@@ -1,17 +1,20 @@
-import { useState, useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
 import {
   Wand2,
   Users,
   Download,
-  ChevronLeft,
-  ChevronRight,
 } from 'lucide-react';
 import { characterAPI } from '../services/api';
 
 export default function Hero() {
-  const [currentSlide, setCurrentSlide] = useState(0);
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const isDraggingRef = useRef(false);
+  const startXRef = useRef(0);
+  const startScrollLeftRef = useRef(0);
+  const accRef = useRef(0);
+  const pausedRef = useRef(false);
 
   const { data: publicCharacters, isLoading } = useQuery({
     queryKey: ['heroCharacters'],
@@ -20,22 +23,140 @@ export default function Hero() {
 
   const characters = publicCharacters?.content || [];
 
+  // Continuous auto-scroll to the right. We duplicate the items to create an infinite loop.
   useEffect(() => {
-    if (characters.length === 0) return;
+    const container = containerRef.current;
+    if (!container || characters.length === 0) return;
 
-    const interval = setInterval(() => {
-      setCurrentSlide((prev) => (prev + 1) % characters.length);
-    }, 5000);
+    accRef.current = container.scrollLeft;
+    let rafId: number;
 
-    return () => clearInterval(interval);
-  }, [characters.length]);
+    // Use time-based motion (pixels per second) instead of pixels per frame.
+    // This avoids rounding/round-trip issues when adding very small fractional
+    // values per frame and makes the scroll consistent across different
+    // refresh rates.
+    const speedPerSecond = 30; // pixels per second (tweak for faster/slower)
 
-  const nextSlide = () => {
-    setCurrentSlide((prev) => (prev + 1) % characters.length);
+    let last = performance.now();
+
+    const step = (now: number) => {
+      if (!container) return;
+      const delta = now - last;
+      last = now;
+
+      if (pausedRef.current) {
+        rafId = requestAnimationFrame(step);
+        return;
+      }
+
+      accRef.current += (speedPerSecond * delta) / 1000;
+
+      const half = container.scrollWidth / 2;
+      // wrap in both directions so negative values also loop
+      if (accRef.current >= half) {
+        accRef.current -= half;
+      } else if (accRef.current < 0) {
+        accRef.current += half;
+      }
+
+      container.scrollLeft = accRef.current;
+      rafId = requestAnimationFrame(step);
+    };
+
+    rafId = requestAnimationFrame(step);
+
+    return () => cancelAnimationFrame(rafId);
+  }, [characters]);
+
+  // Keep accumulator synchronized if the container size/content changes
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    // ResizeObserver keeps us in sync if images load or layout changes.
+    let ro: ResizeObserver | null = null;
+    if (typeof ResizeObserver !== 'undefined') {
+      ro = new ResizeObserver(() => {
+        const half = container.scrollWidth / 2 || 1;
+        accRef.current = ((container.scrollLeft % half) + half) % half;
+        container.scrollLeft = accRef.current;
+      });
+      ro.observe(container);
+    }
+
+    const onWindowResize = () => {
+      const half = container.scrollWidth / 2 || 1;
+      accRef.current = ((container.scrollLeft % half) + half) % half;
+      container.scrollLeft = accRef.current;
+    };
+
+    window.addEventListener('resize', onWindowResize);
+
+    return () => {
+      window.removeEventListener('resize', onWindowResize);
+      if (ro) ro.disconnect();
+    };
+  }, [characters]);
+
+  // Pointer handlers to allow drag-to-scroll. While dragging we pause auto-scroll
+  // and update the accumulator so motion resumes smoothly after release.
+  const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    isDraggingRef.current = true;
+    pausedRef.current = true;
+    startXRef.current = e.clientX;
+    startScrollLeftRef.current = container.scrollLeft;
+
+    // Prefer capturing on the container so moves are tracked even if the
+    // pointer leaves child elements.
+    try {
+      container.setPointerCapture(e.pointerId);
+    } catch (err) {
+      // ignore if unsupported
+    }
+
+    container.style.cursor = 'grabbing';
+    container.style.userSelect = 'none';
   };
 
-  const prevSlide = () => {
-    setCurrentSlide((prev) => (prev - 1 + characters.length) % characters.length);
+  const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
+    const container = containerRef.current;
+    if (!container || !isDraggingRef.current) return;
+    e.preventDefault(); // prevent text selection while dragging
+
+    const delta = e.clientX - startXRef.current;
+    const half = container.scrollWidth / 2;
+
+    // compute new scroll position based on drag. We keep positions normalized
+    // to [0, half) so wrapping both directions is seamless and avoids DOM
+    // clamping to 0 when dragging left.
+    let newScroll = startScrollLeftRef.current - delta;
+    if (newScroll < 0) newScroll += half * Math.ceil(Math.abs(newScroll) / half);
+    // keep in [0, half)
+    newScroll = ((newScroll % half) + half) % half;
+
+    container.scrollLeft = newScroll;
+    accRef.current = newScroll;
+  };
+
+  const handlePointerUp = (e: React.PointerEvent<HTMLDivElement>) => {
+    const container = containerRef.current;
+    if (!container) return;
+
+    isDraggingRef.current = false;
+    pausedRef.current = false;
+
+    try {
+      container.releasePointerCapture(e.pointerId);
+    } catch (err) {
+      // ignore
+    }
+
+    // restore defaults
+    container.style.cursor = 'grab';
+    container.style.userSelect = '';
   };
 
   return (
@@ -74,12 +195,21 @@ export default function Hero() {
             Featured Characters
           </h2>
           <div className="relative bg-white rounded-lg shadow-lg overflow-hidden">
-            <div className="relative min-h-96 md:min-h-125">
-              {characters.map((char, index) => (
+            {/* Hide native scrollbars and provide a scrolling container we control */}
+            <style>{`.hide-scrollbar::-webkit-scrollbar{display:none} .hide-scrollbar{-ms-overflow-style:none; scrollbar-width:none;}`}</style>
+            <div
+              ref={containerRef}
+              className="relative min-h-96 md:min-h-125 flex overflow-auto hide-scrollbar"
+              style={{ touchAction: 'pan-y', cursor: 'grab' }}
+              onPointerDown={handlePointerDown}
+              onPointerMove={handlePointerMove}
+              onPointerUp={handlePointerUp}
+              onPointerCancel={handlePointerUp}
+            >
+              {[...characters, ...characters].map((char, index) => (
                 <div
-                  key={char.id}
-                  className={`absolute inset-0 transition-opacity duration-500 p-6 md:p-12 flex items-center justify-center ${
-                    index === currentSlide ? 'opacity-100' : 'opacity-0'
+                  key={`${char.id}-${index}`}
+                  className={`p-6 md:p-12 flex  items-center justify-center
                   }`}
                 >
                   <div className="flex flex-col md:flex-row items-center gap-8 w-full">
@@ -124,42 +254,7 @@ export default function Hero() {
               ))}
             </div>
 
-            {/* Navigation */}
-            {characters.length > 1 && (
-              <>
-                <button
-                  onClick={prevSlide}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-2 rounded-full shadow-md z-10 transition"
-                  aria-label="Previous character"
-                >
-                  <ChevronLeft size={24} className="text-primary-dark" />
-                </button>
-
-                <button
-                  onClick={nextSlide}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white p-2 rounded-full shadow-md z-10 transition"
-                  aria-label="Next character"
-                >
-                  <ChevronRight size={24} className="text-primary-dark" />
-                </button>
-
-                {/* Dots */}
-                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-                  {characters.map((_, index) => (
-                    <button
-                      key={index}
-                      onClick={() => setCurrentSlide(index)}
-                      className={`transition-all rounded-full ${
-                        index === currentSlide
-                          ? 'bg-accent-gold w-8 h-2'
-                          : 'bg-white/50 w-2 h-2 hover:bg-white/75'
-                      }`}
-                      aria-label={`Go to slide ${index + 1}`}
-                    />
-                  ))}
-                </div>
-              </>
-            )}
+            {/* Navigation removed: carousel auto-scrolls; controls/dots intentionally omitted */}
           </div>
         </div>
       )}
