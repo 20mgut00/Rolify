@@ -1,0 +1,20 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(mvn clean install:*)",
+      "Bash(find:*)",
+      "Bash(npm run lint:*)",
+      "Bash(npx tsc:*)",
+      "Bash(mvn clean compile:*)",
+      "Bash(docker ps:*)",
+      "Bash(docker-compose up:*)",
+      "Bash(docker-compose down:*)",
+      "Bash(curl:*)",
+      "Bash(docker exec:*)",
+      "Bash(docker-compose stop:*)",
+      "Bash(docker-compose build:*)",
+      "Bash(mvn clean package:*)",
+      "Bash(npm run build:*)"
+    ]
+  }
+}

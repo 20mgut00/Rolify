@@ -1,0 +1,22 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700&family=Merriweather:wght@300;400;700&family=Inconsolata:wght@400;500;600&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --color-primary-dark: #0F2B3A;
+  --color-primary-light: #F2EDE4;
+  --color-accent-gold: #D9A441;
+
+  --font-cinzel: 'Cinzel', serif;
+  --font-merriweather: 'Merriweather', serif;
+  --font-inconsolata: 'Inconsolata', monospace;
+}
+
+@layer base {
+  body {
+    @apply bg-primary-light text-primary-dark font-merriweather;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-cinzel;
+  }
+}

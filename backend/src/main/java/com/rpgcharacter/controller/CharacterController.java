@@ -1,0 +1,78 @@
+package com.rpgcharacter.controller;
+
+import com.rpgcharacter.dto.CharacterDTO;
+import com.rpgcharacter.service.CharacterService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/characters")
+@RequiredArgsConstructor
+public class CharacterController {
+    
+    private final CharacterService characterService;
+    
+    @PostMapping
+    public ResponseEntity<CharacterDTO.Response> createCharacter(
+            @Valid @RequestBody CharacterDTO.CreateRequest request,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        String email = userDetails != null ? userDetails.getUsername() : null;
+        return ResponseEntity.ok(characterService.createCharacter(request, email));
+    }
+    
+    @PutMapping("/{id}")
+    public ResponseEntity<CharacterDTO.Response> updateCharacter(
+            @PathVariable String id,
+            @Valid @RequestBody CharacterDTO.UpdateRequest request,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        return ResponseEntity.ok(characterService.updateCharacter(id, request, userDetails.getUsername()));
+    }
+    
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteCharacter(
+            @PathVariable String id,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        characterService.deleteCharacter(id, userDetails.getUsername());
+        return ResponseEntity.noContent().build();
+    }
+    
+    @GetMapping("/my")
+    public ResponseEntity<List<CharacterDTO.CardResponse>> getMyCharacters(
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        return ResponseEntity.ok(characterService.getUserCharacters(userDetails.getUsername()));
+    }
+    
+    @GetMapping("/{id}")
+    public ResponseEntity<CharacterDTO.Response> getCharacter(
+            @PathVariable String id,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        String email = userDetails != null ? userDetails.getUsername() : null;
+        return ResponseEntity.ok(characterService.getCharacter(id, email));
+    }
+    
+    @GetMapping("/public")
+    public ResponseEntity<Page<CharacterDTO.CardResponse>> getPublicCharacters(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "12") int size,
+            @RequestParam(required = false) String system,
+            @RequestParam(required = false) String className
+    ) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        return ResponseEntity.ok(characterService.getPublicCharacters(pageable, system, className));
+    }
+}

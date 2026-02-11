@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  # Backend Spring Boot
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: rpg-backend-dev
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATA_MONGODB_URI: ${MONGODB_URI}
+      SPRING_DATA_MONGODB_DATABASE: ${MONGODB_DATABASE:-rpg-characters}
+      MONGODB_URI: ${MONGODB_URI}
+      MONGODB_DATABASE: ${MONGODB_DATABASE:-rpg-characters}
+      JWT_SECRET: ${JWT_SECRET:-your-256-bit-secret-key-change-this-in-production}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-your-client-id}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-your-client-secret}
+      MAIL_PASSWORD: ${RESEND_API_KEY:-your-api-key}
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    networks:
+      - rpg-network
+    restart: unless-stopped
+
+  # Frontend React with Hot Reload
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: rpg-frontend-dev
+    ports:
+      - "5173:5173"
+    environment:
+      VITE_API_URL: http://localhost:8080/api
+      DOCKER_ENV: "true"
+    volumes:
+      # Mount source code for hot reload
+      - ./frontend/src:/app/src
+      - ./frontend/public:/app/public
+      - ./frontend/index.html:/app/index.html
+      - ./frontend/vite.config.ts:/app/vite.config.ts
+      - ./frontend/tailwind.config.ts:/app/tailwind.config.ts
+      - ./frontend/tsconfig.json:/app/tsconfig.json
+      - ./frontend/tsconfig.node.json:/app/tsconfig.node.json
+      # Exclude node_modules from being mounted
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - rpg-network
+    restart: unless-stopped
+
+networks:
+  rpg-network:
+    driver: bridge

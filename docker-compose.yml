@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+  # MongoDB local (comentado porque usamos MongoDB Atlas)
+  # mongodb:
+  #   image: mongo:7.0
+  #   container_name: rpg-mongodb
+  #   ports:
+  #     - "27017:27017"
+  #   environment:
+  #     MONGO_INITDB_ROOT_USERNAME: admin
+  #     MONGO_INITDB_ROOT_PASSWORD: password
+  #     MONGO_INITDB_DATABASE: rpg-characters
+  #   volumes:
+  #     - mongodb_data:/data/db
+  #   networks:
+  #     - rpg-network
+
+  # Backend Spring Boot
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: rpg-backend
+    ports:
+      - "8080:8080"
+    environment:
+      # Spring Boot reconoce automáticamente SPRING_DATA_MONGODB_URI
+      SPRING_DATA_MONGODB_URI: ${MONGODB_URI}
+      SPRING_DATA_MONGODB_DATABASE: ${MONGODB_DATABASE:-rpg-characters}
+      # También mantenemos las variables originales por compatibilidad
+      MONGODB_URI: ${MONGODB_URI}
+      MONGODB_DATABASE: ${MONGODB_DATABASE:-rpg-characters}
+      JWT_SECRET: ${JWT_SECRET:-your-256-bit-secret-key-change-this-in-production}
+      GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-your-client-id}
+      GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-your-client-secret}
+      # Email Configuration
+      MAIL_HOST: ${MAIL_HOST:-smtp.resend.com}
+      MAIL_PORT: ${MAIL_PORT:-587}
+      MAIL_USERNAME: ${MAIL_USERNAME:-resend}
+      MAIL_PASSWORD: ${RESEND_API_KEY:-your-api-key}
+      EMAIL_FROM: ${EMAIL_FROM:-noreply@rpgcharacters.com}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:5173}
+    dns:
+      - 8.8.8.8
+      - 1.1.1.1
+    networks:
+      - rpg-network
+    restart: unless-stopped
+
+  # Frontend React
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: rpg-frontend
+    ports:
+      - "5173:80"
+    environment:
+      VITE_API_URL: http://localhost:8080/api
+    depends_on:
+      - backend
+    networks:
+      - rpg-network
+    restart: unless-stopped
+
+networks:
+  rpg-network:
+    driver: bridge
+
+volumes:
+  mongodb_data:
