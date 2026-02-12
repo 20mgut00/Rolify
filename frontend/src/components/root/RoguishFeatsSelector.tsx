@@ -6,7 +6,7 @@ import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import { ChevronsDown } from "lucide-react";
 import Typography from "@mui/material/Typography";
-import { useMemo } from "react";
+import { useMemo, useCallback, memo } from "react";
 
 interface RoguishFeatsSelectorProps {
   roguishFeats?: {
@@ -17,7 +17,7 @@ interface RoguishFeatsSelectorProps {
   onFeatsSelect?: (feats: Array<{ name: string; description: string }>) => void;
 }
 
-export default function RoguishFeatsSelector({
+function RoguishFeatsSelector({
   roguishFeats,
   value = [],
   onFeatsSelect,
@@ -45,7 +45,8 @@ export default function RoguishFeatsSelector({
   // handleChange: Controlador para seleccionar/deseleccionar feats
   // Lógica especial: Bloquea intentos de deseleccionar feats bloqueados
   // Si el usuario intenta deseleccionar un feat bloqueado, ignora el evento
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  // Memoizado para evitar re-creación en cada render
+  const handleChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const name = event.target.value;
 
     // Bloquear: Si es un feat bloqueado Y está seleccionado, rechazar cambio
@@ -65,7 +66,7 @@ export default function RoguishFeatsSelector({
     const selectedItems =
       roguishFeats?.feats.filter((f) => newFeats.includes(f.name)) || [];
     onFeatsSelect?.(selectedItems);
-  };
+  }, [selectedNames, lockedFeats, roguishFeats?.feats, onFeatsSelect]);
 
   if (!roguishFeats || !roguishFeats.feats || roguishFeats.feats.length === 0) {
     return <p className="text-sm text-primary-dark/60">No roguish feats available</p>;
@@ -161,3 +162,6 @@ export default function RoguishFeatsSelector({
     </div>
   );
 }
+
+// Memoize component to prevent unnecessary re-renders
+export default memo(RoguishFeatsSelector);

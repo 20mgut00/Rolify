@@ -2,7 +2,7 @@ import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
-import { ThemeProvider, CssBaseline } from '@mui/material';
+import { ThemeProvider, CssBaseline, CircularProgress, Box } from '@mui/material';
 import { theme } from './theme';
 import Header from './components/Header';
 
@@ -30,12 +30,23 @@ const queryClient = new QueryClient({
 // Loading fallback component for lazy routes
 function RouteLoader() {
   return (
-    <div className="min-h-screen bg-primary-light flex items-center justify-center">
-      <div className="text-center">
-        <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-accent-gold border-r-transparent"></div>
-        <p className="mt-4 text-primary-dark text-lg">Loading...</p>
-      </div>
-    </div>
+    <Box
+      sx={{
+        minHeight: '100vh',
+        backgroundColor: '#F5F1E8',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: 'column',
+        gap: 3,
+      }}
+    >
+      <CircularProgress size={60} sx={{ color: '#D9A441' }} />
+      <Box sx={{ textAlign: 'center' }}>
+        <p className="text-primary-dark text-xl font-semibold">Loading...</p>
+        <p className="text-primary-dark/60 text-sm mt-2">Preparing your adventure</p>
+      </Box>
+    </Box>
   );
 }
 

@@ -6,7 +6,7 @@ import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import { ChevronsDown } from "lucide-react";
 import Typography from "@mui/material/Typography";
-import { useMemo } from "react";
+import { useMemo, useCallback, memo } from "react";
 
 interface MovesSelectorProps {
   moves: Array<{ name: string; description: string }>;
@@ -14,7 +14,7 @@ interface MovesSelectorProps {
   onMovesSelect?: (moves: Array<{ name: string; description: string }>) => void;
 }
 
-export default function MovesSelector({
+function MovesSelector({
   moves = [],
   value = [],
   onMovesSelect,
@@ -28,7 +28,8 @@ export default function MovesSelector({
   // Lógica: Si el move está en selectedNames, lo desselecciona; si no, lo añade
   // Esto es un patrón de "toggle": hacer click alterna el estado
   // Limitación: máximo 3 moves (deshabilitados los checkboxes que harían exceder este número)
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  // Memoizado para evitar re-creación en cada render
+  const handleChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const name = event.target.value;
     let newMoves: string[];
     if (selectedNames.includes(name)) {
@@ -42,7 +43,7 @@ export default function MovesSelector({
     const selectedItems = moves.filter((m) => newMoves.includes(m.name));
     // Notificar al padre (RootSheet) sobre los cambios
     onMovesSelect?.(selectedItems);
-  };
+  }, [selectedNames, moves, onMovesSelect]);
 
   return (
     <FormGroup className="text-start">
@@ -127,3 +128,6 @@ export default function MovesSelector({
     </FormGroup>
   );
 }
+
+// Memoize component to prevent unnecessary re-renders
+export default memo(MovesSelector);

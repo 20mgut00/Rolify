@@ -6,7 +6,7 @@ import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import { ChevronsDown } from "lucide-react";
 import Typography from "@mui/material/Typography";
-import { useMemo } from "react";
+import { useMemo, useCallback, memo } from "react";
 
 interface DriveSelectorProps {
   drives?: Array<{ name: string; description: string }>;
@@ -16,14 +16,14 @@ interface DriveSelectorProps {
   ) => void;
 }
 
-export default function DriveSelector({
+function DriveSelector({
   drives = [],
   value = [],
   onDrivesSelect,
 }: DriveSelectorProps) {
   const selectedNames = useMemo(() => value.map((d) => d.name), [value]);
 
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const value = event.target.value;
     let newDrives: string[];
     if (selectedNames.includes(value)) {
@@ -33,7 +33,7 @@ export default function DriveSelector({
     }
     const selectedItems = drives.filter((d) => newDrives.includes(d.name));
     onDrivesSelect?.(selectedItems);
-  };
+  }, [selectedNames, drives, onDrivesSelect]);
 
   if (!drives || drives.length === 0) {
     return <p className="text-sm text-primary-dark/60">No drive options available</p>;
@@ -115,3 +115,5 @@ export default function DriveSelector({
     </FormGroup>
   );
 }
+
+export default memo(DriveSelector);

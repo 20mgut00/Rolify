@@ -111,13 +111,9 @@ export function useCharacterForm(onSuccess: (characterId: string) => void) {
     [selectedClass?.roguishFeats?.feats]
   );
 
-  const preSelectedSkills = useMemo(
-    () =>
-      selectedClass?.weaponSkills?.skills
-        .filter((s) => s.selected)
-        .map((s) => ({ name: s.name, description: s.description })) || [],
-    [selectedClass?.weaponSkills?.skills]
-  );
+  // Note: For weapon skills, 'selected: true' means "selectable", not "pre-selected"
+  // So we don't pre-select any skills when creating a new character
+  const preSelectedSkills = useMemo(() => [], []);
 
   // Create/Update mutation
   const saveMutation = useMutation({
@@ -186,8 +182,6 @@ export function useCharacterForm(onSuccess: (characterId: string) => void) {
           }, {} as Record<string, { prestige: number; notoriety: number }>)
         }
       };
-
-      console.log('Sending to API:', apiData);
 
       if (isEditing && editId) {
         return characterAPI.update(editId, apiData as any);

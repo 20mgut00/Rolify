@@ -19,7 +19,9 @@
       "Bash(docker compose:*)",
       "Bash(docker-compose restart:*)",
       "Bash(docker-compose logs:*)",
-      "Bash(docker-compose:*)"
+      "Bash(docker-compose:*)",
+      "Bash(\"c:\\\\Users\\\\miguel\\\\Documents\\\\2-DAM\\\\rpg-character-creator\\\\backend\\\\src\\\\main\\\\java\\\\com\\\\rpgcharacter\\\\exception\\\\UnauthorizedException.java\" << 'EOF'\npackage com.rpgcharacter.exception;\n\npublic class UnauthorizedException extends RuntimeException {\n    public UnauthorizedException\\(String message\\) {\n        super\\(message\\);\n    }\n}\nEOF)",
+      "Bash(\"c:\\\\Users\\\\miguel\\\\Documents\\\\2-DAM\\\\rpg-character-creator\\\\backend\\\\src\\\\main\\\\java\\\\com\\\\rpgcharacter\\\\exception\\\\GlobalExceptionHandler.java\" << 'EOF'\npackage com.rpgcharacter.exception;\n\nimport org.springframework.http.HttpStatus;\nimport org.springframework.http.ResponseEntity;\nimport org.springframework.web.bind.annotation.ExceptionHandler;\nimport org.springframework.web.bind.annotation.RestControllerAdvice;\n\nimport java.util.HashMap;\nimport java.util.Map;\n\n@RestControllerAdvice\npublic class GlobalExceptionHandler {\n\n    @ExceptionHandler\\(ResourceNotFoundException.class\\)\n    public ResponseEntity<Map<String, String>> handleResourceNotFound\\(ResourceNotFoundException ex\\) {\n        Map<String, String> error = new HashMap<>\\(\\);\n        error.put\\(\"error\", \"Resource Not Found\"\\);\n        error.put\\(\"message\", ex.getMessage\\(\\)\\);\n        return ResponseEntity.status\\(HttpStatus.NOT_FOUND\\).body\\(error\\);\n    }\n\n    @ExceptionHandler\\(UnauthorizedException.class\\)\n    public ResponseEntity<Map<String, String>> handleUnauthorized\\(UnauthorizedException ex\\) {\n        Map<String, String> error = new HashMap<>\\(\\);\n        error.put\\(\"error\", \"Unauthorized\"\\);\n        error.put\\(\"message\", ex.getMessage\\(\\)\\);\n        return ResponseEntity.status\\(HttpStatus.FORBIDDEN\\).body\\(error\\);\n    }\n}\nEOF)"
     ]
   }
 }

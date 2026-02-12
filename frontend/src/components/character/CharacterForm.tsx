@@ -1,7 +1,8 @@
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import { Wand2 } from 'lucide-react';
+import { Wand2, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
+import CircularProgress from '@mui/material/CircularProgress';
 import { useCharacterForm } from '../../hooks/useCharacterForm';
 import { getClassDefaultAvatar, getAvatarUrl } from '../../utils/avatarUrl';
 import { characterAPI } from '../../services/api';
@@ -119,11 +120,20 @@ export default function CharacterForm() {
             <button
               type="button"
               onClick={handleGenerateCharacter}
-              disabled={isGenerating}
-              className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={isGenerating || !selectedClass}
+              className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed relative"
             >
-              <Wand2 size={18} />
-              {isGenerating ? 'Generating...' : 'Auto-fill with AI'}
+              {isGenerating ? (
+                <>
+                  <CircularProgress size={18} sx={{ color: 'white' }} />
+                  <span className="animate-pulse">Generating with AI...</span>
+                </>
+              ) : (
+                <>
+                  <Wand2 size={18} />
+                  Auto-fill with AI
+                </>
+              )}
             </button>
           )}
         </div>
@@ -194,6 +204,25 @@ export default function CharacterForm() {
             </div>
           </div>
         </form>
+
+        {/* AI Generation Loading Overlay */}
+        {isGenerating && (
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
+            <div className="bg-white rounded-lg p-8 max-w-md mx-4 text-center shadow-2xl">
+              <CircularProgress size={60} sx={{ color: '#9333EA', mb: 3 }} />
+              <h3 className="text-2xl font-bold text-primary-dark mb-2">
+                Generating Character...
+              </h3>
+              <p className="text-primary-dark/70 mb-4">
+                AI is creating a unique character for you. This may take a few seconds.
+              </p>
+              <div className="flex items-center justify-center gap-2 text-sm text-purple-600">
+                <Loader2 className="animate-spin" size={16} />
+                <span className="animate-pulse">Please wait...</span>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </main>
   );

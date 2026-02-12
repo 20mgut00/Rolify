@@ -6,7 +6,7 @@ import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
 import { ChevronsDown } from "lucide-react";
-import { useMemo } from "react";
+import { useMemo, useCallback, memo } from "react";
 
 interface WeaponSkillsSelectorProps {
   weaponSkills?: {
@@ -19,7 +19,7 @@ interface WeaponSkillsSelectorProps {
   ) => void;
 }
 
-export default function WeaponSkillsSelector({
+function WeaponSkillsSelector({
   weaponSkills,
   value = [],
   onSkillsSelect,
@@ -35,7 +35,8 @@ export default function WeaponSkillsSelector({
   // handleChange: Controlador para seleccionar/deseleccionar skills
   // Patrón: toggle (hacer click alterna el estado)
   // Limitación: no puedes seleccionar más skills que el máximo permitido
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+  // Memoizado para evitar re-creación en cada render
+  const handleChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const name = event.target.value;
     let newSkills: string[];
     if (selectedNames.includes(name)) {
@@ -49,7 +50,7 @@ export default function WeaponSkillsSelector({
     const selectedItems =
       weaponSkills?.skills.filter((s) => newSkills.includes(s.name)) || [];
     onSkillsSelect?.(selectedItems);
-  };
+  }, [selectedNames, weaponSkills?.skills, onSkillsSelect]);
 
   if (
     !weaponSkills ||
@@ -172,3 +173,6 @@ export default function WeaponSkillsSelector({
     </div>
   );
 }
+
+// Memoize component to prevent unnecessary re-renders
+export default memo(WeaponSkillsSelector);
