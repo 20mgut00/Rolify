@@ -51,8 +51,10 @@ export function toCharacterDB(
     prestige: rep.prestige,
   }));
 
-  // Convert equipment to string
-  const equipment = JSON.stringify(character.equipment);
+  // Keep equipment as string (or stringify if it's an object for backward compatibility)
+  const equipment = typeof character.equipment === 'string'
+    ? character.equipment
+    : JSON.stringify(character.equipment);
 
   return {
     idUsuario: userId || character.userId,
@@ -133,27 +135,21 @@ export function fromCharacterDB(characterDB: any): Character {
     reputation = characterDB.reputation;
   }
 
-  // Parse equipment string to object
-  let equipment;
-  try {
-    equipment =
-      typeof characterDB.equipment === 'string'
-        ? JSON.parse(characterDB.equipment)
-        : {
-            startingValue: 0,
-            carrying: 0,
-            burdened: 0,
-            max: 0,
-            items: [],
-          };
-  } catch {
-    equipment = {
-      startingValue: 0,
-      carrying: 0,
-      burdened: 0,
-      max: 0,
-      items: [],
-    };
+  // Keep equipment as string (no longer using Equipment object)
+  let equipment: any = characterDB.equipment || '';
+
+  // If it's a JSON string of the old Equipment object format, extract it or keep as-is
+  if (typeof equipment === 'string' && equipment.trim().startsWith('{')) {
+    try {
+      const parsed = JSON.parse(equipment);
+      // If it's the old Equipment object format, keep it as the parsed object for backward compatibility
+      if (parsed && typeof parsed === 'object' && 'carrying' in parsed) {
+        equipment = parsed;
+      }
+      // Otherwise, keep as the original string (user entered JSON-like text)
+    } catch {
+      // Not valid JSON, keep as string
+    }
   }
 
   return {

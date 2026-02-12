@@ -48,6 +48,23 @@ export interface FactionReputationDB {
   prestige: number;
 }
 
+// Gemini AI Generated Character Response
+export interface GeneratedCharacter {
+  name: string;
+  species: string;
+  demeanor: string;
+  details: string;
+  equipment: string;
+  nature?: { name: string; description: string };
+  drives?: Array<{ name: string; description: string }>;
+  moves?: Array<{ name: string; description: string }>;
+  background?: Array<{ question: string; answer: string }>;
+  connections?: Array<{ name: string; answer: string }>;
+  stats?: Array<{ name: string; value: number }>;
+  roguishFeats?: Array<{ name: string; description: string }>;
+  weaponSkills?: Array<{ name: string; description: string }>;
+}
+
 // MongoDB Character Schema (backend storage format)
 export interface CharacterDB {
   _id?: string;
@@ -146,7 +163,7 @@ export interface Character {
   connections: Connection[];
   weaponSkills: WeaponSkills;
   roguishFeats: RoguishFeats;
-  equipment: Equipment;
+  equipment: Equipment | string; // Can be either string or Equipment object for backward compatibility
   reputation: Reputation;
   isPublic?: boolean;
   createdAt?: string;

@@ -1,7 +1,11 @@
 package com.rpgcharacter.controller;
 
 import com.rpgcharacter.dto.CharacterDTO;
+import com.rpgcharacter.dto.GenerateCharacterDTO;
+import com.rpgcharacter.model.ClassTemplate;
+import com.rpgcharacter.repository.ClassTemplateRepository;
 import com.rpgcharacter.service.CharacterService;
+import com.rpgcharacter.service.GeminiService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -14,13 +18,16 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/characters")
 @RequiredArgsConstructor
 public class CharacterController {
-    
+
     private final CharacterService characterService;
+    private final GeminiService geminiService;
+    private final ClassTemplateRepository classTemplateRepository;
     
     @PostMapping
     public ResponseEntity<CharacterDTO.Response> createCharacter(
@@ -74,5 +81,17 @@ public class CharacterController {
     ) {
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
         return ResponseEntity.ok(characterService.getPublicCharacters(pageable, system, className));
+    }
+
+    @PostMapping("/generate")
+    public ResponseEntity<Map<String, Object>> generateCharacter(
+            @Valid @RequestBody GenerateCharacterDTO.Request request
+    ) {
+        ClassTemplate template = classTemplateRepository
+                .findBySystemAndClassName(request.getSystem(), request.getClassName())
+                .orElseThrow(() -> new RuntimeException("Class template not found"));
+
+        Map<String, Object> generatedData = geminiService.generateCharacter(template, request.getPrompt());
+        return ResponseEntity.ok(generatedData);
     }
 }

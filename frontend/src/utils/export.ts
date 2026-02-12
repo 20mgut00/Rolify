@@ -110,40 +110,9 @@ export async function exportCharacterToPDF(character: Character): Promise<void> 
       ${character.equipment ? `
         <div style="margin-bottom: 25px;">
           <h2 style="color: #D9A441; font-size: 20px; margin-bottom: 10px; border-bottom: 2px solid #D9A441;">Equipment</h2>
-          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 15px;">
-            <div style="text-align: center; padding: 10px; background: #f5f5f5; border-radius: 5px;">
-              <div style="font-size: 12px; color: #666;">Carrying</div>
-              <div style="font-size: 20px; font-weight: bold;">${character.equipment.carrying}</div>
-            </div>
-            <div style="text-align: center; padding: 10px; background: #f5f5f5; border-radius: 5px;">
-              <div style="font-size: 12px; color: #666;">Burdened</div>
-              <div style="font-size: 20px; font-weight: bold;">${character.equipment.burdened}</div>
-            </div>
-            <div style="text-align: center; padding: 10px; background: #f5f5f5; border-radius: 5px;">
-              <div style="font-size: 12px; color: #666;">Max</div>
-              <div style="font-size: 20px; font-weight: bold;">${character.equipment.max}</div>
-            </div>
+          <div style="white-space: pre-wrap; padding: 10px; background: #f5f5f5; border-radius: 5px;">
+            ${typeof character.equipment === 'string' ? character.equipment : ''}
           </div>
-          ${character.equipment.items && character.equipment.items.length > 0 ? `
-            <table style="width: 100%; border-collapse: collapse;">
-              <thead>
-                <tr style="background: #D9A441; color: white;">
-                  <th style="padding: 8px; text-align: left;">Item</th>
-                  <th style="padding: 8px; text-align: center;">Value</th>
-                  <th style="padding: 8px; text-align: center;">Wear</th>
-                </tr>
-              </thead>
-              <tbody>
-                ${character.equipment.items.map((item, i) => `
-                  <tr style="background: ${i % 2 === 0 ? '#f5f5f5' : 'white'};">
-                    <td style="padding: 8px;">${item.name}</td>
-                    <td style="padding: 8px; text-align: center;">${item.value}</td>
-                    <td style="padding: 8px; text-align: center;">${item.wear}</td>
-                  </tr>
-                `).join('')}
-              </tbody>
-            </table>
-          ` : ''}
         </div>
       ` : ''}
 
@@ -246,20 +215,8 @@ export function exportCharacterToCSV(character: Character): void {
   if (character.equipment) {
     rows.push(
       [''],
-      ['EQUIPMENT', ''],
-      ['Carrying', character.equipment.carrying.toString()],
-      ['Burdened', character.equipment.burdened.toString()],
-      ['Max', character.equipment.max.toString()],
+      ['EQUIPMENT', typeof character.equipment === 'string' ? character.equipment : ''],
     );
-
-    if (character.equipment.items && character.equipment.items.length > 0) {
-      rows.push([''], ['ITEMS', 'Value', 'Wear']);
-      rows.push(...character.equipment.items.map(item => [
-        item.name,
-        item.value.toString(),
-        item.wear.toString(),
-      ]));
-    }
   }
 
   const csvContent = rows.map(row => 

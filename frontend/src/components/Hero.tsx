@@ -203,7 +203,7 @@ export default function Hero() {
             <style>{`.hide-scrollbar::-webkit-scrollbar{display:none} .hide-scrollbar{-ms-overflow-style:none; scrollbar-width:none;}`}</style>
             <div
               ref={containerRef}
-              className="relative min-h-96 md:min-h-125 flex overflow-auto hide-scrollbar"
+              className="relative min-h-96 md:min-h-125 flex flex-nowrap gap-6 overflow-auto hide-scrollbar"
               style={{ touchAction: 'pan-y', cursor: 'grab' }}
               onPointerDown={handlePointerDown}
               onPointerMove={handlePointerMove}
@@ -213,8 +213,7 @@ export default function Hero() {
               {[...characters, ...characters].map((char, index) => (
                 <div
                   key={`${char.id}-${index}`}
-                  className={`p-6 md:p-12 flex  items-center justify-center
-                  }`}
+                  className="p-6 md:p-10 flex items-center justify-center shrink-0 min-w-72 sm:min-w-80 md:min-w-96 border-r"
                 >
                   <div className="flex flex-col md:flex-row items-center gap-8 w-full">
                     {/* Avatar */}
@@ -223,7 +222,7 @@ export default function Hero() {
                         <img
                           src={getAvatarUrl(char.avatarImage)}
                           alt={char.name}
-                          className="w-32 h-32 md:w-48 md:h-48 rounded-full border-4 border-accent-gold shadow-lg object-cover"
+                          className="w-32 h-32 md:w-80 md:h-80 border-accent-gold object-contain"
                         />
                       ) : (
                         <div className="w-32 h-32 md:w-48 md:h-48 rounded-full border-4 border-accent-gold shadow-lg bg-accent-gold/10 flex items-center justify-center">

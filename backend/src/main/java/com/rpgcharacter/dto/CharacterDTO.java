@@ -37,7 +37,7 @@ public class CharacterDTO {
         private List<ConnectionDTO> connections;
         private WeaponSkillsDTO weaponSkills;
         private RoguishFeatsDTO roguishFeats;
-        private EquipmentDTO equipment;
+        private String equipment;  // Changed from EquipmentDTO to String for simplicity
         private ReputationDTO reputation;
         private Boolean isPublic;
     }
@@ -60,7 +60,7 @@ public class CharacterDTO {
         private List<ConnectionDTO> connections;
         private WeaponSkillsDTO weaponSkills;
         private RoguishFeatsDTO roguishFeats;
-        private EquipmentDTO equipment;
+        private String equipment;  // Changed from EquipmentDTO to String for simplicity
         private ReputationDTO reputation;
         private Boolean isPublic;
     }
@@ -87,7 +87,7 @@ public class CharacterDTO {
         private List<ConnectionDTO> connections;
         private WeaponSkillsDTO weaponSkills;
         private RoguishFeatsDTO roguishFeats;
-        private EquipmentDTO equipment;
+        private String equipment;  // Changed from EquipmentDTO to String for simplicity
         private ReputationDTO reputation;
         private Boolean isPublic;
         private LocalDateTime createdAt;

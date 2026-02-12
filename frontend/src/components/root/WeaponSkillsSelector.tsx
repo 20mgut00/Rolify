@@ -64,19 +64,22 @@ export default function WeaponSkillsSelector({
       <FormGroup className="text-start">
         {/* Componente controlado: renderiza un Accordion por cada skill disponible en el catálogo */}
         {weaponSkills.skills.map((skill) => {
-          // isAvailable: Verifica si la skill está marcada como disponible en el backend (skill.selected)
-          // Solo muestra/habilita las skills que el backend indicó como disponibles
-          const isAvailable = skill.selected;
-          const isUnavailable = !isAvailable;
+          // isSelectable: Skills que vienen desde la base de datos (selected: true)
+          // Estas son las ÚNICAS que el usuario puede seleccionar (máximo 1)
+          const isSelectable = skill.selected;
 
-          // isChecked: Verifica si esta skill está en selectedNames (usuario la seleccionó)
+          // isNotSelectable: Skills que NO vienen desde la base de datos (selected: false)
+          // Estas NUNCA pueden seleccionarse
+          const isNotSelectable = !skill.selected;
+
+          // isChecked: Verifica si esta skill está en selectedNames (usuario o Gemini la seleccionó)
           const isChecked = selectedNames.includes(skill.name);
 
           // isDisabled: Deshabilita el checkbox si:
-          // 1. La skill no está disponible (skill.selected === false), O
+          // 1. La skill NO es seleccionable (selected: false), O
           // 2. Ya llegaste al máximo de selecciones permitidas Y esta skill no está seleccionada
           const isDisabled =
-            !isAvailable ||
+            isNotSelectable ||
             (selectedNames.length >= maxSelections && !isChecked);
 
           return (
@@ -94,19 +97,19 @@ export default function WeaponSkillsSelector({
                 className="rounded-lg shadow-md"
                 expandIcon={<ChevronsDown className="text-primary-dark" />}
                 sx={{
-                  backgroundColor: isUnavailable
+                  backgroundColor: isNotSelectable
                     ? '#EFE7DC'
                     : isDisabled
                     ? '#E3DBD0'
                     : '#F2EDE4',
                   color: '#0F2B3A',
-                  border: isUnavailable
+                  border: isNotSelectable
                     ? '1px dashed #C7B59F'
                     : isDisabled
                     ? '1px solid #D1C7B8'
                     : '1px solid transparent',
                   '&:hover': {
-                    backgroundColor: isUnavailable
+                    backgroundColor: isNotSelectable
                       ? '#EFE7DC'
                       : isDisabled
                       ? '#E3DBD0'
@@ -129,7 +132,7 @@ export default function WeaponSkillsSelector({
                       sx={{
                         color: '#0F2B3A',
                         '&.Mui-checked': { color: '#D9A441' },
-                        '&.Mui-disabled': { color: isUnavailable ? '#6B4E2E' : '#0F2B3A' },
+                        '&.Mui-disabled': { color: isNotSelectable ? '#6B4E2E' : '#0F2B3A' },
                       }}
                     />
                   }
@@ -144,14 +147,14 @@ export default function WeaponSkillsSelector({
                     cursor: isDisabled ? 'not-allowed' : 'pointer',
                     opacity: isDisabled ? 0.6 : 1,
                     '& .MuiFormControlLabel-label': {
-                      color: isUnavailable
+                      color: isNotSelectable
                         ? '#6B4E2E'
                         : isDisabled
                         ? '#5B6470'
                         : '#0F2B3A',
                     },
                     '& .MuiFormControlLabel-label.Mui-disabled': {
-                      color: isUnavailable ? '#6B4E2E' : '#5B6470',
+                      color: isNotSelectable ? '#6B4E2E' : '#5B6470',
                     },
                   }}
                 />

@@ -54,23 +54,26 @@ app:
     secret: ${JWT_SECRET:your-256-bit-secret-key-change-this-in-production}
     expiration: 86400000 # 24 hours
     refresh-expiration: 604800000 # 7 days
-  
+
   cors:
     allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173,http://localhost:3000}
-  
+
   frontend:
     url: ${FRONTEND_URL:http://localhost:5173}
-  
+
   email:
     from: ${EMAIL_FROM:noreply@rpgcharacters.com}
     verification:
       expiration: 3600000 # 1 hour
 
+  gemini:
+    api-key: ${GEMINI_API_KEY}
+    model: gemini-2.5-flash
+    api-url: https://generativelanguage.googleapis.com/v1beta/models
+
 logging:
   level:
     root: INFO
-    com.rpgcharacter: DEBUG
-    org.springframework.security: DEBUG
-    org.springframework.data.mongodb: DEBUG
-    org.springframework.boot.context.config: DEBUG
-    org.springframework.core.env: DEBUG
+    com.rpgcharacter: INFO
+    org.springframework.security: INFO
+    org.springframework.data.mongodb: INFO

@@ -6,19 +6,21 @@ import { Filter, Search } from 'lucide-react';
 import { characterAPI, classTemplateAPI } from '../../services/api';
 import CharacterCard from '../character/CharacterCard';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
+import { useUIStore } from '../../store';
 
 export default function PublicGallery() {
   // React 19 feature: Dynamic document title
   useDocumentTitle('Public Gallery - RPG Character Creator');
 
   const navigate = useNavigate();
+  const { selectedSystem } = useUIStore();
   const [classFilter, setClassFilter] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState('');
   const { ref, inView } = useInView();
 
   const { data: templates } = useQuery({
-    queryKey: ['classTemplates', 'Root'],
-    queryFn: () => classTemplateAPI.getBySystem('Root'),
+    queryKey: ['classTemplates', selectedSystem],
+    queryFn: () => classTemplateAPI.getBySystem(selectedSystem),
   });
 
   const {
@@ -28,13 +30,18 @@ export default function PublicGallery() {
     isFetchingNextPage,
     isLoading,
   } = useInfiniteQuery({
-    queryKey: ['publicCharacters', classFilter],
+    queryKey: ['publicCharacters', selectedSystem, classFilter],
     queryFn: ({ pageParam = 0 }) =>
-      characterAPI.getPublicCharacters(pageParam, 12, 'Root', classFilter || undefined),
+      characterAPI.getPublicCharacters(pageParam, 12, selectedSystem, classFilter || undefined),
     getNextPageParam: (lastPage) =>
       lastPage.last ? undefined : lastPage.number + 1,
     initialPageParam: 0,
   });
+
+  // Reset class filter when system changes
+  useEffect(() => {
+    setClassFilter('');
+  }, [selectedSystem]);
 
   // Auto-fetch next page when reaching bottom
   useEffect(() => {

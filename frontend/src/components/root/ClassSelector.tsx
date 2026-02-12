@@ -31,7 +31,7 @@ export default function ClassSelector({
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-4xl mx-auto flex flex-col items-center text-center">
       <h1 className="text-xl font-semibold mb-1 text-primary-dark">
         Choose Your Role
       </h1>

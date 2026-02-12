@@ -1,10 +1,10 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Search, Plus } from 'lucide-react';
+import { Search, Plus, Filter } from 'lucide-react';
 import toast from 'react-hot-toast';
-import { characterAPI } from '../../services/api';
-import { useAuthStore, useCharacterStore } from '../../store';
+import { characterAPI, classTemplateAPI } from '../../services/api';
+import { useAuthStore, useCharacterStore, useUIStore } from '../../store';
 import CharacterCard from './CharacterCard';
 import { exportCharacterToPDF, exportCharacterToJSON, exportCharacterToCSV } from '../../utils/export';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
@@ -18,7 +18,9 @@ export default function CharacterLibrary() {
   const queryClient = useQueryClient();
   const { isAuthenticated } = useAuthStore();
   const { sessionCharacters, removeSessionCharacter } = useCharacterStore();
+  const { selectedSystem } = useUIStore();
   const [searchTerm, setSearchTerm] = useState('');
+  const [classFilter, setClassFilter] = useState<string>('');
 
   // Fetch user characters if authenticated
   const { data: userCharacters, isLoading } = useQuery({
@@ -26,6 +28,17 @@ export default function CharacterLibrary() {
     queryFn: characterAPI.getMyCharacters,
     enabled: isAuthenticated,
   });
+
+  // Fetch class templates for the selected system
+  const { data: templates } = useQuery({
+    queryKey: ['classTemplates', selectedSystem],
+    queryFn: () => classTemplateAPI.getBySystem(selectedSystem),
+  });
+
+  // Reset class filter when system changes
+  useEffect(() => {
+    setClassFilter('');
+  }, [selectedSystem]);
 
   // Delete mutation
   const deleteMutation = useMutation({
@@ -56,12 +69,23 @@ export default function CharacterLibrary() {
           createdAt: c.createdAt,
         }));
 
-  // Filter characters
-  const filteredCharacters = characters.filter((char) =>
-    char.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    char.className.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    char.species.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // Filter characters by system, class, and search term
+  const filteredCharacters = characters.filter((char) => {
+    // Filter by selected system
+    if (char.system !== selectedSystem) return false;
+
+    // Filter by class if selected
+    if (classFilter && char.className !== classFilter) return false;
+
+    // Filter by search term
+    if (searchTerm && !(
+      char.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      char.className.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      char.species.toLowerCase().includes(searchTerm.toLowerCase())
+    )) return false;
+
+    return true;
+  });
 
   const handleDelete = (id: string) => {
     if (isAuthenticated) {
@@ -107,7 +131,8 @@ export default function CharacterLibrary() {
               My Library
             </h1>
             <p className="text-primary-dark/70">
-              {characters.length} character{characters.length !== 1 ? 's' : ''} in your collection
+              {filteredCharacters.length} character{filteredCharacters.length !== 1 ? 's' : ''}
+              {(classFilter || searchTerm) ? ' found' : ' in your collection'}
             </p>
           </div>
           
@@ -137,8 +162,9 @@ export default function CharacterLibrary() {
           </div>
         )}
 
-        {/* Search */}
-        <div className="max-w-md mb-8">
+        {/* Filters */}
+        <div className="max-w-2xl mx-auto mb-8 space-y-4">
+          {/* Search */}
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-primary-dark/50" size={20} />
             <input
@@ -148,6 +174,23 @@ export default function CharacterLibrary() {
               placeholder="Search your characters..."
               className="w-full pl-10 pr-4 py-3 border border-primary-dark/20 rounded-lg focus:ring-2 focus:ring-accent-gold focus:border-transparent text-primary-dark bg-white"
             />
+          </div>
+
+          {/* Class Filter */}
+          <div className="relative">
+            <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-primary-dark/50" size={20} />
+            <select
+              value={classFilter}
+              onChange={(e) => setClassFilter(e.target.value)}
+              className="w-full pl-10 pr-4 py-3 border border-primary-dark/20 rounded-lg focus:ring-2 focus:ring-accent-gold focus:border-transparent text-primary-dark bg-white appearance-none cursor-pointer"
+            >
+              <option value="">All Classes</option>
+              {templates?.map((template) => (
+                <option key={template.id} value={template.className}>
+                  {template.className}
+                </option>
+              ))}
+            </select>
           </div>
         </div>
 
@@ -214,14 +257,19 @@ export default function CharacterLibrary() {
               No characters found
             </h3>
             <p className="text-primary-dark/70 mb-4">
-              Try adjusting your search term
+              {searchTerm || classFilter
+                ? 'Try adjusting your filters to find more characters'
+                : `No characters found for ${selectedSystem} system`}
             </p>
             <button
               type="button"
-              onClick={() => setSearchTerm('')}
+              onClick={() => {
+                setSearchTerm('');
+                setClassFilter('');
+              }}
               className="text-accent-gold hover:underline font-medium"
             >
-              Clear search
+              Clear filters
             </button>
           </div>
         )}

@@ -55,7 +55,7 @@ public class Character {
     private List<Connection> connections;
     private WeaponSkillsData weaponSkills;
     private RoguishFeatsData roguishFeats;
-    private EquipmentData equipment;
+    private String equipment;  // Changed from EquipmentData to String for simplicity
     private ReputationData reputation;
     
     // Metadata

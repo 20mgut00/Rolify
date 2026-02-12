@@ -46,7 +46,7 @@ export default function Header() {
   return (
     <>
       <AppBar position="sticky" sx={{ bgcolor: 'background.paper' }}>
-        <Toolbar sx={{ py: 1 }}>
+        <Toolbar sx={{ py: 1, display: 'flex', justifyContent: 'space-between' }}>
           {/* Logo */}
           <Box
             component={RouterLink}
@@ -57,17 +57,19 @@ export default function Header() {
               gap: 1.5,
               textDecoration: 'none',
               color: 'inherit',
-              flexGrow: 1,
+              width: 150,
             }}
           >
             <LogoTFG
               style={{
-                height: 40,
+                height: 50,
                 width: 'auto',
                 color: theme.palette.primary.main,
               }}
             />
           </Box>
+
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }} >
 
           {/* System Selector */}
           <FormControl size="small" sx={{ minWidth: 120, mr: 2 }}>
@@ -212,6 +214,7 @@ export default function Header() {
               Login
             </Button>
           )}
+          </Box>
         </Toolbar>
       </AppBar>
 

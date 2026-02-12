@@ -1,6 +1,10 @@
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { Wand2 } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { useCharacterForm } from '../../hooks/useCharacterForm';
 import { getClassDefaultAvatar, getAvatarUrl } from '../../utils/avatarUrl';
+import { characterAPI } from '../../services/api';
 import Card from '../common/Card';
 import ClassSelector from '../root/ClassSelector';
 import CharacterFormHeader from './CharacterFormHeader';
@@ -9,6 +13,7 @@ import CharacterFormFields from './CharacterFormFields';
 
 export default function CharacterForm() {
   const navigate = useNavigate();
+  const [isGenerating, setIsGenerating] = useState(false);
 
   const {
     register,
@@ -28,6 +33,43 @@ export default function CharacterForm() {
     validationErrors,
     onSubmit,
   } = useCharacterForm((characterId) => navigate(`/character/${characterId}`));
+
+  const handleGenerateCharacter = async () => {
+    if (!selectedClass) {
+      toast.error('Please select a class first');
+      return;
+    }
+
+    setIsGenerating(true);
+    try {
+      const generatedData = await characterAPI.generateCharacter(
+        selectedClass.system,
+        selectedClass.className
+      );
+
+      // Update form fields with generated data
+      if (generatedData.name) setField('name')(generatedData.name);
+      if (generatedData.species) setField('species')(generatedData.species);
+      if (generatedData.demeanor) setField('demeanor')(generatedData.demeanor);
+      if (generatedData.details) setField('details')(generatedData.details);
+      if (generatedData.equipment) setField('equipment')(generatedData.equipment);
+      if (generatedData.nature) setField('nature')(generatedData.nature);
+      if (generatedData.drives) setField('drives')(generatedData.drives);
+      if (generatedData.moves) setField('moves')(generatedData.moves);
+      if (generatedData.stats) setField('stats')(generatedData.stats);
+      if (generatedData.background) setField('background')(generatedData.background);
+      if (generatedData.connections) setField('connections')(generatedData.connections);
+      if (generatedData.roguishFeats) setField('roguishFeats')(generatedData.roguishFeats);
+      if (generatedData.weaponSkills) setField('weaponSkills')(generatedData.weaponSkills);
+
+      toast.success('Character generated successfully!');
+    } catch (error) {
+      console.error('Error generating character:', error);
+      toast.error('Failed to generate character. Please try again.');
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
   if (!templates?.length) {
     return (
@@ -69,9 +111,22 @@ export default function CharacterForm() {
           }}
         />
 
-        <h3 className="text-xl font-semibold text-primary-dark text-start mt-6">
-          Character Details
-        </h3>
+        <div className="flex items-center justify-between mt-6 mb-4">
+          <h3 className="text-xl font-semibold text-primary-dark">
+            Character Details
+          </h3>
+          {!isEditing && (
+            <button
+              type="button"
+              onClick={handleGenerateCharacter}
+              disabled={isGenerating}
+              className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              <Wand2 size={18} />
+              {isGenerating ? 'Generating...' : 'Auto-fill with AI'}
+            </button>
+          )}
+        </div>
 
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="grid grid-cols-2 gap-4">
@@ -80,6 +135,7 @@ export default function CharacterForm() {
               avatarImage={watchedFields.avatarImage}
               onImageChange={setField('avatarImage')}
               validationErrors={validationErrors}
+              isEditing={isEditing}
             />
 
             <CharacterFormFields

@@ -28,7 +28,7 @@ export default function CharacterCard({
           <img
             src={getAvatarUrl(character.avatarImage)}
             alt={character.name}
-            className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+            className="w-full h-full object-contain group-hover:scale-110 transition-transform duration-300"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-linear-to-br from-primary-dark/10 to-accent-gold/10">

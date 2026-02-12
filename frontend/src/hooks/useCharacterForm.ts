@@ -6,7 +6,6 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import toast from 'react-hot-toast';
 import { characterAPI, classTemplateAPI } from '../services/api';
 import { useAuthStore, useCharacterStore, useUIStore } from '../store';
-import { fromCharacterDB } from '../utils/characterMapper';
 import { getClassDefaultAvatar } from '../utils/avatarUrl';
 import type { CharacterDB } from '../types';
 
@@ -112,7 +111,13 @@ export function useCharacterForm(onSuccess: (characterId: string) => void) {
     [selectedClass?.roguishFeats?.feats]
   );
 
-  const preSelectedSkills = useMemo(() => [], []);
+  const preSelectedSkills = useMemo(
+    () =>
+      selectedClass?.weaponSkills?.skills
+        .filter((s) => s.selected)
+        .map((s) => ({ name: s.name, description: s.description })) || [],
+    [selectedClass?.weaponSkills?.skills]
+  );
 
   // Create/Update mutation
   const saveMutation = useMutation({
@@ -146,12 +151,48 @@ export function useCharacterForm(onSuccess: (characterId: string) => void) {
         _class: 'com.project.rolify.domain.Character',
       };
 
+      // Create the API payload directly (no need to convert to UI format first)
+      const apiData = {
+        name: characterDB.name,
+        system: characterDB.system,
+        className: characterDB.className,
+        species: characterDB.species,
+        demeanor: characterDB.demeanor,
+        details: characterDB.details,
+        avatarImage: characterDB.avatarImage,
+        stats: characterDB.stats,
+        background: characterDB.background,
+        connections: characterDB.connections,
+        isPublic: characterDB.isPublic,
+        nature: [{ ...characterDB.nature, selected: true }],
+        drives: characterDB.drives.map(d => ({ ...d, selected: true })),
+        moves: characterDB.moves.map(m => ({ ...m, selected: true })),
+        roguishFeats: {
+          remaining: 0,
+          feats: characterDB.roguishFeats.map(f => ({ ...f, selected: true }))
+        },
+        weaponSkills: {
+          remaining: 0,
+          skills: characterDB.weaponSkills.map(s => ({ ...s, selected: true }))
+        },
+        equipment: characterDB.equipment,  // Backend now accepts string directly
+        reputation: {
+          factions: characterDB.reputations.reduce((acc, rep) => {
+            acc[rep.name] = {
+              prestige: rep.prestige,
+              notoriety: rep.notoriety,
+            };
+            return acc;
+          }, {} as Record<string, { prestige: number; notoriety: number }>)
+        }
+      };
+
+      console.log('Sending to API:', apiData);
+
       if (isEditing && editId) {
-        const characterUI = fromCharacterDB({ ...characterDB, _id: editId });
-        return characterAPI.update(editId, characterUI);
+        return characterAPI.update(editId, apiData as any);
       } else {
-        const characterUI = fromCharacterDB(characterDB as CharacterDB);
-        return characterAPI.create(characterUI);
+        return characterAPI.create(apiData as any);
       }
     },
     onSuccess: (data) => {

@@ -10,12 +10,26 @@ interface CharacterBasicInfoProps {
   defaultImage?: string;
   onImageChange: (image: string) => void;
   validationErrors?: Record<string, string>;
+  isEditing?: boolean;
 }
 
 const textFieldStyles = {
   '& .MuiInputBase-root': { color: '#0F2B3A' },
   '& .MuiInputBase-input': { color: '#0F2B3A' },
-  '& .MuiOutlinedInput-notchedOutline': { borderColor: '#D9A441' }
+  '& .MuiOutlinedInput-notchedOutline': { borderColor: '#D9A441' },
+  '& .MuiInputBase-root.Mui-disabled': {
+    color: '#0F2B3A',
+    opacity: 0.6,
+    WebkitTextFillColor: '#0F2B3A',
+  },
+  '& .MuiInputBase-input.Mui-disabled': {
+    color: '#0F2B3A',
+    WebkitTextFillColor: '#0F2B3A',
+  },
+  '& .MuiOutlinedInput-notchedOutline.Mui-disabled': {
+    borderColor: '#D9A441',
+    opacity: 0.6,
+  }
 };
 
 const inputProps = {
@@ -30,6 +44,7 @@ export default function CharacterBasicInfo({
   defaultImage,
   onImageChange,
   validationErrors = {},
+  isEditing = false,
 }: CharacterBasicInfoProps) {
   return (
     <>
@@ -53,6 +68,7 @@ export default function CharacterBasicInfo({
             variant="outlined"
             size="small"
             fullWidth
+            disabled={isEditing}
             {...register('name')}
             sx={textFieldStyles}
             slotProps={inputProps}
@@ -69,6 +85,7 @@ export default function CharacterBasicInfo({
             variant="outlined"
             size="small"
             fullWidth
+            disabled={isEditing}
             {...register('species')}
             sx={textFieldStyles}
             slotProps={inputProps}
@@ -85,6 +102,7 @@ export default function CharacterBasicInfo({
             variant="outlined"
             size="small"
             fullWidth
+            disabled={isEditing}
             {...register('details')}
             sx={textFieldStyles}
             slotProps={inputProps}
@@ -101,6 +119,7 @@ export default function CharacterBasicInfo({
             variant="outlined"
             size="small"
             fullWidth
+            disabled={isEditing}
             {...register('demeanor')}
             sx={textFieldStyles}
             slotProps={inputProps}

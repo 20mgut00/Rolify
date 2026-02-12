@@ -24,6 +24,7 @@ services:
       MAIL_PASSWORD: ${RESEND_API_KEY:-your-api-key}
       EMAIL_FROM: ${EMAIL_FROM:-noreply@rpgcharacters.com}
       FRONTEND_URL: ${FRONTEND_URL:-http://localhost:5173}
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-your-gemini-api-key}
       SPRING_DEVTOOLS_RESTART_ENABLED: "true"
     volumes:
       # Mount source code for hot reload

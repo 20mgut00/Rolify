@@ -7,6 +7,7 @@ import type {
   Character,
   CharacterCard,
   ClassTemplate,
+  GeneratedCharacter,
   PaginatedResponse
 } from '../types';
 import { fromCharacterDB } from '../utils/characterMapper';
@@ -180,6 +181,19 @@ export const characterAPI = {
     if (className) params.className = className;
 
     const response = await api.get('/characters/public', { params });
+    return response.data;
+  },
+
+  generateCharacter: async (
+    system: string,
+    className: string,
+    prompt?: string
+  ): Promise<GeneratedCharacter> => {
+    const response = await api.post('/characters/generate', {
+      system,
+      className,
+      prompt,
+    });
     return response.data;
   },
 };

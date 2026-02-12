@@ -66,6 +66,9 @@ public class CharacterMapper {
         return new Character.RoguishFeatsData(dto.getRemaining(), feats);
     }
 
+    // Equipment is now a simple String field, no mapping needed
+    // Kept for backward compatibility if needed, but currently unused
+    /*
     public Character.EquipmentData mapEquipment(CharacterDTO.EquipmentDTO dto) {
         if (dto == null) return null;
 
@@ -82,6 +85,7 @@ public class CharacterMapper {
                 items
         );
     }
+    */
 
     public Character.ReputationData mapReputation(CharacterDTO.ReputationDTO dto) {
         if (dto == null || dto.getFactions() == null) return null;

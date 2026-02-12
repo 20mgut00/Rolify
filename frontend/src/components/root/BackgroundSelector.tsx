@@ -13,12 +13,14 @@ interface BackgroundSelectorProps {
   background?: Array<{ name: string; answers: string[] }>;
   onBackgroundSelect?: (background: BackgroundAnswer[]) => void;
   initialValues?: BackgroundAnswer[];
+  disabled?: boolean;
 }
 
 export default function BackgroundSelector({
   background = [],
   onBackgroundSelect,
   initialValues,
+  disabled = false,
 }: BackgroundSelectorProps) {
   const [answers, setAnswers] = useState<string[]>(
     initialValues
@@ -74,8 +76,15 @@ export default function BackgroundSelector({
                 <FormControlLabel
                   key={answer}
                   value={answer}
-                  control={<Radio size="small" />}
+                  control={<Radio size="small" disabled={disabled} />}
                   label={answer}
+                  disabled={disabled}
+                  sx={{
+                    opacity: disabled ? 0.6 : 1,
+                    '& .MuiFormControlLabel-label.Mui-disabled': {
+                      color: '#0F2B3A',
+                    },
+                  }}
                   slotProps={{
                     typography: {
                       className: "text-primary-dark",
@@ -91,6 +100,7 @@ export default function BackgroundSelector({
               placeholder={`Enter faction's name`}
               value={answers[index] || ""}
               onChange={(e) => handleTextChange(index, e.target.value)}
+              disabled={disabled}
               sx={{
                 '& .MuiInputBase-input': {
                   color: '#0F2B3A',
@@ -98,6 +108,15 @@ export default function BackgroundSelector({
                 '& .MuiInputBase-input::placeholder': {
                   color: '#0F2B3A',
                   opacity: 1,
+                },
+                '& .MuiInputBase-root.Mui-disabled': {
+                  color: '#0F2B3A',
+                  opacity: 0.6,
+                  WebkitTextFillColor: '#0F2B3A',
+                },
+                '& .MuiInputBase-input.Mui-disabled': {
+                  color: '#0F2B3A',
+                  WebkitTextFillColor: '#0F2B3A',
                 },
               }}
               slotProps={{

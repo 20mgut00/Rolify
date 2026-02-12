@@ -56,6 +56,7 @@ export default function ReputationSelector({
 }: ReputationSelectorProps) {
   const isInitializing = useRef(true);
   const onChangeRef = useRef(onChange);
+  const hasInitialized = useRef(false);
 
   // Keep ref up to date
   useEffect(() => {
@@ -73,9 +74,10 @@ export default function ReputationSelector({
       : [{ id: 0, label: "", min: 0, max: 0 }]
   );
 
-  // Update sliders when initialValues change (for editing mode)
+  // Initialize from initialValues only once on mount (for editing mode)
   useEffect(() => {
-    if (initialValues && initialValues.length > 0) {
+    if (initialValues && initialValues.length > 0 && !hasInitialized.current) {
+      hasInitialized.current = true;
       isInitializing.current = true;
       setSliders(
         initialValues.map((rep, idx) => ({

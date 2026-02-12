@@ -76,11 +76,6 @@ export default function CharacterFormFields({
 
   return (
     <>
-    {
-      //TODO: Reputation selector edition wont work.
-      //TODO: In editing mode, basic fields and background shouldnt be editable.
-      //TODO: delete equipment view and keep as a text field in the character sheet view.
-    }
       {/* Nature */}
       <div>
         <Card label="Nature" desc="Select the nature that best describes your character">
@@ -99,7 +94,8 @@ export default function CharacterFormFields({
             key={isEditing ? `background-edit-${editId}` : `background-${selectedClass.className || selectedClassIndex}`}
             background={selectedClass.background}
             onBackgroundSelect={onBackgroundChange}
-            initialValues={isEditing ? watchedFields.background : undefined}
+            initialValues={watchedFields.background}
+            disabled={isEditing}
           />
         </Card>
       </div>
@@ -127,7 +123,7 @@ export default function CharacterFormFields({
             key={isEditing ? `connections-edit-${editId}` : `connections-${selectedClass.className || selectedClassIndex}`}
             connections={selectedClass.connections}
             onConnectionsSelect={onConnectionsChange}
-            initialValues={isEditing ? watchedFields.connections : undefined}
+            initialValues={watchedFields.connections}
           />
         </Card>
       </div>
@@ -139,7 +135,7 @@ export default function CharacterFormFields({
             key={isEditing ? `stats-edit-${editId}` : `stats-${selectedClass.className || selectedClassIndex}`}
             stats={selectedClass.stats}
             onAttributesSelect={onStatsChange}
-            initialValues={isEditing ? watchedFields.stats : undefined}
+            initialValues={watchedFields.stats}
           />
         </Card>
       </div>
@@ -151,7 +147,7 @@ export default function CharacterFormFields({
             key={isEditing ? `reputation-edit-${editId}` : `reputation-${selectedClass.className || selectedClassIndex}`}
             backgroundAnswers={watchedFields.background}
             onChange={onReputationsChange}
-            initialValues={isEditing ? watchedFields.reputations : undefined}
+            initialValues={watchedFields.reputations}
           />
         </Card>
       </div>

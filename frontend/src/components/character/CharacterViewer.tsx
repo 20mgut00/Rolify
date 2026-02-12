@@ -383,49 +383,17 @@ export default function CharacterViewer() {
                 </section>
               </div>
 
-              {/* Equipment */}
+              {/* Equipment & Notes */}
               {character.equipment && (
                 <section>
                   <h2 className="font-cinzel text-2xl font-bold text-primary-dark mb-4">
-                    Equipment
+                    Equipment & Notes
                   </h2>
-                  <div className="grid grid-cols-3 gap-4 mb-4">
-                    <div className="text-center p-4 bg-primary-dark/5 rounded-lg">
-                      <div className="text-sm text-primary-dark/70">Carrying</div>
-                      <div className="text-2xl font-bold text-accent-gold">{character.equipment.carrying}</div>
-                    </div>
-                    <div className="text-center p-4 bg-primary-dark/5 rounded-lg">
-                      <div className="text-sm text-primary-dark/70">Burdened</div>
-                      <div className="text-2xl font-bold text-accent-gold">{character.equipment.burdened}</div>
-                    </div>
-                    <div className="text-center p-4 bg-primary-dark/5 rounded-lg">
-                      <div className="text-sm text-primary-dark/70">Max</div>
-                      <div className="text-2xl font-bold text-accent-gold">{character.equipment.max}</div>
-                    </div>
+                  <div className="p-4 bg-primary-dark/5 rounded-lg whitespace-pre-wrap text-primary-dark">
+                    {typeof character.equipment === 'string'
+                      ? character.equipment
+                      : JSON.stringify(character.equipment, null, 2)}
                   </div>
-
-                  {character.equipment.items && character.equipment.items.length > 0 && (
-                    <div className="overflow-x-auto">
-                      <table className="w-full">
-                        <thead className="bg-accent-gold text-primary-dark">
-                          <tr>
-                            <th className="px-4 py-2 text-left font-cinzel">Item</th>
-                            <th className="px-4 py-2 text-center font-cinzel">Value</th>
-                            <th className="px-4 py-2 text-center font-cinzel">Wear</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {character.equipment.items.map((item, idx) => (
-                            <tr key={idx} className={idx % 2 === 0 ? 'bg-primary-dark/5' : ''}>
-                              <td className="px-4 py-2">{item.name}</td>
-                              <td className="px-4 py-2 text-center">{item.value}</td>
-                              <td className="px-4 py-2 text-center">{item.wear}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  )}
                 </section>
               )}
             </div>

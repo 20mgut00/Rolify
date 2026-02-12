@@ -90,7 +90,7 @@ public class CharacterService {
         if (request.getConnections() != null) character.setConnections(mapConnections(request.getConnections()));
         if (request.getWeaponSkills() != null) character.setWeaponSkills(mapWeaponSkills(request.getWeaponSkills()));
         if (request.getRoguishFeats() != null) character.setRoguishFeats(mapRoguishFeats(request.getRoguishFeats()));
-        if (request.getEquipment() != null) character.setEquipment(mapEquipment(request.getEquipment()));
+        if (request.getEquipment() != null) character.setEquipment(request.getEquipment());
         if (request.getReputation() != null) character.setReputation(mapReputation(request.getReputation()));
         
         // Update public status
@@ -254,19 +254,7 @@ public class CharacterService {
         return new Character.RoguishFeatsData(dto.getRemaining(), feats);
     }
     
-    private Character.EquipmentData mapEquipment(CharacterDTO.EquipmentDTO dto) {
-        List<Character.EquipmentData.Item> items = dto.getItems() != null ? 
-                dto.getItems().stream()
-                        .map(i -> new Character.EquipmentData.Item(i.getName(), i.getValue(), i.getWear()))
-                        .collect(Collectors.toList()) : null;
-        return new Character.EquipmentData(
-                dto.getStartingValue(), 
-                dto.getCarrying(), 
-                dto.getBurdened(), 
-                dto.getMax(), 
-                items
-        );
-    }
+    // Equipment is now a simple String field, no mapping needed
     
     private Character.ReputationData mapReputation(CharacterDTO.ReputationDTO dto) {
         return new Character.ReputationData(
