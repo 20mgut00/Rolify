@@ -7,8 +7,12 @@ import {
   Download,
 } from 'lucide-react';
 import { characterAPI } from '../services/api';
+import { useDocumentTitle } from '../hooks/useDocumentTitle';
+import { getAvatarUrl } from '../utils/avatarUrl';
 
 export default function Hero() {
+  // React 19 feature: Dynamic document title
+  useDocumentTitle('RPG Character Creator - Create Your Adventure');
   const containerRef = useRef<HTMLDivElement | null>(null);
   const isDraggingRef = useRef(false);
   const startXRef = useRef(0);
@@ -217,7 +221,7 @@ export default function Hero() {
                     <div className="shrink-0">
                       {char.avatarImage ? (
                         <img
-                          src={char.avatarImage}
+                          src={getAvatarUrl(char.avatarImage)}
                           alt={char.name}
                           className="w-32 h-32 md:w-48 md:h-48 rounded-full border-4 border-accent-gold shadow-lg object-cover"
                         />

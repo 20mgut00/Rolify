@@ -116,9 +116,6 @@ export default function LoginModal({ onClose, open }: LoginModalProps) {
   };
 
   const onForgotPassword = async (data: ForgotPasswordFormData) => {
-    {
-      //TODO: Backend not sending email, need to fix before enabling this
-    }
     setIsLoading(true);
     try {
       await authAPI.forgotPassword(data.email);

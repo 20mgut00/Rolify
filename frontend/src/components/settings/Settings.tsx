@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 import { authAPI } from '../../services/api';
 import { useAuthStore } from '../../store';
 import { useNavigate } from 'react-router-dom';
+import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 
 const changePasswordSchema = z.object({
   currentPassword: z.string().min(1, 'Current password is required'),
@@ -20,6 +21,9 @@ const changePasswordSchema = z.object({
 type ChangePasswordFormData = z.infer<typeof changePasswordSchema>;
 
 export default function Settings() {
+  // React 19 feature: Dynamic document title
+  useDocumentTitle('Settings - RPG Character Creator');
+
   const navigate = useNavigate();
   const { user, logout } = useAuthStore();
   const [isChangingPassword, setIsChangingPassword] = useState(false);
@@ -51,19 +55,26 @@ export default function Settings() {
     }
   };
 
-  const handleDeleteAccount = () => {
+  const handleDeleteAccount = async () => {
     const confirmed = window.confirm(
       'Are you sure you want to delete your account? This action cannot be undone and all your characters will be permanently deleted.'
     );
-    
+
     if (confirmed) {
       const doubleCheck = window.prompt(
         'Type "DELETE" to confirm account deletion:'
       );
-      
+
       if (doubleCheck === 'DELETE') {
-        // TODO: Implement delete account API
-        toast.error('Account deletion not implemented yet');
+        try {
+          await authAPI.deleteAccount();
+          toast.success('Account deleted successfully');
+          logout();
+          navigate('/');
+        } catch (error) {
+          const errorMessage = error instanceof Error ? error.message : 'Failed to delete account';
+          toast.error(errorMessage);
+        }
       }
     }
   };
@@ -249,7 +260,7 @@ export default function Settings() {
               </p>
               <button
                 onClick={handleDeleteAccount}
-                className="bg-red-600 text-white px-6 py-2 rounded-lg font-medium hover:bg-red-700 transition"
+                className="bg-white border-2 border-red-600 text-red-600 px-6 py-2 rounded-lg font-semibold hover:bg-red-50 hover:border-red-700 transition"
               >
                 Delete Account
               </button>

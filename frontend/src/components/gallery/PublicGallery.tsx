@@ -5,8 +5,12 @@ import { useInView } from 'react-intersection-observer';
 import { Filter, Search } from 'lucide-react';
 import { characterAPI, classTemplateAPI } from '../../services/api';
 import CharacterCard from '../character/CharacterCard';
+import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 
 export default function PublicGallery() {
+  // React 19 feature: Dynamic document title
+  useDocumentTitle('Public Gallery - RPG Character Creator');
+
   const navigate = useNavigate();
   const [classFilter, setClassFilter] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState('');
@@ -48,8 +52,9 @@ export default function PublicGallery() {
   );
 
   return (
-    <div className="container mx-auto px-4 py-12">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-primary-light">
+      <div className="container mx-auto px-4 py-12">
+        <div className="max-w-7xl mx-auto">
         <h1 className="font-cinzel text-4xl md:text-5xl font-bold text-center mb-4 text-primary-dark">
           Public Gallery
         </h1>
@@ -169,6 +174,7 @@ export default function PublicGallery() {
             )}
           </div>
         )}
+        </div>
       </div>
     </div>
   );

@@ -4,7 +4,19 @@ import tailwindcss from '@tailwindcss/vite'
 import svgr from 'vite-plugin-svgr'
 
 export default defineConfig({
-  plugins: [react(), svgr(), tailwindcss()],
+  plugins: [
+    react({
+      babel: {
+        plugins: [
+          ['babel-plugin-react-compiler', {
+            target: '19' // Target React 19
+          }]
+        ],
+      },
+    }),
+    svgr(),
+    tailwindcss()
+  ],
   server: {
     host: '0.0.0.0',
     port: 5173,

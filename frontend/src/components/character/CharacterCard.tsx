@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Eye, Edit, Trash2, Download, Globe, Lock } from 'lucide-react';
 import type { CharacterCard as CharacterCardType } from '../../types';
+import { getAvatarUrl } from '../../utils/avatarUrl';
 
 interface CharacterCardProps {
   character: CharacterCardType;
@@ -25,7 +26,7 @@ export default function CharacterCard({
       <div className="aspect-square bg-primary-dark/5 relative overflow-hidden">
         {character.avatarImage ? (
           <img
-            src={character.avatarImage}
+            src={getAvatarUrl(character.avatarImage)}
             alt={character.name}
             className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
           />

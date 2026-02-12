@@ -1,19 +1,22 @@
+import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import { ThemeProvider, CssBaseline } from '@mui/material';
 import { theme } from './theme';
 import Header from './components/Header';
-import Hero from './components/Hero';
-import CharacterForm from './components/character/CharacterForm';
-import CharacterLibrary from './components/character/CharacterLibrary';
-import CharacterViewer from './components/character/CharacterViewer';
-import PublicGallery from './components/gallery/PublicGallery';
-import Settings from './components/settings/Settings';
-import Statistics from './components/settings/Statistics';
-import VerifyEmail from './components/auth/VerifyEmail';
-import ResetPassword from './components/auth/ResetPassword';
-import OAuthCallback from './components/auth/OAuthCallback';
+
+// Lazy load route components for code splitting
+const Hero = lazy(() => import('./components/Hero'));
+const CharacterForm = lazy(() => import('./components/character/CharacterForm'));
+const CharacterLibrary = lazy(() => import('./components/character/CharacterLibrary'));
+const CharacterViewer = lazy(() => import('./components/character/CharacterViewer'));
+const PublicGallery = lazy(() => import('./components/gallery/PublicGallery'));
+const Settings = lazy(() => import('./components/settings/Settings'));
+const Statistics = lazy(() => import('./components/settings/Statistics'));
+const VerifyEmail = lazy(() => import('./components/auth/VerifyEmail'));
+const ResetPassword = lazy(() => import('./components/auth/ResetPassword'));
+const OAuthCallback = lazy(() => import('./components/auth/OAuthCallback'));
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -24,6 +27,18 @@ const queryClient = new QueryClient({
   },
 });
 
+// Loading fallback component for lazy routes
+function RouteLoader() {
+  return (
+    <div className="min-h-screen bg-primary-light flex items-center justify-center">
+      <div className="text-center">
+        <div className="inline-block h-12 w-12 animate-spin rounded-full border-4 border-solid border-accent-gold border-r-transparent"></div>
+        <p className="mt-4 text-primary-dark text-lg">Loading...</p>
+      </div>
+    </div>
+  );
+}
+
 function App() {
   return (
     <ThemeProvider theme={theme}>
@@ -33,18 +48,20 @@ function App() {
           <div className="min-h-screen bg-primary-light">
             <Header />
 
-            <Routes>
-              <Route path="/" element={<Hero />} />
-              <Route path="/create" element={<CharacterForm />} />
-              <Route path="/library" element={<CharacterLibrary />} />
-              <Route path="/character/:id" element={<CharacterViewer />} />
-              <Route path="/gallery" element={<PublicGallery />} />
-              <Route path="/settings" element={<Settings />} />
-              <Route path="/statistics" element={<Statistics />} />
-              <Route path="/verify-email" element={<VerifyEmail />} />
-              <Route path="/reset-password" element={<ResetPassword />} />
-              <Route path="/oauth/callback" element={<OAuthCallback />} />
-            </Routes>
+            <Suspense fallback={<RouteLoader />}>
+              <Routes>
+                <Route path="/" element={<Hero />} />
+                <Route path="/create" element={<CharacterForm />} />
+                <Route path="/library" element={<CharacterLibrary />} />
+                <Route path="/character/:id" element={<CharacterViewer />} />
+                <Route path="/gallery" element={<PublicGallery />} />
+                <Route path="/settings" element={<Settings />} />
+                <Route path="/statistics" element={<Statistics />} />
+                <Route path="/verify-email" element={<VerifyEmail />} />
+                <Route path="/reset-password" element={<ResetPassword />} />
+                <Route path="/oauth/callback" element={<OAuthCallback />} />
+              </Routes>
+            </Suspense>
 
             <Toaster position="top-right" />
           </div>

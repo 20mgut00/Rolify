@@ -1,4 +1,4 @@
-// Character Types
+// Base Character Types
 export interface Stat {
   name: string;
   value: number;
@@ -9,17 +9,77 @@ export interface BackgroundAnswer {
   answer: string;
 }
 
+export interface Connection {
+  type?: string;
+  characterName: string;
+  description: string;
+  story?: string;
+}
+
+// MongoDB-specific types (backend format)
+export interface NatureDB {
+  name: string;
+  description: string;
+}
+
+export interface DriveDB {
+  name: string;
+  description: string;
+}
+
+export interface MoveDB {
+  name: string;
+  description: string;
+}
+
+export interface RoguishFeatDB {
+  name: string;
+  description: string;
+}
+
+export interface WeaponSkillDB {
+  name: string;
+  description: string;
+}
+
+export interface FactionReputationDB {
+  name: string;
+  notoriety: number;
+  prestige: number;
+}
+
+// MongoDB Character Schema (backend storage format)
+export interface CharacterDB {
+  _id?: string;
+  idUsuario?: string;
+  system: string;
+  className: string;
+  name: string;
+  species: string;
+  details: string;
+  demeanor: string;
+  avatarImage?: string;
+  nature: NatureDB;
+  drives: DriveDB[];
+  background: BackgroundAnswer[];
+  connections: Connection[];
+  stats: Stat[];
+  reputations: FactionReputationDB[];
+  moves: MoveDB[];
+  roguishFeats: RoguishFeatDB[];
+  weaponSkills: WeaponSkillDB[];
+  equipment: string;
+  isPublic?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+  _class?: string;
+}
+
+// UI Helper Types (for forms and selection)
 export interface SelectedOption {
   name: string;
   description: string;
   selected: boolean;
-}
-
-export interface Connection {
-  type: string;
-  characterName: string;
-  description: string;
-  story: string;
 }
 
 export interface Skill {
@@ -67,6 +127,7 @@ export interface Reputation {
   factions: Record<string, FactionReputation>;
 }
 
+// Character for UI (frontend format - maintains backward compatibility)
 export interface Character {
   id?: string;
   userId?: string;
@@ -87,7 +148,7 @@ export interface Character {
   roguishFeats: RoguishFeats;
   equipment: Equipment;
   reputation: Reputation;
-  isPublic: boolean;
+  isPublic?: boolean;
   createdAt?: string;
   updatedAt?: string;
 }
@@ -119,6 +180,7 @@ export interface ClassTemplate {
   system: string;
   className: string;
   description: string;
+  avatarImage?: string;
   background: BackgroundQuestion[];
   nature: Option[];
   drives: Option[];

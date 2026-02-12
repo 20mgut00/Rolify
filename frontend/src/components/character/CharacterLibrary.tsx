@@ -7,9 +7,13 @@ import { characterAPI } from '../../services/api';
 import { useAuthStore, useCharacterStore } from '../../store';
 import CharacterCard from './CharacterCard';
 import { exportCharacterToPDF, exportCharacterToJSON, exportCharacterToCSV } from '../../utils/export';
-import type { Character } from '../../types';
+import { useDocumentTitle } from '../../hooks/useDocumentTitle';
+import type { Character, CharacterCard as CharacterCardType } from '../../types';
 
 export default function CharacterLibrary() {
+  // React 19 feature: Dynamic document title
+  useDocumentTitle('My Characters - RPG Character Creator');
+
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { isAuthenticated } = useAuthStore();
@@ -37,9 +41,20 @@ export default function CharacterLibrary() {
   });
 
   // Get characters based on auth status
-  const characters = isAuthenticated
+  const characters: CharacterCardType[] = isAuthenticated
     ? (userCharacters || [])
-    : sessionCharacters.filter((c): c is Character & { id: string; createdAt: string } => !!c.id && !!c.createdAt);
+    : sessionCharacters
+        .filter((c): c is Character & { id: string; createdAt: string } => !!c.id && !!c.createdAt)
+        .map((c) => ({
+          id: c.id,
+          name: c.name,
+          system: c.system,
+          className: c.className,
+          species: c.species,
+          avatarImage: c.avatarImage,
+          isPublic: c.isPublic || false,
+          createdAt: c.createdAt,
+        }));
 
   // Filter characters
   const filteredCharacters = characters.filter((char) =>
@@ -82,7 +97,8 @@ export default function CharacterLibrary() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-12">
+    <div className="min-h-screen bg-primary-light">
+      <div className="container mx-auto px-4 py-12">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
@@ -209,6 +225,7 @@ export default function CharacterLibrary() {
             </button>
           </div>
         )}
+      </div>
       </div>
     </div>
   );

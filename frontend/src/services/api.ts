@@ -9,6 +9,7 @@ import type {
   ClassTemplate,
   PaginatedResponse
 } from '../types';
+import { fromCharacterDB } from '../utils/characterMapper';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
 
@@ -91,18 +92,66 @@ export const authAPI = {
   changePassword: async (data: ChangePasswordRequest): Promise<void> => {
     await api.post('/auth/change-password', data);
   },
+
+  deleteAccount: async (): Promise<void> => {
+    await api.delete('/auth/delete-account');
+  },
 };
 
 // Character API
 export const characterAPI = {
   create: async (data: Partial<Character>): Promise<Character> => {
-    const response = await api.post('/characters', data);
-    return response.data;
+    // Prepare data for backend API (keep nature as array, not object)
+    const apiData = {
+      name: data.name,
+      system: data.system,
+      className: data.className,
+      species: data.species,
+      demeanor: data.demeanor,
+      details: data.details,
+      avatarImage: data.avatarImage,
+      stats: data.stats || [],
+      background: data.background || [],
+      connections: data.connections || [],
+      isPublic: data.isPublic || false,
+      // Filter and map to remove 'selected' field, keep as array
+      nature: data.nature?.filter(n => n.selected).map(n => ({ name: n.name, description: n.description, selected: true })) || [],
+      drives: data.drives?.filter(d => d.selected).map(d => ({ name: d.name, description: d.description, selected: true })) || [],
+      moves: data.moves?.filter(m => m.selected).map(m => ({ name: m.name, description: m.description, selected: true })) || [],
+      roguishFeats: data.roguishFeats,
+      weaponSkills: data.weaponSkills,
+      equipment: data.equipment,
+      reputation: data.reputation
+    };
+
+    const response = await api.post('/characters', apiData);
+    return fromCharacterDB(response.data);
   },
 
   update: async (id: string, data: Partial<Character>): Promise<Character> => {
-    const response = await api.put(`/characters/${id}`, data);
-    return response.data;
+    // Prepare data for backend API (keep nature as array, not object)
+    const apiData = {
+      name: data.name,
+      species: data.species,
+      demeanor: data.demeanor,
+      details: data.details,
+      avatarImage: data.avatarImage,
+      stats: data.stats || [],
+      background: data.background || [],
+      connections: data.connections || [],
+      isPublic: data.isPublic,
+      // Filter and map to remove 'selected' field, keep as array
+      nature: data.nature?.filter(n => n.selected).map(n => ({ name: n.name, description: n.description, selected: true })) || [],
+      drives: data.drives?.filter(d => d.selected).map(d => ({ name: d.name, description: d.description, selected: true })) || [],
+      moves: data.moves?.filter(m => m.selected).map(m => ({ name: m.name, description: m.description, selected: true })) || [],
+      roguishFeats: data.roguishFeats,
+      weaponSkills: data.weaponSkills,
+      equipment: data.equipment,
+      reputation: data.reputation
+    };
+
+    const response = await api.put(`/characters/${id}`, apiData);
+    return fromCharacterDB(response.data);
   },
 
   delete: async (id: string): Promise<void> => {
@@ -111,7 +160,8 @@ export const characterAPI = {
 
   getById: async (id: string): Promise<Character> => {
     const response = await api.get(`/characters/${id}`);
-    return response.data;
+    // Convert MongoDB response to UI Character
+    return fromCharacterDB(response.data);
   },
 
   getMyCharacters: async (): Promise<CharacterCard[]> => {
@@ -131,6 +181,19 @@ export const characterAPI = {
 
     const response = await api.get('/characters/public', { params });
     return response.data;
+  },
+};
+
+// Avatar API
+export const avatarAPI = {
+  upload: async (file: File): Promise<string> => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await api.post('/avatars/upload', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data.url; // Returns "/api/avatars/{filename}"
   },
 };
 

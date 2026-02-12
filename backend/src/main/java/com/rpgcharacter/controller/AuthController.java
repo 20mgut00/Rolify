@@ -62,4 +62,10 @@ public class AuthController {
     public ResponseEntity<AuthDTO.UserDTO> getCurrentUser(@AuthenticationPrincipal UserDetails userDetails) {
         return ResponseEntity.ok(authService.getUserInfo(userDetails.getUsername()));
     }
+
+    @DeleteMapping("/delete-account")
+    public ResponseEntity<String> deleteAccount(@AuthenticationPrincipal UserDetails userDetails) {
+        authService.deleteAccount(userDetails.getUsername());
+        return ResponseEntity.ok("Account deleted successfully");
+    }
 }

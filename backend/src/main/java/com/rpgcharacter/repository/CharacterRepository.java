@@ -22,6 +22,8 @@ public interface CharacterRepository extends MongoRepository<Character, String> 
     Page<Character> findByIsPublicTrueAndSystemAndClassName(String system, String className, Pageable pageable);
     
     Long countByUserId(String userId);
-    
+
     Long countByUserIdAndIsPublicTrue(String userId);
+
+    Long deleteByUserId(String userId);
 }

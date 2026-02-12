@@ -35,6 +35,11 @@ spring:
             token-uri: https://oauth2.googleapis.com/token
             user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
 
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 5MB
+
 server:
   port: 8080
   error:
@@ -42,6 +47,9 @@ server:
     include-stacktrace: never
 
 app:
+  upload:
+    avatar-path: ${UPLOAD_AVATAR_PATH:./uploads/avatars}
+
   jwt:
     secret: ${JWT_SECRET:your-256-bit-secret-key-change-this-in-production}
     expiration: 86400000 # 24 hours

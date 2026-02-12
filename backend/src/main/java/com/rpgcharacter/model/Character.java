@@ -7,22 +7,34 @@ import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.mongodb.core.index.CompoundIndex;
+import org.springframework.data.mongodb.core.index.CompoundIndexes;
+import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Character entity with optimized database indexes for common query patterns.
+ */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = "characters")
+@CompoundIndexes({
+    @CompoundIndex(name = "public_system_class_idx", def = "{'isPublic': 1, 'system': 1, 'className': 1}"),
+    @CompoundIndex(name = "public_created_idx", def = "{'isPublic': 1, 'createdAt': -1}"),
+    @CompoundIndex(name = "user_created_idx", def = "{'userId': 1, 'createdAt': -1}")
+})
 public class Character {
-    
+
     @Id
     private String id;
-    
+
+    @Indexed
     private String userId; // Null if not logged in
     
     // Basic Info
@@ -48,6 +60,7 @@ public class Character {
     
     // Metadata
     @Builder.Default
+    @Indexed
     private Boolean isPublic = false;
     
     @CreatedDate

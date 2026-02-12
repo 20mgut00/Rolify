@@ -14,7 +14,12 @@
       "Bash(docker-compose stop:*)",
       "Bash(docker-compose build:*)",
       "Bash(mvn clean package:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(grep:*)",
+      "Bash(docker compose:*)",
+      "Bash(docker-compose restart:*)",
+      "Bash(docker-compose logs:*)",
+      "Bash(docker-compose:*)"
     ]
   }
 }

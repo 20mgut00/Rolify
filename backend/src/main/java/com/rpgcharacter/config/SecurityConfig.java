@@ -47,6 +47,7 @@ public class SecurityConfig {
                     "/api/auth/**",
                     "/api/class-templates/**",
                     "/api/characters/public/**",
+                    "/api/avatars/{filename}",
                     "/oauth2/**",
                     "/login/oauth2/**",
                     "/error"

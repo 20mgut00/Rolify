@@ -2,10 +2,14 @@ package com.rpgcharacter.service;
 
 import com.rpgcharacter.config.JwtUtil;
 import com.rpgcharacter.dto.AuthDTO;
+import com.rpgcharacter.exception.BusinessException;
+import com.rpgcharacter.exception.ResourceNotFoundException;
+import com.rpgcharacter.exception.ValidationException;
 import com.rpgcharacter.model.User;
 import com.rpgcharacter.model.VerificationToken;
 import com.rpgcharacter.repository.UserRepository;
 import com.rpgcharacter.repository.VerificationTokenRepository;
+import com.rpgcharacter.repository.CharacterRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,9 +26,10 @@ import java.util.UUID;
 @RequiredArgsConstructor
 @Slf4j
 public class AuthService {
-    
+
     private final UserRepository userRepository;
     private final VerificationTokenRepository tokenRepository;
+    private final CharacterRepository characterRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
@@ -217,6 +222,24 @@ public class AuthService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("User not found"));
         return mapToUserDTO(user);
+    }
+
+    @Transactional
+    public void deleteAccount(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        // Delete all characters associated with the user
+        long deletedCharacters = characterRepository.deleteByUserId(user.getId());
+        log.info("Deleted {} characters for user: {}", deletedCharacters, user.getEmail());
+
+        // Delete all verification tokens
+        tokenRepository.deleteByUserId(user.getId());
+        log.info("Deleted verification tokens for user: {}", user.getEmail());
+
+        // Delete the user account
+        userRepository.delete(user);
+        log.info("User account deleted: {}", user.getEmail());
     }
 
     private AuthDTO.UserDTO mapToUserDTO(User user) {

@@ -10,32 +10,38 @@ interface AuthState {
   setAuth: (token: string, refreshToken: string, user: User) => void;
   logout: () => void;
   updateUser: (user: Partial<User>) => void;
+  getToken: () => string | null;
+  getRefreshToken: () => string | null;
 }
 
+/**
+ * Simplified auth store - Zustand persist middleware handles localStorage automatically.
+ * No need for manual localStorage.setItem/removeItem calls.
+ */
 export const useAuthStore = create<AuthState>()(
   persist(
-    (set) => ({
+    (set, get) => ({
       user: null,
       token: null,
       refreshToken: null,
       isAuthenticated: false,
-      
+
       setAuth: (token, refreshToken, user) => {
-        localStorage.setItem('token', token);
-        localStorage.setItem('refreshToken', refreshToken);
         set({ user, token, refreshToken, isAuthenticated: true });
       },
-      
+
       logout: () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('refreshToken');
         set({ user: null, token: null, refreshToken: null, isAuthenticated: false });
       },
-      
+
       updateUser: (userData) =>
         set((state) => ({
           user: state.user ? { ...state.user, ...userData } : null,
         })),
+
+      getToken: () => get().token,
+
+      getRefreshToken: () => get().refreshToken,
     }),
     {
       name: 'auth-storage',

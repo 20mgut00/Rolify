@@ -1,14 +1,15 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
-import { 
+import {
   ArrowLeft, Edit, Download, Share2, Globe, Lock,
-  Heart, Zap, Target, Sparkles, Shield, Sword
+  Heart, Zap, Target, Sparkles, Shield, Sword, Users, TrendingUp
 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { characterAPI } from '../../services/api';
 import { useAuthStore } from '../../store';
 import { exportCharacterToPDF, exportCharacterToJSON, exportCharacterToCSV } from '../../utils/export';
+import { getAvatarUrl } from '../../utils/avatarUrl';
 
 export default function CharacterViewer() {
   const { id } = useParams<{ id: string }>();
@@ -170,45 +171,45 @@ export default function CharacterViewer() {
           {/* Character Sheet */}
           <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
             {/* Hero Section */}
-            <div className="bg-linear-to-r from-primary-dark to-accent-gold/30 p-8 text-white relative overflow-hidden">
+            <div className="bg-linear-to-r from-primary-light via-white to-accent-gold/10 p-8 border-b-4 border-accent-gold relative overflow-hidden">
               <div className="relative z-10 flex flex-col md:flex-row items-center gap-6">
                 {character.avatarImage ? (
                   <img
-                    src={character.avatarImage}
+                    src={getAvatarUrl(character.avatarImage)}
                     alt={character.name}
-                    className="w-32 h-32 rounded-full border-4 border-white shadow-xl object-cover"
+                    className="w-32 h-32 rounded-full border-4 border-accent-gold shadow-xl object-cover"
                   />
                 ) : (
-                  <div className="w-32 h-32 rounded-full border-4 border-white shadow-xl bg-white/20 flex items-center justify-center">
-                    <span className="font-cinzel text-6xl text-white/50">
+                  <div className="w-32 h-32 rounded-full border-4 border-accent-gold shadow-xl bg-primary-light flex items-center justify-center">
+                    <span className="font-cinzel text-6xl text-primary-dark/40">
                       {character.name[0]}
                     </span>
                   </div>
                 )}
 
                 <div className="text-center md:text-left flex-1">
-                  <h1 className="font-cinzel text-4xl md:text-5xl font-bold mb-2">
+                  <h1 className="font-cinzel text-4xl md:text-5xl font-bold mb-2 text-primary-dark">
                     {character.name}
                   </h1>
                   <p className="text-xl text-accent-gold font-semibold mb-1">
                     {character.className} • {character.system}
                   </p>
-                  <p className="text-white/90 mb-2">
+                  <p className="text-primary-dark/80 mb-2">
                     {character.species} • {character.demeanor}
                   </p>
                   <div className="flex items-center justify-center md:justify-start gap-2">
                     {character.isPublic ? (
-                      <span className="flex items-center gap-1 bg-white/20 px-3 py-1 rounded-full text-sm">
+                      <span className="flex items-center gap-1 bg-accent-gold/20 border border-accent-gold/40 px-3 py-1 rounded-full text-sm text-primary-dark font-medium">
                         <Globe size={14} />
                         Public
                       </span>
                     ) : (
-                      <span className="flex items-center gap-1 bg-white/20 px-3 py-1 rounded-full text-sm">
+                      <span className="flex items-center gap-1 bg-primary-dark/10 border border-primary-dark/20 px-3 py-1 rounded-full text-sm text-primary-dark font-medium">
                         <Lock size={14} />
                         Private
                       </span>
                     )}
-                    <span className="text-white/70 text-sm">
+                    <span className="text-primary-dark/60 text-sm">
                       Created {new Date(character.createdAt || '').toLocaleDateString()}
                     </span>
                   </div>
@@ -252,6 +253,56 @@ export default function CharacterViewer() {
                   ))}
                 </div>
               </section>
+
+              {/* Connections */}
+              {character.connections && character.connections.length > 0 && (
+                <section className="mb-8">
+                  <h2 className="font-cinzel text-2xl font-bold text-primary-dark mb-4 flex items-center gap-2">
+                    <Users className="text-accent-gold" size={24} />
+                    Connections
+                  </h2>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    {character.connections.map((connection, idx) => (
+                      <div key={idx} className="p-4 bg-primary-dark/5 rounded-lg border-l-4 border-accent-gold">
+                        <div className="font-bold text-primary-dark mb-1">{connection.characterName}</div>
+                        <div className="text-sm text-primary-dark/70">{connection.description}</div>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              {/* Reputation */}
+              {character.reputation && character.reputation.factions && Object.keys(character.reputation.factions).length > 0 && (
+                <section className="mb-8">
+                  <h2 className="font-cinzel text-2xl font-bold text-primary-dark mb-4 flex items-center gap-2">
+                    <TrendingUp className="text-accent-gold" size={24} />
+                    Reputation
+                  </h2>
+                  <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {Object.entries(character.reputation.factions).map(([factionName, rep]) => (
+                      <div key={factionName} className="p-4 bg-white border-2 border-primary-dark/10 rounded-lg">
+                        <div className="font-bold text-primary-dark mb-3 text-center">{factionName}</div>
+                        <div className="flex justify-around">
+                          <div className="text-center">
+                            <div className="text-xs text-primary-dark/60 mb-1">Prestige</div>
+                            <div className={`text-2xl font-bold ${rep.prestige >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                              {rep.prestige >= 0 ? '+' : ''}{rep.prestige}
+                            </div>
+                          </div>
+                          <div className="w-px bg-primary-dark/10" />
+                          <div className="text-center">
+                            <div className="text-xs text-primary-dark/60 mb-1">Notoriety</div>
+                            <div className={`text-2xl font-bold ${rep.notoriety >= 0 ? 'text-red-600' : 'text-green-600'}`}>
+                              {rep.notoriety >= 0 ? '+' : ''}{rep.notoriety}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              )}
 
               {/* Nature & Drives */}
               <div className="grid md:grid-cols-2 gap-8 mb-8">
