@@ -6,6 +6,7 @@ import { z } from 'zod';
 import { Lock, CheckCircle, Eye, EyeOff } from 'lucide-react';
 import { authAPI } from '../../services/api';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 const resetPasswordSchema = z.object({
   newPassword: z.string().min(8, 'Password must be at least 8 characters'),
@@ -18,6 +19,7 @@ const resetPasswordSchema = z.object({
 type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
 
 export default function ResetPassword() {
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
@@ -36,7 +38,7 @@ export default function ResetPassword() {
 
   const onSubmit = async (data: ResetPasswordFormData) => {
     if (!token) {
-      toast.error('Invalid reset link');
+      toast.error(t('auth.invalidResetLink'));
       return;
     }
 
@@ -44,7 +46,7 @@ export default function ResetPassword() {
     try {
       await authAPI.resetPassword(token, data.newPassword);
       setIsSuccess(true);
-      toast.success('Password reset successfully!');
+      toast.success(t('auth.passwordResetToast'));
 
       // Redirect to home after 3 seconds
       setTimeout(() => {
@@ -63,16 +65,16 @@ export default function ResetPassword() {
       <div className="min-h-screen flex items-center justify-center p-4 bg-primary-light">
         <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 text-center dark-shared-panel">
           <h2 className="font-cinzel text-2xl font-bold text-primary-dark mb-3">
-            Invalid Reset Link
+            {t('auth.invalidResetLink')}
           </h2>
           <p className="text-primary-dark/70 mb-6">
-            The password reset link is invalid or has expired.
+            {t('auth.resetLinkExpired')}
           </p>
           <button
             onClick={() => navigate('/')}
             className="bg-accent-gold text-primary-dark px-6 py-3 rounded-lg font-cinzel font-medium hover:bg-opacity-90 transition"
           >
-            Go to Home
+            {t('common.goToHome')}
           </button>
         </div>
       </div>
@@ -85,13 +87,13 @@ export default function ResetPassword() {
         <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 text-center dark-shared-panel">
           <CheckCircle size={64} className="text-green-600 mx-auto mb-4" />
           <h2 className="font-cinzel text-2xl font-bold text-primary-dark mb-2">
-            Password Reset Successfully!
+            {t('auth.passwordResetSuccess')}
           </h2>
           <p className="text-primary-dark/70 mb-3">
-            Your password has been changed. You can now login with your new password.
+            {t('auth.passwordResetSuccessDesc')}
           </p>
           <p className="text-primary-dark/50 text-sm">
-            Redirecting to home page...
+            {t('auth.redirectingHome')}
           </p>
         </div>
       </div>
@@ -102,14 +104,14 @@ export default function ResetPassword() {
     <div className="min-h-screen flex items-center justify-center p-4 bg-primary-light">
       <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 dark-shared-panel">
         <h1 className="font-cinzel text-3xl font-bold text-primary-dark mb-1">
-          Reset Password
+          {t('auth.resetPassword')}
         </h1>
         <p className="text-primary-dark/70 mb-6">Enter your new password below.</p>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
             <label className="block text-sm font-medium mb-2 text-primary-dark">
-              New Password
+              {t('auth.newPassword')}
             </label>
             <div className="relative flex items-center">
               <Lock size={20} className="absolute left-3 text-primary-dark pointer-events-none" />
@@ -133,7 +135,7 @@ export default function ResetPassword() {
 
           <div>
             <label className="block text-sm font-medium mb-2 text-primary-dark">
-              Confirm Password
+              {t('auth.confirmPassword')}
             </label>
             <div className="relative flex items-center">
               <Lock size={20} className="absolute left-3 text-primary-dark pointer-events-none" />
@@ -160,7 +162,7 @@ export default function ResetPassword() {
             disabled={isLoading}
             className="w-full bg-accent-gold text-primary-dark py-3 rounded-lg font-cinzel font-medium hover:bg-opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isLoading ? 'Resetting...' : 'Reset Password'}
+            {isLoading ? t('auth.resetting') : t('auth.resetPassword')}
           </button>
 
           <div className="text-center">
@@ -169,7 +171,7 @@ export default function ResetPassword() {
               onClick={() => navigate('/')}
               className="text-accent-gold hover:underline font-medium"
             >
-              Back to home
+              {t('auth.backToHome')}
             </button>
           </div>
         </form>

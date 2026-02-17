@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
+import { useTranslation } from 'react-i18next';
 import {
   Dialog,
   DialogContent,
@@ -53,6 +54,7 @@ interface LoginModalProps {
 }
 
 export default function LoginModal({ onClose, open }: LoginModalProps) {
+  const { t } = useTranslation();
   const [mode, setMode] = useState<'login' | 'register' | 'forgot'>('login');
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -90,7 +92,7 @@ export default function LoginModal({ onClose, open }: LoginModalProps) {
     try {
       const response = await authAPI.login(data);
       setAuth(response.token, response.refreshToken, response.user);
-      toast.success('Welcome back!');
+      toast.success(t('auth.welcomeBackToast'));
       onClose();
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Login failed';
@@ -105,7 +107,7 @@ export default function LoginModal({ onClose, open }: LoginModalProps) {
     try {
       const response = await authAPI.register(data);
       setAuth(response.token, response.refreshToken, response.user);
-      toast.success('Registration successful! Please verify your email.');
+      toast.success(t('auth.registrationSuccess'));
       onClose();
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Registration failed';
@@ -119,7 +121,7 @@ export default function LoginModal({ onClose, open }: LoginModalProps) {
     setIsLoading(true);
     try {
       await authAPI.forgotPassword(data.email);
-      toast.success('Password reset email sent! Check your inbox.');
+      toast.success(t('auth.resetEmailSent'));
       setMode('login');
       resetForgot();
     } catch (error) {
@@ -164,9 +166,9 @@ export default function LoginModal({ onClose, open }: LoginModalProps) {
     >
       <DialogTitle sx={{ position: 'relative', pb: 1 }}>
         <Typography variant="h4" component="div" sx={{ fontFamily: 'Cinzel' }}>
-          {mode === 'login' && 'Welcome Back'}
-          {mode === 'register' && 'Create Account'}
-          {mode === 'forgot' && 'Reset Password'}
+          {mode === 'login' && t('auth.welcomeBack')}
+          {mode === 'register' && t('auth.createAccount')}
+          {mode === 'forgot' && t('auth.resetPassword')}
         </Typography>
         <IconButton
           onClick={onClose}
@@ -187,7 +189,7 @@ export default function LoginModal({ onClose, open }: LoginModalProps) {
           <Box component="form" onSubmit={handleLoginSubmit(onLogin)} sx={{ mt: 2 }}>
             <TextField
               fullWidth
-              label="Email"
+              label={t('auth.email')}
               type="email"
               margin="normal"
               {...loginRegister('email')}
@@ -206,7 +208,7 @@ export default function LoginModal({ onClose, open }: LoginModalProps) {
 
             <TextField
               fullWidth
-              label="Password"
+              label={t('auth.password')}
               type={showPassword ? 'text' : 'password'}
               margin="normal"
               {...loginRegister('password')}
@@ -242,7 +244,7 @@ export default function LoginModal({ onClose, open }: LoginModalProps) {
                   '&:hover': { textDecoration: 'underline' }
                 }}
               >
-                Forgot password?
+                {t('auth.forgotPassword')}
               </Button>
             </Box>
 
@@ -254,12 +256,12 @@ export default function LoginModal({ onClose, open }: LoginModalProps) {
               disabled={isLoading}
               sx={{ mb: 2, py: 1.5 }}
             >
-              {isLoading ? <CircularProgress size={24} /> : 'Login'}
+              {isLoading ? <CircularProgress size={24} /> : t('header.login')}
             </Button>
 
             <Divider sx={{ my: 2 }}>
               <Typography variant="body2" color="text.secondary">
-                Or continue with
+                {t('auth.orContinueWith')}
               </Typography>
             </Divider>
 
@@ -279,12 +281,12 @@ export default function LoginModal({ onClose, open }: LoginModalProps) {
                 },
               }}
             >
-              Sign in with Google
+              {t('auth.signInWithGoogle')}
             </Button>
 
             <Box sx={{ mt: 3, textAlign: 'center' }}>
               <Typography variant="body2" color="text.secondary">
-                Don't have an account?{' '}
+                {t('auth.dontHaveAccount')}{' '}
                 <Button
                   onClick={() => switchMode('register')}
                   sx={{
@@ -293,7 +295,7 @@ export default function LoginModal({ onClose, open }: LoginModalProps) {
                     '&:hover': { textDecoration: 'underline' }
                   }}
                 >
-                  Sign up
+                  {t('auth.signUp')}
                 </Button>
               </Typography>
             </Box>
@@ -305,7 +307,7 @@ export default function LoginModal({ onClose, open }: LoginModalProps) {
           <Box component="form" onSubmit={handleSignupSubmit(onRegister)} sx={{ mt: 2 }}>
             <TextField
               fullWidth
-              label="Name"
+              label={t('auth.name')}
               type="text"
               margin="normal"
               {...signupRegister('name')}
@@ -324,7 +326,7 @@ export default function LoginModal({ onClose, open }: LoginModalProps) {
 
             <TextField
               fullWidth
-              label="Email"
+              label={t('auth.email')}
               type="email"
               margin="normal"
               {...signupRegister('email')}
@@ -343,7 +345,7 @@ export default function LoginModal({ onClose, open }: LoginModalProps) {
 
             <TextField
               fullWidth
-              label="Password"
+              label={t('auth.password')}
               type={showPassword ? 'text' : 'password'}
               margin="normal"
               {...signupRegister('password')}
@@ -378,12 +380,12 @@ export default function LoginModal({ onClose, open }: LoginModalProps) {
               disabled={isLoading}
               sx={{ mt: 3, py: 1.5 }}
             >
-              {isLoading ? <CircularProgress size={24} /> : 'Create Account'}
+              {isLoading ? <CircularProgress size={24} /> : t('auth.createAccount')}
             </Button>
 
             <Box sx={{ mt: 3, textAlign: 'center' }}>
               <Typography variant="body2" color="text.secondary">
-                Already have an account?{' '}
+                {t('auth.alreadyHaveAccount')}{' '}
                 <Button
                   onClick={() => switchMode('login')}
                   sx={{
@@ -392,7 +394,7 @@ export default function LoginModal({ onClose, open }: LoginModalProps) {
                     '&:hover': { textDecoration: 'underline' }
                   }}
                 >
-                  Login
+                  {t('header.login')}
                 </Button>
               </Typography>
             </Box>
@@ -403,12 +405,12 @@ export default function LoginModal({ onClose, open }: LoginModalProps) {
         {mode === 'forgot' && (
           <Box component="form" onSubmit={handleForgotSubmit(onForgotPassword)} sx={{ mt: 2 }}>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-              Enter your email address and we'll send you a link to reset your password.
+              {t('auth.forgotPasswordDesc')}
             </Typography>
 
             <TextField
               fullWidth
-              label="Email"
+              label={t('auth.email')}
               type="email"
               margin="normal"
               {...forgotRegister('email')}
@@ -434,7 +436,7 @@ export default function LoginModal({ onClose, open }: LoginModalProps) {
               disabled={isLoading}
               sx={{ mt: 3, py: 1.5 }}
             >
-              {isLoading ? <CircularProgress size={24} /> : 'Send Reset Link'}
+              {isLoading ? <CircularProgress size={24} /> : t('auth.sendResetLink')}
             </Button>
 
             <Box sx={{ mt: 3, textAlign: 'center' }}>
@@ -446,7 +448,7 @@ export default function LoginModal({ onClose, open }: LoginModalProps) {
                   '&:hover': { textDecoration: 'underline' }
                 }}
               >
-                Back to login
+                {t('auth.backToLogin')}
               </Button>
             </Box>
           </Box>

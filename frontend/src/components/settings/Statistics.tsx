@@ -1,11 +1,13 @@
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { BarChart3, Users, Globe, Calendar, TrendingUp } from 'lucide-react';
 import { characterAPI } from '../../services/api';
 import { useAuthStore } from '../../store';
 
 export default function Statistics() {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
   const { user } = useAuthStore();
 
   const { data: characters, isLoading } = useQuery({
@@ -19,16 +21,16 @@ export default function Statistics() {
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-2xl mx-auto text-center">
           <h1 className="font-cinzel text-4xl font-bold text-primary-dark mb-4">
-            Statistics
+            {t('statistics.title')}
           </h1>
           <p className="text-primary-dark/70 mb-6">
-            You need to be logged in to view statistics.
+            {t('statistics.loginRequired')}
           </p>
           <button
             onClick={() => navigate('/')}
             className="bg-accent-gold text-primary-dark px-6 py-3 rounded-lg font-cinzel font-medium hover:bg-opacity-90 transition"
           >
-            Go to Home
+            {t('common.goToHome')}
           </button>
         </div>
       </div>
@@ -57,10 +59,10 @@ export default function Statistics() {
     <div className="container mx-auto px-4 py-12">
       <div className="max-w-5xl mx-auto">
         <h1 className="font-cinzel text-4xl font-bold text-primary-dark mb-2">
-          Statistics
+          {t('statistics.title')}
         </h1>
         <p className="text-primary-dark/70 mb-8">
-          Your character creation journey at a glance
+          {t('statistics.subtitle')}
         </p>
 
         {isLoading && (
@@ -81,7 +83,7 @@ export default function Statistics() {
               <div className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition dark-shared-panel">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="font-cinzel text-lg font-bold text-primary-dark">
-                    Total Characters
+                    {t('statistics.totalCharacters')}
                   </h3>
                   <div className="w-12 h-12 bg-accent-gold/20 rounded-full flex items-center justify-center">
                     <BarChart3 size={24} className="text-accent-gold" />
@@ -95,7 +97,7 @@ export default function Statistics() {
               <div className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition dark-shared-panel">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="font-cinzel text-lg font-bold text-primary-dark">
-                    Public Characters
+                    {t('statistics.publicCharacters')}
                   </h3>
                   <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
                     <Globe size={24} className="text-green-600" />
@@ -109,7 +111,7 @@ export default function Statistics() {
               <div className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition dark-shared-panel">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="font-cinzel text-lg font-bold text-primary-dark">
-                    Private Characters
+                    {t('statistics.privateCharacters')}
                   </h3>
                   <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
                     <Users size={24} className="text-blue-600" />
@@ -125,7 +127,7 @@ export default function Statistics() {
             <div className="bg-white rounded-lg shadow-lg p-6 mb-8 dark-shared-panel">
               <h2 className="font-cinzel text-2xl font-bold text-primary-dark mb-6 flex items-center gap-2">
                 <TrendingUp size={24} className="text-accent-gold" />
-                Characters by Class
+                {t('statistics.charactersByClass')}
               </h2>
               
               {Object.keys(stats.byClass).length > 0 ? (

@@ -102,9 +102,11 @@ interface AccessibilityState {
   darkMode: boolean;
   reducedMotion: boolean;
   largeText: boolean;
+  language: string;
   setDarkMode: (enabled: boolean) => void;
   setReducedMotion: (enabled: boolean) => void;
   setLargeText: (enabled: boolean) => void;
+  setLanguage: (lang: string) => void;
 }
 
 export const useAccessibilityStore = create<AccessibilityState>()(
@@ -113,9 +115,11 @@ export const useAccessibilityStore = create<AccessibilityState>()(
       darkMode: false,
       reducedMotion: false,
       largeText: false,
+      language: 'en',
       setDarkMode: (enabled) => set({ darkMode: enabled }),
       setReducedMotion: (enabled) => set({ reducedMotion: enabled }),
       setLargeText: (enabled) => set({ largeText: enabled }),
+      setLanguage: (lang) => set({ language: lang }),
     }),
     {
       name: 'accessibility-storage',

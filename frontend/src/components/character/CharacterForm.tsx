@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import axios from 'axios';
 import { Wand2 } from 'lucide-react';
 import toast from 'react-hot-toast';
@@ -16,6 +17,7 @@ import CharacterFormFields from './CharacterFormFields';
 
 export default function CharacterForm() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [isGenerating, setIsGenerating] = useState(false);
   const { reducedMotion } = useAccessibilityStore();
 
@@ -40,12 +42,12 @@ export default function CharacterForm() {
 
   const handleGenerateCharacter = async () => {
     if (!isAuthenticated) {
-      toast.error('You need to be logged in to use AI generation');
+      toast.error(t('characterForm.loginRequiredAIToast'));
       return;
     }
 
     if (!selectedClass) {
-      toast.error('Please select a class first');
+      toast.error(t('characterForm.selectClassFirst'));
       return;
     }
 
@@ -71,13 +73,13 @@ export default function CharacterForm() {
       if (generatedData.roguishFeats) setField('roguishFeats')(generatedData.roguishFeats);
       if (generatedData.weaponSkills) setField('weaponSkills')(generatedData.weaponSkills);
 
-      toast.success('Character generated successfully!');
+      toast.success(t('characterForm.characterGenerated'));
     } catch (error) {
       console.error('Error generating character:', error);
 
       const errorMessage = axios.isAxiosError(error)
-        ? error.response?.data?.message || 'Failed to generate character. Please try again.'
-        : 'Failed to generate character. Please try again.';
+        ? error.response?.data?.message || t('characterForm.generateFailed')
+        : t('characterForm.generateFailed');
 
       toast.error(errorMessage);
     } finally {
@@ -89,7 +91,7 @@ export default function CharacterForm() {
     return (
       <div className="min-h-screen bg-linear-to-b from-primary-light to-white flex items-center justify-center">
         <div className="text-center">
-          <p className="text-primary-dark text-lg">Loading templates...</p>
+          <p className="text-primary-dark text-lg">{t('characterForm.loadingTemplates')}</p>
         </div>
       </div>
     );
@@ -99,7 +101,7 @@ export default function CharacterForm() {
     return (
       <div className="min-h-screen bg-linear-to-b from-primary-light to-white flex items-center justify-center">
         <div className="text-center">
-          <p className="text-primary-dark text-lg">No class template available</p>
+          <p className="text-primary-dark text-lg">{t('characterForm.noClassTemplate')}</p>
         </div>
       </div>
     );
@@ -127,7 +129,7 @@ export default function CharacterForm() {
 
         <div className="flex items-center justify-between mt-6 mb-4">
           <h3 className="text-xl font-semibold text-primary-dark">
-            Character Details
+            {t('characterForm.characterDetails')}
           </h3>
           {!isEditing && (
             <button
@@ -135,17 +137,17 @@ export default function CharacterForm() {
               onClick={handleGenerateCharacter}
               disabled={isGenerating || !selectedClass}
               className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed relative"
-              title={!isAuthenticated ? 'Login required to use AI generation' : undefined}
+              title={!isAuthenticated ? t('characterForm.loginRequiredAI') : undefined}
             >
               {isGenerating ? (
                 <>
                   {!reducedMotion && <CircularProgress size={18} sx={{ color: 'white' }} />}
-                  <span className={reducedMotion ? '' : 'animate-pulse'}>Generating with AI...</span>
+                  <span className={reducedMotion ? '' : 'animate-pulse'}>{t('characterForm.generatingWithAI')}</span>
                 </>
               ) : (
                 <>
                   <Wand2 size={18} />
-                  Auto-fill with AI
+                  {t('characterForm.autoFillWithAI')}
                 </>
               )}
             </button>
@@ -184,7 +186,7 @@ export default function CharacterForm() {
             {/* Public Toggle - col-span-2 (only if authenticated) */}
             {isAuthenticated && (
               <div className="col-span-2">
-                <Card label="Visibility">
+                <Card label={t('characterForm.visibility')}>
                   <label className="flex items-center gap-3 cursor-pointer">
                     <input
                       type="checkbox"
@@ -193,7 +195,7 @@ export default function CharacterForm() {
                       className="w-5 h-5 rounded border-primary-dark/30 text-accent-gold focus:ring-accent-gold"
                     />
                     <span className="text-primary-dark font-medium">
-                      Make this character public (visible in gallery)
+                      {t('characterForm.makePublic')}
                     </span>
                   </label>
                 </Card>
@@ -209,11 +211,11 @@ export default function CharacterForm() {
               >
                 {isSaving
                   ? isEditing
-                    ? 'Updating...'
-                    : 'Creating...'
+                    ? t('characterForm.updating')
+                    : t('characterForm.creating')
                   : isEditing
-                  ? 'Update Character'
-                  : 'Create Character'}
+                  ? t('characterForm.updateCharacter')
+                  : t('characterForm.createCharacter')}
               </button>
             </div>
           </div>
@@ -225,12 +227,12 @@ export default function CharacterForm() {
             <div className="bg-primary-light rounded-lg p-8 max-w-md mx-4 text-center shadow-2xl">
               {!reducedMotion && <CircularProgress size={60} sx={{ color: '#9333EA', mb: 3 }} />}
               <h3 className="text-2xl font-bold text-primary-dark mb-2">
-                Generating Character...
+                {t('characterForm.generatingCharacter')}
               </h3>
               <p className="text-primary-dark/70 mb-4">
-                AI is creating a unique character for you. This may take a few seconds.
+                {t('characterForm.aiCreatingDesc')}
               </p>
-              <p className="text-sm text-purple-600">Please wait...</p>
+              <p className="text-sm text-purple-600">{t('characterForm.pleaseWait')}</p>
             </div>
           </div>
         )}

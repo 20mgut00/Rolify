@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Search, Plus, Filter, Upload } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 import { characterAPI, classTemplateAPI } from '../../services/api';
 import { useAuthStore, useCharacterStore, useUIStore } from '../../store';
 import CharacterCard from './CharacterCard';
@@ -11,8 +12,10 @@ import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 import type { Character, CharacterCard as CharacterCardType } from '../../types';
 
 export default function CharacterLibrary() {
+  const { t, i18n } = useTranslation();
+
   // React 19 feature: Dynamic document title
-  useDocumentTitle('My Characters - RPG Character Creator');
+  useDocumentTitle(`${t('characterLibrary.title')} - RPG Character Creator`);
 
   const navigate = useNavigate();
   const queryClient = useQueryClient();
@@ -46,7 +49,7 @@ export default function CharacterLibrary() {
     mutationFn: characterAPI.delete,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['myCharacters'] });
-      toast.success('Character deleted successfully');
+      toast.success(t('characterLibrary.characterDeleted'));
     },
     onError: (error) => {
       const errorMessage = error instanceof Error ? error.message : 'Failed to delete character';
@@ -93,7 +96,7 @@ export default function CharacterLibrary() {
       deleteMutation.mutate(id);
     } else {
       removeSessionCharacter(id);
-      toast.success('Character removed from session');
+      toast.success(t('characterLibrary.characterRemoved'));
     }
   };
 
@@ -102,10 +105,10 @@ export default function CharacterLibrary() {
     mutationFn: (data: Partial<Character>) => characterAPI.create(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['myCharacters'] });
-      toast.success('Character imported successfully!');
+      toast.success(t('characterLibrary.importSuccess'));
     },
     onError: () => {
-      toast.error('Failed to import character');
+      toast.error(t('characterLibrary.importFailed'));
     },
   });
 
@@ -117,19 +120,19 @@ export default function CharacterLibrary() {
       switch (format) {
         case 'pdf':
           await exportCharacterToPDF(character);
-          toast.success('PDF exported successfully');
+          toast.success(t('characterLibrary.pdfExported'));
           break;
         case 'json':
           exportCharacterToJSON(character);
-          toast.success('JSON exported successfully');
+          toast.success(t('characterLibrary.jsonExported'));
           break;
         case 'csv':
           exportCharacterToCSV(character);
-          toast.success('CSV exported successfully');
+          toast.success(t('characterLibrary.csvExported'));
           break;
       }
     } catch {
-      toast.error('Failed to export character');
+      toast.error(t('characterLibrary.exportFailed'));
     }
   };
 
@@ -145,18 +148,18 @@ export default function CharacterLibrary() {
       } else if (file.name.endsWith('.csv')) {
         characterData = await importCharacterFromCSV(file);
       } else {
-        toast.error('Unsupported file format. Use .json or .csv');
+        toast.error(t('characterLibrary.unsupportedFormat'));
         return;
       }
 
       if (!characterData.name || !characterData.system || !characterData.className) {
-        toast.error('Invalid file: missing required fields (name, system, className)');
+        toast.error(t('characterLibrary.invalidFile'));
         return;
       }
 
       importMutation.mutate(characterData);
     } catch {
-      toast.error('Failed to parse file. Make sure it was exported from ROLIFY.');
+      toast.error(t('characterLibrary.parseFailed'));
     } finally {
       // Reset file input so the same file can be imported again
       if (fileInputRef.current) fileInputRef.current.value = '';
@@ -171,11 +174,10 @@ export default function CharacterLibrary() {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
           <div>
             <h1 className="font-cinzel text-4xl md:text-5xl font-bold text-primary-dark mb-2">
-              My Library
+              {t('characterLibrary.title')}
             </h1>
             <p className="text-primary-dark/70">
-              {filteredCharacters.length} character{filteredCharacters.length !== 1 ? 's' : ''}
-              {(classFilter || searchTerm) ? ' found' : ' in your collection'}
+              {filteredCharacters.length} {filteredCharacters.length !== 1 ? t('common.characters') : t('common.character')} {(classFilter || searchTerm) ? t('common.found') : t('common.inYourCollection')}
             </p>
           </div>
           
@@ -196,7 +198,7 @@ export default function CharacterLibrary() {
                   className="bg-primary-dark/10 text-primary-dark px-5 py-3 rounded-lg font-cinzel font-medium hover:bg-primary-dark/20 transition flex items-center gap-2 disabled:opacity-50"
                 >
                   <Upload size={20} />
-                  {importMutation.isPending ? 'Importing...' : 'Import'}
+                  {importMutation.isPending ? t('common.importing') : t('common.import')}
                 </button>
               </>
             )}
@@ -206,7 +208,7 @@ export default function CharacterLibrary() {
               className="bg-accent-gold text-primary-dark px-6 py-3 rounded-lg font-cinzel font-medium hover:bg-opacity-90 transition flex items-center gap-2 shadow-lg"
             >
               <Plus size={20} />
-              New Character
+              {t('characterLibrary.newCharacter')}
             </button>
           </div>
         </div>
@@ -215,13 +217,13 @@ export default function CharacterLibrary() {
         {!isAuthenticated && sessionCharacters.length > 0 && (
           <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-8">
             <p className="text-yellow-800">
-              <strong>Note:</strong> You're not logged in. These characters are stored in your browser only.
+              <strong>Note:</strong> {t('characterLibrary.authWarning')}
               <button
                 type="button"
                 onClick={() => navigate('/')}
                 className="ml-2 text-accent-gold hover:underline font-medium"
               >
-                Sign in to save permanently
+                {t('characterLibrary.signInToSave')}
               </button>
             </p>
           </div>

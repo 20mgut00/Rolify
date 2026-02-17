@@ -27,10 +27,12 @@ import {
   DarkMode,
   LightMode,
 } from '@mui/icons-material';
+import { useTranslation } from 'react-i18next';
 import { useAccessibilityStore, useAuthStore, useUIStore } from '../store';
 import LoginModal from './auth/LoginModal';
 
 export default function Header() {
+  const { t } = useTranslation();
   const theme = useTheme();
   const navigate = useNavigate();
   const { darkMode, setDarkMode } = useAccessibilityStore();
@@ -104,7 +106,7 @@ export default function Header() {
             startIcon={<Add />}
             sx={{ mr: 1, px: 2 }}
           >
-            New Character
+            {t('header.newCharacter')}
           </Button>
 
           <Button
@@ -114,13 +116,13 @@ export default function Header() {
             startIcon={<LibraryBooks />}
             sx={{ mr: 2, px: 2 }}
           >
-            Library
+            {t('header.library')}
           </Button>
 
           <IconButton
             onClick={() => setDarkMode(!darkMode)}
-            aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
-            title={darkMode ? 'Light mode' : 'Dark mode'}
+            aria-label={darkMode ? t('header.switchToLight') : t('header.switchToDark')}
+            title={darkMode ? t('header.lightMode') : t('header.darkMode')}
             sx={{
               mr: 1,
               bgcolor: 'primary.main',
@@ -177,7 +179,7 @@ export default function Header() {
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.5 }}>
                       <Warning sx={{ fontSize: 14, color: 'error.main' }} />
                       <Typography variant="caption" color="error">
-                        Email not verified
+                        {t('header.emailNotVerified')}
                       </Typography>
                     </Box>
                   )}
@@ -192,7 +194,7 @@ export default function Header() {
                   sx={{ py: 1.5 }}
                 >
                   <BarChart sx={{ mr: 1.5, fontSize: 20 }} />
-                  Statistics
+                  {t('header.statistics')}
                 </MenuItem>
 
                 <MenuItem
@@ -202,7 +204,7 @@ export default function Header() {
                   sx={{ py: 1.5 }}
                 >
                   <Settings sx={{ mr: 1.5, fontSize: 20 }} />
-                  Settings
+                  {t('header.settings')}
                 </MenuItem>
 
                 <Divider />
@@ -222,7 +224,7 @@ export default function Header() {
                   }}
                 >
                   <Logout sx={{ mr: 1.5, fontSize: 20 }} />
-                  Logout
+                  {t('header.logout')}
                 </MenuItem>
               </Menu>
             </>
@@ -233,7 +235,7 @@ export default function Header() {
               onClick={() => setShowLoginModal(true)}
               sx={{ px: 2 }}
             >
-              Login
+              {t('header.login')}
             </Button>
           )}
           </Box>

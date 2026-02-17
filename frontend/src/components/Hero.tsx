@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { useQuery } from '@tanstack/react-query';
 import {
   Wand2,
@@ -11,6 +12,7 @@ import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { getAvatarUrl } from '../utils/avatarUrl';
 
 export default function Hero() {
+  const { t, i18n } = useTranslation();
   // React 19 feature: Dynamic document title
   useDocumentTitle('RPG Character Creator - Create Your Adventure');
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -187,11 +189,10 @@ export default function Hero() {
       {/* Hero Section */}
       <div className="text-center mb-20">
         <h1 className="font-cinzel text-5xl md:text-6xl font-bold text-primary-dark mb-4 leading-tight">
-          Create Your Legend
+          {t('hero.title')}
         </h1>
         <p className="text-lg md:text-2xl text-primary-dark/70 mb-8 max-w-3xl mx-auto">
-          Bring your tabletop RPG characters to life with our intuitive character creator.
-          Start with Root RPG and expand your adventures.
+          {t('hero.subtitle')}
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <RouterLink
@@ -199,14 +200,14 @@ export default function Hero() {
             className="bg-accent-gold text-primary-dark px-8 py-3 rounded-lg font-cinzel font-medium cursor-pointer transition-all duration-200 transform-gpu hover:bg-opacity-90 hover:scale-[1.02] hover:-translate-y-px hover:brightness-105 inline-flex items-center justify-center gap-2"
           >
             <Wand2 size={20} />
-            Create Character
+            {t('hero.createCharacter')}
           </RouterLink>
           <RouterLink
             to="/gallery"
             className="border-2 border-accent-gold text-accent-gold px-8 py-3 rounded-lg font-cinzel font-medium hover:bg-accent-gold hover:text-primary-dark transition inline-flex items-center justify-center gap-2"
           >
             <Users size={20} />
-            Browse Gallery
+            {t('hero.browseGallery')}
           </RouterLink>
         </div>
       </div>
@@ -215,7 +216,7 @@ export default function Hero() {
       {!isLoading && characters.length > 0 && (
         <div className="mb-20">
           <h2 className="font-cinzel text-4xl font-bold text-center text-primary-dark mb-8">
-            Featured Characters
+            {t('hero.featuredCharacters')}
           </h2>
           <div className="relative bg-white rounded-lg shadow-lg overflow-hidden hero-shared-panel">
             {/* Hide native scrollbars and provide a scrolling container we control */}
@@ -263,16 +264,16 @@ export default function Hero() {
                       </p>
                       <p className="text-primary-dark/70 mb-1">{char.species}</p>
                       {char.creatorName && (
-                        <p className="text-primary-dark/60 text-sm mb-2">By {char.creatorName}</p>
+                        <p className="text-primary-dark/60 text-sm mb-2">{`${t('common.by')} ${char.creatorName}`}</p>
                       )}
                       <p className="text-primary-dark/50 text-sm mb-6">
-                        Created {new Date(char.createdAt).toLocaleDateString()}
+                        Created {new Date(char.createdAt).toLocaleDateString(i18n.language)}
                       </p>
                       <RouterLink
                         to={`/character/${char.id}`}
                         className="bg-accent-gold text-primary-dark px-6 py-2 rounded-lg font-cinzel font-medium cursor-pointer transition-all duration-200 transform-gpu hover:bg-opacity-90 hover:scale-[1.02] hover:-translate-y-px hover:brightness-105 inline-block"
                       >
-                        View Character
+                        {t('hero.viewCharacter')}
                       </RouterLink>
                     </div>
                   </div>
@@ -293,10 +294,10 @@ export default function Hero() {
             <Wand2 size={40} className="text-primary-dark" />
           </div>
           <h3 className="font-cinzel text-xl font-bold text-primary-dark mb-3">
-            Easy Creation
+            {t('hero.easyCreation')}
           </h3>
           <p className="text-primary-dark/70">
-            Intuitive step-by-step forms with real-time validation guide you through character creation. No rules knowledge required!
+            {t('hero.easyCreationDesc')}
           </p>
         </div>
 
@@ -306,10 +307,10 @@ export default function Hero() {
             <Users size={40} className="text-primary-dark" />
           </div>
           <h3 className="font-cinzel text-xl font-bold text-primary-dark mb-3">
-            Share & Discover
+            {t('hero.shareDiscover')}
           </h3>
           <p className="text-primary-dark/70">
-            Make your characters public and explore amazing creations from the community. Get inspired by others!
+            {t('hero.shareDiscoverDesc')}
           </p>
         </div>
 
@@ -319,10 +320,10 @@ export default function Hero() {
             <Download size={40} className="text-primary-dark" />
           </div>
           <h3 className="font-cinzel text-xl font-bold text-primary-dark mb-3">
-            Export Anywhere
+            {t('hero.exportAnywhere')}
           </h3>
           <p className="text-primary-dark/70">
-            Download your characters as beautiful PDFs for printing, or JSON/CSV for importing into other tools.
+            {t('hero.exportAnywhereDesc')}
           </p>
         </div>
       </div>
@@ -330,24 +331,23 @@ export default function Hero() {
       {/* CTA Section */}
       <div className="bg-linear-to-r from-accent-gold/10 to-accent-gold/5 rounded-lg p-12 text-center mb-20 border border-accent-gold/20">
         <h2 className="font-cinzel text-4xl font-bold text-primary-dark mb-3">
-          Ready to Begin Your Adventure?
+          {t('hero.readyToBegin')}
         </h2>
         <p className="text-lg text-primary-dark/70 mb-8 max-w-2xl mx-auto">
-          Join thousands of players creating memorable characters for their campaigns.
-          Sign up now to save your characters and access all features!
+          {t('hero.readyToBeginDesc')}
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <RouterLink
             to="/create"
             className="bg-accent-gold text-primary-dark px-8 py-3 rounded-lg font-cinzel font-medium cursor-pointer transition-all duration-200 transform-gpu hover:bg-opacity-90 hover:scale-[1.02] hover:-translate-y-px hover:brightness-105"
           >
-            Start Creating
+            {t('hero.startCreating')}
           </RouterLink>
           <RouterLink
             to="/library"
             className="border-2 border-accent-gold text-accent-gold px-8 py-3 rounded-lg font-cinzel font-medium hover:bg-accent-gold hover:text-primary-dark transition"
           >
-            View My Library
+            {t('hero.viewMyLibrary')}
           </RouterLink>
         </div>
       </div>
@@ -355,7 +355,7 @@ export default function Hero() {
       {/* How It Works */}
       <div className="mb-8">
         <h2 className="font-cinzel text-4xl font-bold text-center text-primary-dark mb-12">
-          How It Works
+          {t('hero.howItWorks')}
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Step 1 */}
@@ -364,10 +364,10 @@ export default function Hero() {
               1
             </div>
             <h3 className="font-cinzel text-xl font-bold text-primary-dark mb-2">
-              Choose Your Class
+              {t('hero.step1Title')}
             </h3>
             <p className="text-primary-dark/70 text-sm">
-              Select from Adventurer, Arbiter, Ranger, and more. Each class has unique abilities and playstyles.
+              {t('hero.step1Desc')}
             </p>
           </div>
 
@@ -377,10 +377,10 @@ export default function Hero() {
               2
             </div>
             <h3 className="font-cinzel text-xl font-bold text-primary-dark mb-2">
-              Build Your Character
+              {t('hero.step2Title')}
             </h3>
             <p className="text-primary-dark/70 text-sm">
-              Fill in stats, background, moves, and equipment. Our system validates everything automatically.
+              {t('hero.step2Desc')}
             </p>
           </div>
 
@@ -390,10 +390,10 @@ export default function Hero() {
               3
             </div>
             <h3 className="font-cinzel text-xl font-bold text-primary-dark mb-2">
-              Play & Share
+              {t('hero.step3Title')}
             </h3>
             <p className="text-primary-dark/70 text-sm">
-              Export your character sheet or share it with the community. Update it as your character grows!
+              {t('hero.step3Desc')}
             </p>
           </div>
         </div>

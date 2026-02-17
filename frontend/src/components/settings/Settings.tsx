@@ -2,8 +2,9 @@ import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { Lock, User, Mail, AlertCircle, CheckCircle, Eye, EyeOff } from 'lucide-react';
+import { Lock, User, Mail, AlertCircle, CheckCircle, Eye, EyeOff, Globe } from 'lucide-react';
 import toast from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 import { authAPI } from '../../services/api';
 import { useAccessibilityStore, useAuthStore } from '../../store';
 import { useNavigate } from 'react-router-dom';
@@ -22,8 +23,9 @@ const changePasswordSchema = z.object({
 type ChangePasswordFormData = z.infer<typeof changePasswordSchema>;
 
 export default function Settings() {
-  // React 19 feature: Dynamic document title
-  useDocumentTitle('Settings - RPG Character Creator');
+  const { t, i18n } = useTranslation();
+
+  useDocumentTitle(`${t('settings.title')} - RPG Character Creator`);
 
   const navigate = useNavigate();
   const { user, logout } = useAuthStore();
@@ -31,9 +33,11 @@ export default function Settings() {
     darkMode,
     reducedMotion,
     largeText,
+    language,
     setDarkMode,
     setReducedMotion,
     setLargeText,
+    setLanguage,
   } = useAccessibilityStore();
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -55,7 +59,7 @@ export default function Settings() {
         currentPassword: data.currentPassword,
         newPassword: data.newPassword,
       });
-      toast.success('Password changed successfully!');
+      toast.success(t('settings.passwordChanged'));
       reset();
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to change password';
@@ -68,7 +72,7 @@ export default function Settings() {
   const handleDeleteAccount = async () => {
     try {
       await authAPI.deleteAccount();
-      toast.success('Account deleted successfully');
+      toast.success(t('settings.accountDeleted'));
       logout();
       navigate('/');
     } catch (error) {
@@ -77,21 +81,26 @@ export default function Settings() {
     }
   };
 
+  const handleLanguageChange = (lang: string) => {
+    setLanguage(lang);
+    i18n.changeLanguage(lang);
+  };
+
   if (!user) {
     return (
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-2xl mx-auto text-center">
           <h1 className="font-cinzel text-4xl font-bold text-primary-dark mb-4">
-            Settings
+            {t('settings.title')}
           </h1>
           <p className="text-primary-dark/70 mb-6">
-            You need to be logged in to access settings.
+            {t('settings.loginRequired')}
           </p>
           <button
             onClick={() => navigate('/')}
             className="bg-accent-gold text-primary-dark px-6 py-3 rounded-lg font-cinzel font-medium hover:bg-opacity-90 transition"
           >
-            Go to Home
+            {t('common.goToHome')}
           </button>
         </div>
       </div>
@@ -102,27 +111,27 @@ export default function Settings() {
     <div className="container mx-auto px-4 py-12">
       <div className="max-w-3xl mx-auto">
         <h1 className="font-cinzel text-4xl font-bold text-primary-dark mb-8">
-          Settings
+          {t('settings.title')}
         </h1>
 
         {/* Account Information */}
         <div className="bg-white rounded-lg shadow-lg p-6 mb-6 dark-shared-panel">
           <h2 className="font-cinzel text-2xl font-bold text-primary-dark mb-4 flex items-center gap-2">
             <User size={24} />
-            Account Information
+            {t('settings.accountInfo')}
           </h2>
-          
+
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-primary-dark/70 mb-1">
-                Name
+                {t('settings.name')}
               </label>
               <p className="text-lg text-primary-dark">{user.name}</p>
             </div>
 
             <div>
               <label className="block text-sm font-medium text-primary-dark/70 mb-1">
-                Email
+                {t('settings.email')}
               </label>
               <div className="flex items-center gap-2">
                 <Mail size={18} className="text-primary-dark/50" />
@@ -130,12 +139,12 @@ export default function Settings() {
                 {user.emailVerified ? (
                   <span className="text-green-600 flex items-center gap-1 text-sm">
                     <CheckCircle size={16} />
-                    Verified
+                    {t('settings.verified')}
                   </span>
                 ) : (
                   <span className="text-yellow-600 flex items-center gap-1 text-sm">
                     <AlertCircle size={16} />
-                    Not verified
+                    {t('settings.notVerified')}
                   </span>
                 )}
               </div>
@@ -148,13 +157,13 @@ export default function Settings() {
         <div className="bg-white rounded-lg shadow-lg p-6 mb-6 dark-shared-panel">
           <h2 className="font-cinzel text-2xl font-bold text-primary-dark mb-4 flex items-center gap-2">
             <Lock size={24} />
-            Change Password
+            {t('settings.changePassword')}
           </h2>
-          
+
           <form onSubmit={handleSubmit(onChangePassword)} className="space-y-4">
             <div>
               <label className="block text-sm font-medium mb-2 text-primary-dark">
-                Current Password
+                {t('settings.currentPassword')}
               </label>
               <div className="relative flex items-center">
                 <Lock size={20} className="absolute left-3 text-primary-dark pointer-events-none" />
@@ -162,7 +171,7 @@ export default function Settings() {
                   {...register('currentPassword')}
                   type={showPassword ? 'text' : 'password'}
                   className="w-full pl-10 pr-10 py-2 border border-primary-dark/20 rounded-lg focus:ring-2 focus:ring-accent-gold focus:border-transparent text-primary-dark placeholder-primary-dark/50"
-                  placeholder="current password"
+                  placeholder={t('settings.currentPasswordPlaceholder')}
                 />
                 <button
                   type="button"
@@ -181,7 +190,7 @@ export default function Settings() {
 
             <div>
               <label className="block text-sm font-medium mb-2 text-primary-dark">
-                New Password
+                {t('settings.newPassword')}
               </label>
               <div className="relative flex items-center">
                 <Lock size={20} className="absolute left-3 text-primary-dark pointer-events-none" />
@@ -189,7 +198,7 @@ export default function Settings() {
                   {...register('newPassword')}
                   type={showPassword ? 'text' : 'password'}
                   className="w-full pl-10 pr-10 py-2 border border-primary-dark/20 rounded-lg focus:ring-2 focus:ring-accent-gold focus:border-transparent text-primary-dark placeholder-primary-dark/50"
-                  placeholder="new password"
+                  placeholder={t('settings.newPasswordPlaceholder')}
                 />
                 <button
                   type="button"
@@ -208,7 +217,7 @@ export default function Settings() {
 
             <div>
               <label className="block text-sm font-medium mb-2 text-primary-dark">
-                Confirm New Password
+                {t('settings.confirmNewPassword')}
               </label>
               <div className="relative flex items-center">
                 <Lock size={20} className="absolute left-3 text-primary-dark pointer-events-none" />
@@ -216,7 +225,7 @@ export default function Settings() {
                   {...register('confirmPassword')}
                   type={showPassword ? 'text' : 'password'}
                   className="w-full pl-10 pr-10 py-2 border border-primary-dark/20 rounded-lg focus:ring-2 focus:ring-accent-gold focus:border-transparent text-primary-dark placeholder-primary-dark/50"
-                  placeholder="new password"
+                  placeholder={t('settings.newPasswordPlaceholder')}
                 />
                 <button
                   type="button"
@@ -239,22 +248,42 @@ export default function Settings() {
               disabled={isChangingPassword}
               className="w-full bg-accent-gold text-primary-dark py-3 rounded-lg font-cinzel font-medium hover:bg-opacity-90 transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
             >
-              {isChangingPassword ? 'Changing...' : 'Change Password'}
+              {isChangingPassword ? t('settings.changing') : t('settings.changePassword')}
             </button>
           </form>
+        </div>
+
+        {/* Language */}
+        <div className="bg-white rounded-lg shadow-lg p-6 mt-6 dark-shared-panel">
+          <h2 className="font-cinzel text-2xl font-bold text-primary-dark mb-4 flex items-center gap-2">
+            <Globe size={24} />
+            {t('settings.language')}
+          </h2>
+
+          <div className="space-y-4">
+            <p className="text-sm text-primary-dark/70">{t('settings.languageDesc')}</p>
+            <select
+              value={language}
+              onChange={(e) => handleLanguageChange(e.target.value)}
+              className="w-full px-4 py-3 border border-primary-dark/20 rounded-lg focus:ring-2 focus:ring-accent-gold focus:border-transparent text-primary-dark bg-white appearance-none cursor-pointer dark-field"
+            >
+              <option value="en">{t('settings.english')}</option>
+              <option value="es">{t('settings.spanish')}</option>
+            </select>
+          </div>
         </div>
 
         {/* Accessibility */}
         <div className="bg-white rounded-lg shadow-lg p-6 mt-6 dark-shared-panel">
           <h2 className="font-cinzel text-2xl font-bold text-primary-dark mb-4">
-            Accessibility
+            {t('settings.accessibility')}
           </h2>
 
           <div className="space-y-4">
             <label className="flex items-center justify-between gap-4 p-3 rounded-lg border border-primary-dark/15">
               <div>
-                <p className="font-medium text-primary-dark">Dark mode</p>
-                <p className="text-sm text-primary-dark/70">Use a darker theme with better night readability</p>
+                <p className="font-medium text-primary-dark">{t('settings.darkMode')}</p>
+                <p className="text-sm text-primary-dark/70">{t('settings.darkModeDesc')}</p>
               </div>
               <input
                 type="checkbox"
@@ -266,8 +295,8 @@ export default function Settings() {
 
             <label className="flex items-center justify-between gap-4 p-3 rounded-lg border border-primary-dark/15">
               <div>
-                <p className="font-medium text-primary-dark">Reduce motion</p>
-                <p className="text-sm text-primary-dark/70">Minimize animations and transitions</p>
+                <p className="font-medium text-primary-dark">{t('settings.reduceMotion')}</p>
+                <p className="text-sm text-primary-dark/70">{t('settings.reduceMotionDesc')}</p>
               </div>
               <input
                 type="checkbox"
@@ -279,8 +308,8 @@ export default function Settings() {
 
             <label className="flex items-center justify-between gap-4 p-3 rounded-lg border border-primary-dark/15">
               <div>
-                <p className="font-medium text-primary-dark">Larger text</p>
-                <p className="text-sm text-primary-dark/70">Increase base text size for readability</p>
+                <p className="font-medium text-primary-dark">{t('settings.largerText')}</p>
+                <p className="text-sm text-primary-dark/70">{t('settings.largerTextDesc')}</p>
               </div>
               <input
                 type="checkbox"
@@ -293,30 +322,30 @@ export default function Settings() {
         </div>
 
         {/* Danger Zone */}
-        <div className="bg-red-50 border-2 border-red-200 dark:bg-red-950/30 dark:border-red-900 rounded-lg p-6">
+        <div className="bg-red-50 border-2 border-red-200 dark:bg-red-950/30 dark:border-red-900 rounded-lg p-6 mt-6">
           <h2 className="font-cinzel text-2xl font-bold text-red-600 dark:text-red-300 mb-4 flex items-center gap-2">
             <AlertCircle size={24} />
-            Danger Zone
+            {t('settings.dangerZone')}
           </h2>
-          
+
           <div className="space-y-4">
             <div>
               <p className="text-sm text-red-600 dark:text-red-300/90 mb-3">
-                Once you delete your account, there is no going back. All your characters will be permanently deleted.
+                {t('settings.deleteAccountWarning')}
               </p>
               <button
                 onClick={() => setShowDeleteModal(true)}
                 className="bg-white border-2 border-red-600 text-red-600 dark:bg-red-950/45 dark:border-red-500 dark:text-red-300 px-6 py-2 rounded-lg font-semibold hover:bg-red-50 dark:hover:bg-red-900/55 hover:border-red-700 dark:hover:border-red-400 transition"
               >
-                Delete Account
+                {t('settings.deleteAccount')}
               </button>
               <ConfirmModal
                 isOpen={showDeleteModal}
                 onClose={() => setShowDeleteModal(false)}
                 onConfirm={handleDeleteAccount}
-                title="Delete Account"
-                message="This action cannot be undone. All your characters will be permanently deleted."
-                confirmText="Delete Account"
+                title={t('settings.deleteAccount')}
+                message={t('settings.deleteAccountConfirm')}
+                confirmText={t('settings.deleteAccount')}
                 variant="danger"
                 requireTypedConfirmation="DELETE"
               />
@@ -324,17 +353,17 @@ export default function Settings() {
 
             <div className="pt-4 border-t border-red-200 dark:border-red-900">
               <p className="text-sm text-primary-dark/70 mb-3">
-                Sign out of your account
+                {t('settings.signOutDesc')}
               </p>
               <button
                 onClick={() => {
                   logout();
                   navigate('/');
-                  toast.success('Logged out successfully');
+                  toast.success(t('settings.loggedOut'));
                 }}
                 className="bg-primary-dark text-primary-light px-6 py-2 rounded-lg font-medium hover:bg-opacity-90 transition"
               >
-                Sign Out
+                {t('settings.signOut')}
               </button>
             </div>
           </div>

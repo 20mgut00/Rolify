@@ -1,5 +1,6 @@
 import { ArrowBigLeft, ArrowBigRight } from "lucide-react";
 import { useState } from "react";
+import { useTranslation } from 'react-i18next';
 
 interface role {
   name: string;
@@ -15,6 +16,7 @@ export default function ClassSelector({
   roles,
   onRoleSelect,
 }: ClassSelectorProps) {
+  const { t } = useTranslation();
   const [currentRoleIndex, setCurrentRoleIndex] = useState(0);
   const currentRole = roles[currentRoleIndex].name;
 
@@ -33,7 +35,7 @@ export default function ClassSelector({
   return (
     <div className="max-w-4xl mx-auto flex flex-col items-center text-center">
       <h1 className="text-xl font-semibold mb-1 text-primary-dark">
-        Choose Your Role
+        {t('characterForm.chooseYourRole')}
       </h1>
       <div className="w-full flex items-center">
         <ArrowBigLeft

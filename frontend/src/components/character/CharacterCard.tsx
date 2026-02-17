@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Eye, Edit, Trash2, Download, Globe, Lock } from 'lucide-react';
 import type { CharacterCard as CharacterCardType } from '../../types';
 import { getAvatarUrl } from '../../utils/avatarUrl';
@@ -21,6 +22,7 @@ export default function CharacterCard({
   onExport,
   showCreatorName = false,
 }: CharacterCardProps) {
+  const { t, i18n } = useTranslation();
   const [showExportMenu, setShowExportMenu] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
 
@@ -47,12 +49,12 @@ export default function CharacterCard({
           {character.isPublic ? (
             <div className="bg-accent-gold text-primary-dark text-xs px-3 py-1 rounded-full font-medium flex items-center gap-1 shadow-lg">
               <Globe size={12} />
-              Public
+              {t('common.public')}
             </div>
           ) : (
             <div className="bg-primary-dark text-primary-light text-xs px-3 py-1 rounded-full font-medium flex items-center gap-1 shadow-lg">
               <Lock size={12} />
-              Private
+              {t('common.private')}
             </div>
           )}
         </div>
@@ -69,7 +71,7 @@ export default function CharacterCard({
         <p className="text-primary-dark/70 text-sm mb-2">{character.species}</p>
         {showCreatorName && character.creatorName && (
           <p className="text-primary-dark/60 text-xs mb-2 truncate" title={character.creatorName}>
-            By {character.creatorName}
+            {t('common.by')} {character.creatorName}
           </p>
         )}
         <div className="flex items-center gap-2 text-primary-dark/50 text-xs mt-auto">
@@ -77,7 +79,7 @@ export default function CharacterCard({
             {character.system}
           </span>
           <span>•</span>
-          <span>{new Date(character.createdAt).toLocaleDateString()}</span>
+          <span>{new Date(character.createdAt).toLocaleDateString(i18n.language)}</span>
         </div>
       </div>
 
@@ -88,14 +90,14 @@ export default function CharacterCard({
           className="flex-1 flex items-center justify-center gap-1 bg-accent-gold text-primary-dark py-2.5 rounded-lg cursor-pointer transition-all duration-200 transform-gpu hover:bg-opacity-90 hover:scale-[1.02] hover:-translate-y-px hover:brightness-105 text-sm font-medium shadow-md hover:shadow-lg"
         >
           <Eye size={16} />
-          View
+          {t('characterCard.viewCharacter')}
         </button>
         
         {onEdit && (
           <button
             onClick={() => onEdit(character.id)}
             className="w-10 h-10 flex items-center justify-center bg-primary-dark/10 text-primary-dark rounded-lg cursor-pointer hover:bg-primary-dark/20 transition shadow-md hover:shadow-lg"
-            title="Edit character"
+            title={t('characterCard.editCharacter')}
           >
             <Edit size={16} />
           </button>
@@ -106,7 +108,7 @@ export default function CharacterCard({
             <button
               onClick={() => setShowExportMenu(!showExportMenu)}
               className="w-full h-full flex items-center justify-center bg-primary-dark/10 text-primary-dark rounded-lg cursor-pointer hover:bg-primary-dark/20 transition shadow-md hover:shadow-lg"
-              title="Export character"
+              title={t('characterCard.exportCharacter')}
             >
               <Download size={16} />
             </button>
@@ -156,7 +158,7 @@ export default function CharacterCard({
             <button
               onClick={() => setShowDeleteModal(true)}
               className="w-10 h-10 flex items-center justify-center bg-red-50 text-red-600 dark:bg-red-950/35 dark:text-red-300 rounded-lg cursor-pointer hover:bg-red-100 dark:hover:bg-red-900/45 transition shadow-md hover:shadow-lg"
-              title="Delete character"
+              title={t('characterCard.deleteCharacter')}
             >
               <Trash2 size={16} />
             </button>
@@ -164,9 +166,9 @@ export default function CharacterCard({
               isOpen={showDeleteModal}
               onClose={() => setShowDeleteModal(false)}
               onConfirm={() => onDelete(character.id)}
-              title="Delete Character"
-              message={`Are you sure you want to delete "${character.name}"? This action cannot be undone.`}
-              confirmText="Delete"
+              title={t('characterCard.deleteCharacter')}
+              message={t('characterCard.deleteConfirm', { name: character.name })}
+              confirmText={t('common.delete')}
               variant="danger"
             />
           </>

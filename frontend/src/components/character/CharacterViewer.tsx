@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useQuery } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import {
   ArrowLeft, Edit, Download, Share2, Globe, Lock,
   Heart, Zap, Target, Sparkles, Shield, Sword, Users, TrendingUp
@@ -15,6 +16,7 @@ export default function CharacterViewer() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const { user } = useAuthStore();
+  const { t, i18n } = useTranslation();
   const [showExportMenu, setShowExportMenu] = useState(false);
 
   const { data: character, isLoading } = useQuery({
@@ -37,20 +39,20 @@ export default function CharacterViewer() {
       switch (format) {
         case 'pdf':
           await exportCharacterToPDF(character);
-          toast.success('PDF exported successfully');
+          toast.success(t('characterViewer.pdfExported'));
           break;
         case 'json':
           exportCharacterToJSON(character);
-          toast.success('JSON exported successfully');
+          toast.success(t('characterViewer.jsonExported'));
           break;
         case 'csv':
           exportCharacterToCSV(character);
-          toast.success('CSV exported successfully');
+          toast.success(t('characterViewer.csvExported'));
           break;
       }
       setShowExportMenu(false);
     } catch {
-      toast.error('Failed to export character');
+      toast.error(t('characterViewer.exportFailed'));
     }
   };
 
@@ -58,7 +60,7 @@ export default function CharacterViewer() {
     if (character) {
       const url = window.location.href;
       navigator.clipboard.writeText(url);
-      toast.success('Link copied to clipboard!');
+      toast.success(t('characterViewer.linkCopied'));
     }
   };
 
@@ -67,7 +69,7 @@ export default function CharacterViewer() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="w-16 h-16 border-4 border-accent-gold border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <p className="text-primary-dark/70">Loading character...</p>
+          <p className="text-primary-dark/70">{t('characterViewer.loadingCharacter')}</p>
         </div>
       </div>
     );
@@ -78,17 +80,17 @@ export default function CharacterViewer() {
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <h2 className="font-cinzel text-2xl font-bold text-primary-dark mb-4">
-            Character Not Found
+            {t('characterViewer.characterNotFound')}
           </h2>
           <p className="text-primary-dark/70 mb-6">
-            This character doesn't exist or you don't have permission to view it.
+            {t('characterViewer.characterNotFoundDesc')}
           </p>
           <button
             type="button"
             onClick={() => navigate('/library')}
             className="bg-accent-gold text-primary-dark px-6 py-3 rounded-lg font-cinzel font-medium hover:bg-opacity-90 transition"
           >
-            Back to Library
+            {t('characterViewer.backToLibrary')}
           </button>
         </div>
       </div>
@@ -107,7 +109,7 @@ export default function CharacterViewer() {
               className="flex items-center gap-2 text-primary-dark hover:text-accent-gold transition"
             >
               <ArrowLeft size={20} />
-              <span className="font-medium">Back</span>
+              <span className="font-medium">{t('common.back')}</span>
             </button>
 
             <div className="flex gap-2">
@@ -118,7 +120,7 @@ export default function CharacterViewer() {
                   className="flex items-center gap-2 bg-primary-dark text-primary-light px-4 py-2 rounded-lg hover:bg-opacity-90 transition"
                 >
                   <Edit size={18} />
-                  Edit
+                  {t('common.edit')}
                 </button>
               )}
 
@@ -129,7 +131,7 @@ export default function CharacterViewer() {
                   className="flex items-center gap-2 bg-accent-gold text-primary-dark px-4 py-2 rounded-lg hover:bg-opacity-90 transition"
                 >
                   <Download size={18} />
-                  Export
+                  {t('common.export')}
                 </button>
 
                 {showExportMenu && (
@@ -168,7 +170,7 @@ export default function CharacterViewer() {
                 className="flex items-center gap-2 bg-primary-dark/10 text-primary-dark px-4 py-2 rounded-lg hover:bg-primary-dark/20 transition"
               >
                 <Share2 size={18} />
-                Share
+                {t('common.share')}
               </button>
             </div>
           </div>

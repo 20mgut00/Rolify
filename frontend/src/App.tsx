@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import { ThemeProvider, CssBaseline, CircularProgress, Box } from '@mui/material';
+import { useTranslation } from 'react-i18next';
 import { theme } from './theme';
 import Header from './components/Header';
 import { useAccessibilityStore } from './store';
@@ -30,6 +31,7 @@ const queryClient = new QueryClient({
 
 // Loading fallback component for lazy routes
 function RouteLoader() {
+  const { t } = useTranslation();
   return (
     <Box
       sx={{
@@ -44,15 +46,16 @@ function RouteLoader() {
     >
       <CircularProgress size={60} sx={{ color: '#D9A441' }} />
       <Box sx={{ textAlign: 'center' }}>
-        <p className="text-primary-dark text-xl font-semibold">Loading...</p>
-        <p className="text-primary-dark/60 text-sm mt-2">Preparing your adventure</p>
+        <p className="text-primary-dark text-xl font-semibold">{t('common.loading')}</p>
+        <p className="text-primary-dark/60 text-sm mt-2">{t('common.preparingAdventure')}</p>
       </Box>
     </Box>
   );
 }
 
 function App() {
-  const { darkMode, reducedMotion, largeText } = useAccessibilityStore();
+  const { darkMode, reducedMotion, largeText, language } = useAccessibilityStore();
+  const { i18n } = useTranslation();
 
   useEffect(() => {
     const root = document.documentElement;
@@ -61,6 +64,12 @@ function App() {
     root.classList.toggle('text-large', largeText);
     root.style.colorScheme = darkMode ? 'dark' : 'light';
   }, [darkMode, reducedMotion, largeText]);
+
+  useEffect(() => {
+    if (i18n.language !== language) {
+      i18n.changeLanguage(language);
+    }
+  }, [language, i18n]);
 
   return (
     <ThemeProvider theme={theme}>

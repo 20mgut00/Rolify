@@ -1,4 +1,5 @@
 import { UseFormRegister } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import TextField from '@mui/material/TextField';
 import Card from '../common/Card';
 import ImageSelector from '../common/ImageSelector';
@@ -55,11 +56,13 @@ export default function CharacterBasicInfo({
   validationErrors = {},
   isEditing = false,
 }: CharacterBasicInfoProps) {
+  const { t } = useTranslation();
+
   return (
     <>
       {/* Avatar Image - row-span-4 */}
       <div className="row-span-4">
-        <Card label="Avatar Image">
+        <Card label={t('characterBasicInfo.avatarImage')}>
           <ImageSelector
             value={avatarImage}
             defaultImage={defaultImage}
@@ -70,10 +73,10 @@ export default function CharacterBasicInfo({
 
       {/* Name */}
       <div>
-        <Card label="Name" required error={validationErrors.name}>
+        <Card label={t('characterBasicInfo.name')} required error={validationErrors.name}>
           <TextField
             id="name"
-            placeholder="Enter your character's name"
+            placeholder={t('characterBasicInfo.namePlaceholder')}
             variant="outlined"
             size="small"
             fullWidth
@@ -87,10 +90,10 @@ export default function CharacterBasicInfo({
 
       {/* Species */}
       <div>
-        <Card label="Species">
+        <Card label={t('characterBasicInfo.species')}>
           <TextField
             id="species"
-            placeholder="Enter your character's species"
+            placeholder={t('characterBasicInfo.speciesPlaceholder')}
             variant="outlined"
             size="small"
             fullWidth
@@ -104,10 +107,10 @@ export default function CharacterBasicInfo({
 
       {/* Details */}
       <div>
-        <Card label="Details">
+        <Card label={t('characterBasicInfo.details')}>
           <TextField
             id="details"
-            placeholder="Enter your character's details"
+            placeholder={t('characterBasicInfo.detailsPlaceholder')}
             variant="outlined"
             size="small"
             fullWidth
@@ -121,10 +124,10 @@ export default function CharacterBasicInfo({
 
       {/* Demeanor */}
       <div>
-        <Card label="Demeanor">
+        <Card label={t('characterBasicInfo.demeanor')}>
           <TextField
             id="demeanor"
-            placeholder="Enter your character's demeanor"
+            placeholder={t('characterBasicInfo.demeanorPlaceholder')}
             variant="outlined"
             size="small"
             fullWidth

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import { UseFormRegister } from 'react-hook-form';
 import TextField from '@mui/material/TextField';
 import Card from '../common/Card';
@@ -72,13 +73,14 @@ export default function CharacterFormFields({
   onSkillsChange,
   validationErrors = {},
 }: CharacterFormFieldsProps) {
+  const { t } = useTranslation();
   const maxDrives = selectedClass.maxDrives ?? 2;
 
   return (
     <>
       {/* Nature */}
       <div>
-        <Card label="Nature" desc="Select the nature that best describes your character">
+        <Card label={t('characterFormFields.nature')} desc={t('characterFormFields.natureDesc')}>
           <NatureSelector
             nature={selectedClass.nature}
             value={watchedFields.nature}
@@ -89,7 +91,7 @@ export default function CharacterFormFields({
 
       {/* Background - row-span-3 */}
       <div className="row-span-3">
-        <Card label="Background">
+        <Card label={t('characterFormFields.background')}>
           <BackgroundSelector
             key={isEditing ? `background-edit-${editId}` : `background-${selectedClass.className || selectedClassIndex}`}
             background={selectedClass.background}
@@ -103,8 +105,8 @@ export default function CharacterFormFields({
       {/* Drives - row-span-2 */}
       <div className="row-span-2">
         <Card
-          label="Drives"
-          desc={`Select ${maxDrives} drives for your character`}
+          label={t('characterFormFields.drives')}
+          desc={t('characterFormFields.drivesDesc', { count: maxDrives })}
           required={maxDrives > 0}
           error={validationErrors.drives}
         >
@@ -118,7 +120,7 @@ export default function CharacterFormFields({
 
       {/* Connections */}
       <div>
-        <Card label="Connections">
+        <Card label={t('characterFormFields.connections')}>
           <ConnectionsSelector
             key={isEditing ? `connections-edit-${editId}` : `connections-${selectedClass.className || selectedClassIndex}`}
             connections={selectedClass.connections}
@@ -130,7 +132,7 @@ export default function CharacterFormFields({
 
       {/* Stats */}
       <div>
-        <Card label="Stats" desc="Add +1 to a stat of your choice, Max +2" required error={validationErrors.stats}>
+        <Card label={t('characterFormFields.stats')} desc={t('characterFormFields.statsDesc')} required error={validationErrors.stats}>
           <AttributesSelector
             key={isEditing ? `stats-edit-${editId}` : `stats-${selectedClass.className || selectedClassIndex}`}
             stats={selectedClass.stats}
@@ -142,7 +144,7 @@ export default function CharacterFormFields({
 
       {/* Reputation - col-span-2 */}
       <div className="col-span-2">
-        <Card label="Reputation" desc="Set your notoriety and prestige with each faction">
+        <Card label={t('characterFormFields.reputation')} desc={t('characterFormFields.reputationDesc')}>
           <ReputationSelector
             key={isEditing ? `reputation-edit-${editId}` : `reputation-${selectedClass.className || selectedClassIndex}`}
             backgroundAnswers={watchedFields.background}
@@ -154,7 +156,7 @@ export default function CharacterFormFields({
 
       {/* Moves - col-span-2 */}
       <div className="col-span-2">
-        <Card label="Moves" desc="Choose three moves for your character" required error={validationErrors.moves}>
+        <Card label={t('characterFormFields.moves')} desc={t('characterFormFields.movesDesc')} required error={validationErrors.moves}>
           <MovesSelector
             moves={selectedClass.moves}
             value={watchedFields.moves}
@@ -166,8 +168,8 @@ export default function CharacterFormFields({
       {/* Roguish Feats */}
       <div>
         <Card
-          label="Roguish Feats"
-          desc={`Choose your roguish feats (add ${selectedClass.roguishFeats?.remaining ?? 0} more)`}
+          label={t('characterFormFields.roguishFeats')}
+          desc={t('characterFormFields.roguishFeatsDesc', { count: selectedClass.roguishFeats?.remaining ?? 0 })}
           required={(selectedClass.roguishFeats?.remaining ?? 0) > 0}
           error={validationErrors.roguishFeats}
         >
@@ -182,8 +184,8 @@ export default function CharacterFormFields({
       {/* Weapon Skills */}
       <div>
         <Card
-          label="Weapon Skills"
-          desc={`Choose your weapon skills (add ${selectedClass.weaponSkills?.remaining ?? 0} more)`}
+          label={t('characterFormFields.weaponSkills')}
+          desc={t('characterFormFields.weaponSkillsDesc', { count: selectedClass.weaponSkills?.remaining ?? 0 })}
           required={(selectedClass.weaponSkills?.remaining ?? 0) > 0}
           error={validationErrors.weaponSkills}
         >
@@ -197,10 +199,10 @@ export default function CharacterFormFields({
 
       {/* Equipment - col-span-2 */}
       <div className="col-span-2">
-        <Card label="Equipment & Notes" desc="Add your character's equipment and any additional notes">
+        <Card label={t('characterFormFields.equipment')} desc={t('characterFormFields.equipmentDesc')}>
           <TextField
             id="equipment"
-            placeholder="Enter equipment and notes..."
+            placeholder={t('characterFormFields.equipmentPlaceholder')}
             multiline
             rows={4}
             fullWidth

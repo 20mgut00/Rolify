@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
 import { useInView } from 'react-intersection-observer';
@@ -9,8 +10,9 @@ import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 import { useUIStore } from '../../store';
 
 export default function PublicGallery() {
+  const { t } = useTranslation();
   // React 19 feature: Dynamic document title
-  useDocumentTitle('Public Gallery - RPG Character Creator');
+  useDocumentTitle(`${t('gallery.title')} - RPG Character Creator`);
 
   const navigate = useNavigate();
   const { selectedSystem } = useUIStore();
@@ -63,10 +65,10 @@ export default function PublicGallery() {
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-7xl mx-auto">
         <h1 className="font-cinzel text-4xl md:text-5xl font-bold text-center mb-4 text-primary-dark">
-          Public Gallery
+          {t('gallery.title')}
         </h1>
         <p className="text-center text-primary-dark/70 mb-8 text-lg">
-          Explore amazing characters created by the community
+          {t('gallery.subtitle')}
         </p>
 
         {/* Filters */}
@@ -78,7 +80,7 @@ export default function PublicGallery() {
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search by name or species..."
+              placeholder={t('gallery.searchPlaceholder')}
               className="w-full pl-10 pr-4 py-3 border border-primary-dark/20 rounded-lg focus:ring-2 focus:ring-accent-gold focus:border-transparent text-primary-dark bg-white dark-field"
             />
           </div>
@@ -91,7 +93,7 @@ export default function PublicGallery() {
               onChange={(e) => setClassFilter(e.target.value)}
               className="w-full pl-10 pr-4 py-3 border border-primary-dark/20 rounded-lg focus:ring-2 focus:ring-accent-gold focus:border-transparent text-primary-dark bg-white appearance-none cursor-pointer dark-field"
             >
-              <option value="">All Classes</option>
+              <option value="">{t('common.allClasses')}</option>
               {templates?.map((template) => (
                 <option key={template.id} value={template.className}>
                   {template.className}
@@ -104,7 +106,7 @@ export default function PublicGallery() {
         {/* Results Count */}
         {!isLoading && (
           <div className="text-center mb-6 text-primary-dark/70">
-            {characters.length} character{characters.length !== 1 ? 's' : ''} found
+            {characters.length} {characters.length !== 1 ? t('common.characters') : t('common.character')} {t('common.found')}
           </div>
         )}
 
@@ -142,7 +144,7 @@ export default function PublicGallery() {
         {isFetchingNextPage && (
           <div className="text-center py-12">
             <div className="inline-block w-12 h-12 border-4 border-accent-gold border-t-transparent rounded-full animate-spin" />
-            <p className="mt-4 text-primary-dark/70">Loading more characters...</p>
+            <p className="mt-4 text-primary-dark/70">{t('gallery.loadingMore')}</p>
           </div>
         )}
 
@@ -153,7 +155,7 @@ export default function PublicGallery() {
         {!hasNextPage && characters.length > 0 && !isLoading && (
           <div className="text-center py-12">
             <p className="text-primary-dark/50 text-lg">
-              You've reached the end of the gallery
+              {t('gallery.endOfGallery')}
             </p>
           </div>
         )}
@@ -165,19 +167,19 @@ export default function PublicGallery() {
               <Search size={48} className="text-accent-gold" />
             </div>
             <h3 className="font-cinzel text-2xl font-bold text-primary-dark mb-2">
-              No characters found
+              {t('gallery.noCharactersFound')}
             </h3>
             <p className="text-primary-dark/70 mb-6">
               {searchTerm || classFilter
-                ? 'Try adjusting your filters to find more characters'
-                : 'Be the first to share your character with the community!'}
+                ? t('gallery.adjustFilters')
+                : t('gallery.beTheFirst')}
             </p>
             {!searchTerm && !classFilter && (
               <button
                 onClick={() => navigate('/create')}
                 className="bg-accent-gold text-primary-dark px-6 py-3 rounded-lg font-cinzel font-medium hover:bg-opacity-90 transition"
               >
-                Create Your First Character
+                {t('gallery.createFirstCharacter')}
               </button>
             )}
           </div>
