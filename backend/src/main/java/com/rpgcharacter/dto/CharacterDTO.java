@@ -101,6 +101,7 @@ public class CharacterDTO {
     public static class CardResponse {
         private String id;
         private String name;
+        private String creatorName;
         private String system;
         private String className;
         private String species;

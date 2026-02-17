@@ -14,7 +14,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -140,10 +143,13 @@ public class CharacterService {
     
     public List<CharacterDTO.CardResponse> getUserCharacters(String userEmail) {
         return userRepository.findByEmail(userEmail)
-                .map(user -> characterRepository.findByUserId(user.getId())
-                        .stream()
-                        .map(c -> modelMapper.map(c, CharacterDTO.CardResponse.class))
-                        .collect(Collectors.toList()))
+            .map(user -> {
+                List<Character> characters = characterRepository.findByUserId(user.getId());
+                Map<String, String> creatorNamesById = resolveCreatorNames(characters);
+                return characters.stream()
+                    .map(character -> mapToCardResponse(character, creatorNamesById))
+                    .collect(Collectors.toList());
+            })
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
     
@@ -180,7 +186,39 @@ public class CharacterService {
             characters = characterRepository.findByIsPublicTrue(pageable);
         }
         
-        return characters.map(c -> modelMapper.map(c, CharacterDTO.CardResponse.class));
+        Map<String, String> creatorNamesById = resolveCreatorNames(characters.getContent());
+        return characters.map(character -> mapToCardResponse(character, creatorNamesById));
+    }
+
+    private CharacterDTO.CardResponse mapToCardResponse(Character character, Map<String, String> creatorNamesById) {
+        CharacterDTO.CardResponse cardResponse = modelMapper.map(character, CharacterDTO.CardResponse.class);
+
+        String creatorName = "Anonymous";
+        if (character.getUserId() != null && !character.getUserId().isBlank()) {
+            creatorName = creatorNamesById.getOrDefault(character.getUserId(), "Unknown adventurer");
+        }
+
+        cardResponse.setCreatorName(creatorName);
+        return cardResponse;
+    }
+
+    private Map<String, String> resolveCreatorNames(List<Character> characters) {
+        Set<String> userIds = new HashSet<>();
+        for (Character character : characters) {
+            if (character.getUserId() != null && !character.getUserId().isBlank()) {
+                userIds.add(character.getUserId());
+            }
+        }
+
+        if (userIds.isEmpty()) {
+            return Map.of();
+        }
+
+        return userRepository.findAllById(userIds).stream()
+                .collect(Collectors.toMap(
+                        user -> user.getId(),
+                        user -> user.getName() == null || user.getName().isBlank() ? "Unknown adventurer" : user.getName()
+                ));
     }
     
     private void validateCharacter(CharacterDTO.CreateRequest request, ClassTemplate template) {

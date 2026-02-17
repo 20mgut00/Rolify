@@ -10,6 +10,7 @@ interface CharacterCardProps {
   onEdit?: (id: string) => void;
   onDelete?: (id: string) => void;
   onExport?: (id: string, format: 'pdf' | 'json' | 'csv') => void;
+  showCreatorName?: boolean;
 }
 
 export default function CharacterCard({
@@ -18,6 +19,7 @@ export default function CharacterCard({
   onEdit,
   onDelete,
   onExport,
+  showCreatorName = false,
 }: CharacterCardProps) {
   const [showExportMenu, setShowExportMenu] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -65,6 +67,11 @@ export default function CharacterCard({
           {character.className}
         </p>
         <p className="text-primary-dark/70 text-sm mb-2">{character.species}</p>
+        {showCreatorName && character.creatorName && (
+          <p className="text-primary-dark/60 text-xs mb-2 truncate" title={character.creatorName}>
+            By {character.creatorName}
+          </p>
+        )}
         <div className="flex items-center gap-2 text-primary-dark/50 text-xs mt-auto">
           <span className="bg-primary-dark/5 px-2 py-1 rounded">
             {character.system}
@@ -78,7 +85,7 @@ export default function CharacterCard({
       <div className="px-4 pb-4 flex gap-2">
         <button
           onClick={() => onView(character.id)}
-          className="flex-1 flex items-center justify-center gap-1 bg-accent-gold text-primary-dark py-2.5 rounded-lg hover:bg-opacity-90 transition text-sm font-medium shadow-md hover:shadow-lg"
+          className="flex-1 flex items-center justify-center gap-1 bg-accent-gold text-primary-dark py-2.5 rounded-lg cursor-pointer transition-all duration-200 transform-gpu hover:bg-opacity-90 hover:scale-[1.02] hover:-translate-y-px hover:brightness-105 text-sm font-medium shadow-md hover:shadow-lg"
         >
           <Eye size={16} />
           View
@@ -87,7 +94,7 @@ export default function CharacterCard({
         {onEdit && (
           <button
             onClick={() => onEdit(character.id)}
-            className="flex items-center justify-center bg-primary-dark/10 text-primary-dark p-2.5 rounded-lg hover:bg-primary-dark/20 transition shadow-md hover:shadow-lg"
+            className="w-10 h-10 flex items-center justify-center bg-primary-dark/10 text-primary-dark rounded-lg cursor-pointer hover:bg-primary-dark/20 transition shadow-md hover:shadow-lg"
             title="Edit character"
           >
             <Edit size={16} />
@@ -95,10 +102,10 @@ export default function CharacterCard({
         )}
         
         {onExport && (
-          <div className="relative">
+          <div className="relative w-10 h-10">
             <button
               onClick={() => setShowExportMenu(!showExportMenu)}
-              className="flex items-center justify-center bg-primary-dark/10 text-primary-dark p-2.5 rounded-lg hover:bg-primary-dark/20 transition shadow-md hover:shadow-lg"
+              className="w-full h-full flex items-center justify-center bg-primary-dark/10 text-primary-dark rounded-lg cursor-pointer hover:bg-primary-dark/20 transition shadow-md hover:shadow-lg"
               title="Export character"
             >
               <Download size={16} />
@@ -116,7 +123,7 @@ export default function CharacterCard({
                       onExport(character.id, 'pdf');
                       setShowExportMenu(false);
                     }}
-                    className="w-full px-4 py-2 text-left text-sm hover:bg-primary-dark/5 transition"
+                    className="w-full px-4 py-2 text-left text-sm cursor-pointer hover:bg-primary-dark/5 transition"
                   >
                     PDF
                   </button>
@@ -125,7 +132,7 @@ export default function CharacterCard({
                       onExport(character.id, 'json');
                       setShowExportMenu(false);
                     }}
-                    className="w-full px-4 py-2 text-left text-sm hover:bg-primary-dark/5 transition"
+                    className="w-full px-4 py-2 text-left text-sm cursor-pointer hover:bg-primary-dark/5 transition"
                   >
                     JSON
                   </button>
@@ -134,7 +141,7 @@ export default function CharacterCard({
                       onExport(character.id, 'csv');
                       setShowExportMenu(false);
                     }}
-                    className="w-full px-4 py-2 text-left text-sm hover:bg-primary-dark/5 transition"
+                    className="w-full px-4 py-2 text-left text-sm cursor-pointer hover:bg-primary-dark/5 transition"
                   >
                     CSV
                   </button>
@@ -148,7 +155,7 @@ export default function CharacterCard({
           <>
             <button
               onClick={() => setShowDeleteModal(true)}
-              className="flex items-center justify-center bg-red-50 text-red-600 p-2.5 rounded-lg hover:bg-red-100 transition shadow-md hover:shadow-lg"
+              className="w-10 h-10 flex items-center justify-center bg-red-50 text-red-600 rounded-lg cursor-pointer hover:bg-red-100 transition shadow-md hover:shadow-lg"
               title="Delete character"
             >
               <Trash2 size={16} />

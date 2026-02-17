@@ -35,11 +35,23 @@ public class GeminiService {
 
     public Map<String, Object> generateCharacter(ClassTemplate classTemplate, String additionalPrompt) {
         try {
+            if (apiKey == null || apiKey.isBlank()) {
+                throw new IllegalStateException("AI generation is not configured. Missing GEMINI_API_KEY.");
+            }
+
             String prompt = buildPrompt(classTemplate, additionalPrompt);
             String response = callGeminiAPI(prompt);
             return parseCharacterResponse(response, classTemplate);
+        } catch (IllegalStateException e) {
+            throw e;
         } catch (Exception e) {
             log.error("Error generating character with Gemini API", e);
+
+            String errorMessage = e.getMessage() != null ? e.getMessage() : "Unknown Gemini API error";
+            if (errorMessage.contains("API_KEY_INVALID") || errorMessage.contains("API key not valid")) {
+                throw new IllegalStateException("Invalid GEMINI_API_KEY configured for AI generation.");
+            }
+
             throw new RuntimeException("Failed to generate character: " + e.getMessage());
         }
     }

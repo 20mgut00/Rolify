@@ -132,6 +132,7 @@ export default function PublicGallery() {
                 key={character.id}
                 character={character}
                 onView={(id) => navigate(`/character/${id}`)}
+                showCreatorName
               />
             ))}
           </div>

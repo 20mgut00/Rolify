@@ -173,6 +173,7 @@ export interface Character {
 export interface CharacterCard {
   id: string;
   name: string;
+  creatorName?: string;
   system: string;
   className: string;
   species: string;

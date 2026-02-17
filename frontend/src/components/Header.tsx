@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import LogoTFG from '../assets/LogoTFG.svg?react';
 import {
   AppBar,
@@ -30,6 +30,7 @@ import LoginModal from './auth/LoginModal';
 
 export default function Header() {
   const theme = useTheme();
+  const navigate = useNavigate();
   const { user, isAuthenticated, logout } = useAuthStore();
   const { selectedSystem, setSelectedSystem } = useUIStore();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -190,6 +191,7 @@ export default function Header() {
                   onClick={() => {
                     logout();
                     handleMenuClose();
+                    navigate('/');
                   }}
                   sx={{
                     py: 1.5,

@@ -15,10 +15,12 @@ export default function Hero() {
   useDocumentTitle('RPG Character Creator - Create Your Adventure');
   const containerRef = useRef<HTMLDivElement | null>(null);
   const isDraggingRef = useRef(false);
+  const hasDraggedRef = useRef(false);
   const startXRef = useRef(0);
   const startScrollLeftRef = useRef(0);
   const accRef = useRef(0);
   const pausedRef = useRef(false);
+  const dragThreshold = 6;
 
   const { data: publicCharacters, isLoading } = useQuery({
     queryKey: ['heroCharacters'],
@@ -109,28 +111,35 @@ export default function Hero() {
     if (!container) return;
 
     isDraggingRef.current = true;
-    pausedRef.current = true;
+    hasDraggedRef.current = false;
     startXRef.current = e.clientX;
     startScrollLeftRef.current = container.scrollLeft;
-
-    // Prefer capturing on the container so moves are tracked even if the
-    // pointer leaves child elements.
-    try {
-      container.setPointerCapture(e.pointerId);
-    } catch (err) {
-      // ignore if unsupported
-    }
-
-    container.style.cursor = 'grabbing';
-    container.style.userSelect = 'none';
   };
 
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     const container = containerRef.current;
     if (!container || !isDraggingRef.current) return;
-    e.preventDefault(); // prevent text selection while dragging
 
     const delta = e.clientX - startXRef.current;
+
+    if (!hasDraggedRef.current && Math.abs(delta) < dragThreshold) {
+      return;
+    }
+
+    if (!hasDraggedRef.current) {
+      hasDraggedRef.current = true;
+      pausedRef.current = true;
+      container.style.cursor = 'grabbing';
+      container.style.userSelect = 'none';
+      try {
+        container.setPointerCapture(e.pointerId);
+      } catch (err) {
+        // ignore if unsupported
+      }
+    }
+
+    e.preventDefault(); // prevent text selection while dragging
+
     const half = container.scrollWidth / 2;
 
     // compute new scroll position based on drag. We keep positions normalized
@@ -152,15 +161,25 @@ export default function Hero() {
     isDraggingRef.current = false;
     pausedRef.current = false;
 
-    try {
-      container.releasePointerCapture(e.pointerId);
-    } catch (err) {
-      // ignore
+    if (hasDraggedRef.current) {
+      try {
+        container.releasePointerCapture(e.pointerId);
+      } catch (err) {
+        // ignore
+      }
     }
 
     // restore defaults
     container.style.cursor = 'grab';
     container.style.userSelect = '';
+  };
+
+  const handleClickCapture = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (hasDraggedRef.current) {
+      e.preventDefault();
+      e.stopPropagation();
+      hasDraggedRef.current = false;
+    }
   };
 
   return (
@@ -177,7 +196,7 @@ export default function Hero() {
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <RouterLink
             to="/create"
-            className="bg-accent-gold text-primary-dark px-8 py-3 rounded-lg font-cinzel font-medium hover:bg-opacity-90 transition inline-flex items-center justify-center gap-2"
+            className="bg-accent-gold text-primary-dark px-8 py-3 rounded-lg font-cinzel font-medium cursor-pointer transition-all duration-200 transform-gpu hover:bg-opacity-90 hover:scale-[1.02] hover:-translate-y-px hover:brightness-105 inline-flex items-center justify-center gap-2"
           >
             <Wand2 size={20} />
             Create Character
@@ -209,6 +228,7 @@ export default function Hero() {
               onPointerMove={handlePointerMove}
               onPointerUp={handlePointerUp}
               onPointerCancel={handlePointerUp}
+              onClickCapture={handleClickCapture}
             >
               {[...characters, ...characters].map((char, index) => (
                 <div
@@ -242,12 +262,15 @@ export default function Hero() {
                         {char.className} • {char.system}
                       </p>
                       <p className="text-primary-dark/70 mb-1">{char.species}</p>
+                      {char.creatorName && (
+                        <p className="text-primary-dark/60 text-sm mb-2">By {char.creatorName}</p>
+                      )}
                       <p className="text-primary-dark/50 text-sm mb-6">
                         Created {new Date(char.createdAt).toLocaleDateString()}
                       </p>
                       <RouterLink
                         to={`/character/${char.id}`}
-                        className="bg-accent-gold text-primary-dark px-6 py-2 rounded-lg font-cinzel font-medium hover:bg-opacity-90 transition inline-block"
+                        className="bg-accent-gold text-primary-dark px-6 py-2 rounded-lg font-cinzel font-medium cursor-pointer transition-all duration-200 transform-gpu hover:bg-opacity-90 hover:scale-[1.02] hover:-translate-y-px hover:brightness-105 inline-block"
                       >
                         View Character
                       </RouterLink>
@@ -316,7 +339,7 @@ export default function Hero() {
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <RouterLink
             to="/create"
-            className="bg-accent-gold text-primary-dark px-8 py-3 rounded-lg font-cinzel font-medium hover:bg-opacity-90 transition"
+            className="bg-accent-gold text-primary-dark px-8 py-3 rounded-lg font-cinzel font-medium cursor-pointer transition-all duration-200 transform-gpu hover:bg-opacity-90 hover:scale-[1.02] hover:-translate-y-px hover:brightness-105"
           >
             Start Creating
           </RouterLink>
