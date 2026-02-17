@@ -76,7 +76,9 @@ public class CharacterService {
                 }
             });
         } else {
-            throw new RuntimeException("Must be logged in to update character");
+            if (character.getUserId() != null && !character.getUserId().isBlank()) {
+                throw new RuntimeException("Must be logged in to update this character");
+            }
         }
         
         // Update fields
@@ -159,6 +161,10 @@ public class CharacterService {
         
         // Check if user can access this character
         if (!Boolean.TRUE.equals(character.getIsPublic())) {
+            if (character.getUserId() == null || character.getUserId().isBlank()) {
+                return modelMapper.map(character, CharacterDTO.Response.class);
+            }
+
             if (userEmail == null) {
                 throw new RuntimeException("Character is private");
             }

@@ -56,6 +56,8 @@ public class SecurityConfig {
                     "/error"
                 ).permitAll()
                 .requestMatchers(HttpMethod.POST, "/api/characters").permitAll()
+                .requestMatchers(HttpMethod.GET, "/api/characters/{id}").permitAll()
+                .requestMatchers(HttpMethod.PUT, "/api/characters/{id}").permitAll()
                 .anyRequest().authenticated()
             )
             .exceptionHandling(exceptions -> exceptions

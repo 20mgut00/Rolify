@@ -23,7 +23,12 @@ export default function CharacterViewer() {
     enabled: !!id,
   });
 
-  const isOwner = user && character && user.id === character.userId;
+  const isOwner = !!(
+    character && (
+      (user && user.id === character.userId) ||
+      (!user && (!character.userId || character.userId.length === 0))
+    )
+  );
 
   const handleExport = async (format: 'pdf' | 'json' | 'csv') => {
     if (!character) return;
