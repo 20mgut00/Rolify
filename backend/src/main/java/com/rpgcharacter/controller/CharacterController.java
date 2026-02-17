@@ -44,7 +44,8 @@ public class CharacterController {
             @Valid @RequestBody CharacterDTO.UpdateRequest request,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        return ResponseEntity.ok(characterService.updateCharacter(id, request, userDetails.getUsername()));
+        String email = userDetails != null ? userDetails.getUsername() : null;
+        return ResponseEntity.ok(characterService.updateCharacter(id, request, email));
     }
     
     @DeleteMapping("/{id}")
