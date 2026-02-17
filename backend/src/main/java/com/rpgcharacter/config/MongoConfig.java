@@ -29,7 +29,12 @@ public class MongoConfig extends AbstractMongoClientConfiguration {
     @Override
     @Bean
     public MongoClient mongoClient() {
-        log.info("Creating MongoClient with URI: {}", maskPassword(mongoUri));
+        log.info("MongoDB URI (raw): '{}'", mongoUri);
+        log.info("MongoDB URI (masked): {}", maskPassword(mongoUri));
+        
+        if (mongoUri == null || mongoUri.trim().isEmpty()) {
+            throw new IllegalArgumentException("MONGODB_URI is not set. Please configure MONGODB_URI environment variable.");
+        }
 
         ConnectionString connectionString = new ConnectionString(mongoUri);
         MongoClientSettings mongoClientSettings = MongoClientSettings.builder()
