@@ -25,7 +25,6 @@ import java.util.UUID;
 @Slf4j
 @RestController
 @RequestMapping("/api/avatars")
-@CrossOrigin(origins = "*.vercel.app") // Permitir CORS para todas las fuentes (ajustar según sea necesario)
 public class AvatarController {
 
     private static final Set<String> ALLOWED_TYPES = Set.of(

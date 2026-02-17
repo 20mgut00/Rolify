@@ -11,6 +11,7 @@ import type {
   PaginatedResponse
 } from '../types';
 import { fromCharacterDB } from '../utils/characterMapper';
+import { useAuthStore } from '../store';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
 
@@ -21,10 +22,29 @@ const api = axios.create({
   },
 });
 
+const getAccessToken = (): string | null => {
+  const storeToken = useAuthStore.getState().token;
+  if (storeToken) return storeToken;
+  return localStorage.getItem('token');
+};
+
+const getRefreshToken = (): string | null => {
+  const storeRefreshToken = useAuthStore.getState().refreshToken;
+  if (storeRefreshToken) return storeRefreshToken;
+  return localStorage.getItem('refreshToken');
+};
+
+const clearAuthSession = (): void => {
+  useAuthStore.getState().logout();
+  localStorage.removeItem('token');
+  localStorage.removeItem('refreshToken');
+  localStorage.removeItem('user');
+};
+
 // Request interceptor to add auth token
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
+    const token = getAccessToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -43,10 +63,21 @@ api.interceptors.response.use(
       originalRequest._retry = true;
 
       try {
-        const refreshToken = localStorage.getItem('refreshToken');
+        const refreshToken = getRefreshToken();
+        if (!refreshToken) {
+          throw new Error('Missing refresh token');
+        }
+
         const { data } = await axios.post(`${API_URL}/auth/refresh`, {
           refreshToken,
         });
+
+        useAuthStore.setState((state) => ({
+          ...state,
+          token: data.token,
+          refreshToken: data.refreshToken,
+          isAuthenticated: true,
+        }));
 
         localStorage.setItem('token', data.token);
         localStorage.setItem('refreshToken', data.refreshToken);
@@ -54,9 +85,7 @@ api.interceptors.response.use(
         originalRequest.headers.Authorization = `Bearer ${data.token}`;
         return api(originalRequest);
       } catch (refreshError) {
-        localStorage.removeItem('token');
-        localStorage.removeItem('refreshToken');
-        localStorage.removeItem('user');
+        clearAuthSession();
         window.location.href = '/';
         return Promise.reject(refreshError);
       }
