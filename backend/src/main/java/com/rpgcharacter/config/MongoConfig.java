@@ -14,10 +14,10 @@ import org.springframework.data.mongodb.config.AbstractMongoClientConfiguration;
 @Configuration
 public class MongoConfig extends AbstractMongoClientConfiguration {
 
-    @Value("${spring.data.mongodb.uri:${MONGODB_URI:mongodb://localhost:27017}}")
+    @Value("${MONGODB_URI:mongodb://localhost:27017}")
     private String mongoUri;
 
-    @Value("${spring.data.mongodb.database:${MONGODB_DATABASE:rpg-characters}}")
+    @Value("${MONGODB_DATABASE:rpg-characters}")
     private String database;
 
     @Override
