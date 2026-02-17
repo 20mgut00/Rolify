@@ -11,6 +11,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/class-templates")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*.vercel.app") // Permitir CORS para todas las fuentes (ajustar según sea necesario)
 public class ClassTemplateController {
     
     private final ClassTemplateRepository classTemplateRepository;

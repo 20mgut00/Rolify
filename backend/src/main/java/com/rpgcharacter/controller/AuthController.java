@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
+@CrossOrigin(origins = "*.vercel.app") // Permitir CORS para todas las fuentes (ajustar según sea necesario)
 public class AuthController {
     
     private final AuthService authService;
