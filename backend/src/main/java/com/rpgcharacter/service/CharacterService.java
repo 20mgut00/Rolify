@@ -103,14 +103,16 @@ public class CharacterService {
             character.setIsPublic(request.getIsPublic());
             
             // Update user statistics
-            userRepository.findById(character.getUserId()).ifPresent(user -> {
-                if (Boolean.TRUE.equals(request.getIsPublic())) {
-                    user.setPublicCharacters(user.getPublicCharacters() + 1);
-                } else {
-                    user.setPublicCharacters(Math.max(0, user.getPublicCharacters() - 1));
-                }
-                userRepository.save(user);
-            });
+            if (character.getUserId() != null && !character.getUserId().isBlank()) {
+                userRepository.findById(character.getUserId()).ifPresent(user -> {
+                    if (Boolean.TRUE.equals(request.getIsPublic())) {
+                        user.setPublicCharacters(user.getPublicCharacters() + 1);
+                    } else {
+                        user.setPublicCharacters(Math.max(0, user.getPublicCharacters() - 1));
+                    }
+                    userRepository.save(user);
+                });
+            }
         }
         
         character = characterRepository.save(character);
