@@ -5,15 +5,7 @@ import svgr from 'vite-plugin-svgr'
 
 export default defineConfig({
   plugins: [
-    react({
-      babel: {
-        plugins: [
-          ['babel-plugin-react-compiler', {
-            target: '19' // Target React 19
-          }]
-        ],
-      },
-    }),
+    react(),
     svgr(),
     tailwindcss()
   ],

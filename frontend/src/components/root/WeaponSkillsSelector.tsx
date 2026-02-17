@@ -65,10 +65,6 @@ function WeaponSkillsSelector({
       <FormGroup className="text-start">
         {/* Componente controlado: renderiza un Accordion por cada skill disponible en el catálogo */}
         {weaponSkills.skills.map((skill) => {
-          // isSelectable: Skills que vienen desde la base de datos (selected: true)
-          // Estas son las ÚNICAS que el usuario puede seleccionar (máximo 1)
-          const isSelectable = skill.selected;
-
           // isNotSelectable: Skills que NO vienen desde la base de datos (selected: false)
           // Estas NUNCA pueden seleccionarse
           const isNotSelectable = !skill.selected;
