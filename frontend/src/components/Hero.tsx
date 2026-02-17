@@ -217,7 +217,7 @@ export default function Hero() {
           <h2 className="font-cinzel text-4xl font-bold text-center text-primary-dark mb-8">
             Featured Characters
           </h2>
-          <div className="relative bg-white rounded-lg shadow-lg overflow-hidden">
+          <div className="relative bg-white rounded-lg shadow-lg overflow-hidden hero-shared-panel">
             {/* Hide native scrollbars and provide a scrolling container we control */}
             <style>{`.hide-scrollbar::-webkit-scrollbar{display:none} .hide-scrollbar{-ms-overflow-style:none; scrollbar-width:none;}`}</style>
             <div
@@ -233,7 +233,7 @@ export default function Hero() {
               {[...characters, ...characters].map((char, index) => (
                 <div
                   key={`${char.id}-${index}`}
-                  className="p-6 md:p-10 flex items-center justify-center shrink-0 min-w-72 sm:min-w-80 md:min-w-96 border-r"
+                  className="p-6 md:p-10 flex items-center justify-center shrink-0 min-w-72 sm:min-w-80 md:min-w-96 border-r border-accent-gold/30"
                 >
                   <div className="flex flex-col md:flex-row items-center gap-8 w-full">
                     {/* Avatar */}
@@ -288,7 +288,7 @@ export default function Hero() {
       {/* Features */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
         {/* Feature 1 */}
-        <div className="bg-white rounded-lg shadow-lg p-8 text-center hover:shadow-xl hover:scale-105 transition">
+        <div className="bg-white rounded-lg shadow-lg p-8 text-center hover:shadow-xl hover:scale-105 transition hero-shared-panel">
           <div className="w-20 h-20 bg-accent-gold rounded-full flex items-center justify-center mx-auto mb-4">
             <Wand2 size={40} className="text-primary-dark" />
           </div>
@@ -301,7 +301,7 @@ export default function Hero() {
         </div>
 
         {/* Feature 2 */}
-        <div className="bg-white rounded-lg shadow-lg p-8 text-center hover:shadow-xl hover:scale-105 transition">
+        <div className="bg-white rounded-lg shadow-lg p-8 text-center hover:shadow-xl hover:scale-105 transition hero-shared-panel">
           <div className="w-20 h-20 bg-accent-gold rounded-full flex items-center justify-center mx-auto mb-4">
             <Users size={40} className="text-primary-dark" />
           </div>
@@ -314,7 +314,7 @@ export default function Hero() {
         </div>
 
         {/* Feature 3 */}
-        <div className="bg-white rounded-lg shadow-lg p-8 text-center hover:shadow-xl hover:scale-105 transition">
+        <div className="bg-white rounded-lg shadow-lg p-8 text-center hover:shadow-xl hover:scale-105 transition hero-shared-panel">
           <div className="w-20 h-20 bg-accent-gold rounded-full flex items-center justify-center mx-auto mb-4">
             <Download size={40} className="text-primary-dark" />
           </div>

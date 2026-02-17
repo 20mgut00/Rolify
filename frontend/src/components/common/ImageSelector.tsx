@@ -74,8 +74,8 @@ export default function ImageSelector({
     () =>
       `flex flex-col items-center justify-center ${width} ${height} mx-auto border-2 border-dashed rounded-lg cursor-pointer transition ${
         isDragging
-          ? "border-accent-gold bg-yellow-50"
-          : "border-primary-dark hover:bg-gray-50"
+          ? "border-accent-gold bg-yellow-50 dark:bg-yellow-900/30"
+          : "border-primary-dark hover:bg-gray-50 dark:hover:bg-gray-900/50"
       }`,
     [width, height, isDragging]
   );

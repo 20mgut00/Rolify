@@ -64,17 +64,18 @@ export default function ConnectionsSelector({
               expandIcon={<ChevronsDown className="text-primary-dark" />}
               className="rounded-lg shadow-md"
               sx={{
-                backgroundColor: '#F2EDE4',
-                color: '#0F2B3A',
-                '&:hover': { backgroundColor: '#E8E3DB' },
-                '& .MuiAccordionSummary-content': { color: '#0F2B3A' }
+                backgroundColor: 'var(--color-primary-light)',
+                color: 'var(--color-primary-dark)',
+                border: '2px solid rgba(217, 164, 65, 0.3)',
+                '&:hover': { backgroundColor: 'var(--color-primary-light)' },
+                '& .MuiAccordionSummary-content': { color: 'var(--color-primary-dark)' }
               }}
             >
               <Typography className="text-lg text-primary-dark font-semibold">
                 {connection.name}
               </Typography>
             </AccordionSummary>
-            <AccordionDetails sx={{ backgroundColor: 'white', color: '#0F2B3A' }}>
+            <AccordionDetails sx={{ backgroundColor: 'var(--color-primary-light)', color: 'var(--color-primary-dark)' }}>
               <Typography className="text-sm text-primary-dark opacity-70 mb-2">
                 {connection.description}
               </Typography>
@@ -88,10 +89,13 @@ export default function ConnectionsSelector({
             value={answers[index] || ""}
             sx={{
               marginTop: 1,
-              '& .MuiInputBase-root': { color: '#0F2B3A' },
+              '& .MuiInputBase-root': {
+                backgroundColor: 'var(--color-primary-light)',
+              },
+              '& .MuiInputBase-input': { color: 'var(--color-primary-dark)' },
               '& .MuiOutlinedInput-notchedOutline': { borderColor: '#D9A441' },
               '& .MuiInputBase-input::placeholder': {
-                color: '#0F2B3A',
+                color: 'var(--color-primary-dark)',
                 opacity: 1,
               },
             }}

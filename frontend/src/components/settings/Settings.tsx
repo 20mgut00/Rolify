@@ -5,7 +5,7 @@ import { z } from 'zod';
 import { Lock, User, Mail, AlertCircle, CheckCircle, Eye, EyeOff } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { authAPI } from '../../services/api';
-import { useAuthStore } from '../../store';
+import { useAccessibilityStore, useAuthStore } from '../../store';
 import { useNavigate } from 'react-router-dom';
 import ConfirmModal from '../common/ConfirmModal';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
@@ -27,6 +27,14 @@ export default function Settings() {
 
   const navigate = useNavigate();
   const { user, logout } = useAuthStore();
+  const {
+    darkMode,
+    reducedMotion,
+    largeText,
+    setDarkMode,
+    setReducedMotion,
+    setLargeText,
+  } = useAccessibilityStore();
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -98,7 +106,7 @@ export default function Settings() {
         </h1>
 
         {/* Account Information */}
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+        <div className="bg-white rounded-lg shadow-lg p-6 mb-6 dark-shared-panel">
           <h2 className="font-cinzel text-2xl font-bold text-primary-dark mb-4 flex items-center gap-2">
             <User size={24} />
             Account Information
@@ -137,7 +145,7 @@ export default function Settings() {
         </div>
 
         {/* Change Password */}
-        <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
+        <div className="bg-white rounded-lg shadow-lg p-6 mb-6 dark-shared-panel">
           <h2 className="font-cinzel text-2xl font-bold text-primary-dark mb-4 flex items-center gap-2">
             <Lock size={24} />
             Change Password
@@ -236,21 +244,69 @@ export default function Settings() {
           </form>
         </div>
 
+        {/* Accessibility */}
+        <div className="bg-white rounded-lg shadow-lg p-6 mt-6 dark-shared-panel">
+          <h2 className="font-cinzel text-2xl font-bold text-primary-dark mb-4">
+            Accessibility
+          </h2>
+
+          <div className="space-y-4">
+            <label className="flex items-center justify-between gap-4 p-3 rounded-lg border border-primary-dark/15">
+              <div>
+                <p className="font-medium text-primary-dark">Dark mode</p>
+                <p className="text-sm text-primary-dark/70">Use a darker theme with better night readability</p>
+              </div>
+              <input
+                type="checkbox"
+                checked={darkMode}
+                onChange={(e) => setDarkMode(e.target.checked)}
+                className="w-5 h-5 rounded border-primary-dark/30 text-accent-gold focus:ring-accent-gold"
+              />
+            </label>
+
+            <label className="flex items-center justify-between gap-4 p-3 rounded-lg border border-primary-dark/15">
+              <div>
+                <p className="font-medium text-primary-dark">Reduce motion</p>
+                <p className="text-sm text-primary-dark/70">Minimize animations and transitions</p>
+              </div>
+              <input
+                type="checkbox"
+                checked={reducedMotion}
+                onChange={(e) => setReducedMotion(e.target.checked)}
+                className="w-5 h-5 rounded border-primary-dark/30 text-accent-gold focus:ring-accent-gold"
+              />
+            </label>
+
+            <label className="flex items-center justify-between gap-4 p-3 rounded-lg border border-primary-dark/15">
+              <div>
+                <p className="font-medium text-primary-dark">Larger text</p>
+                <p className="text-sm text-primary-dark/70">Increase base text size for readability</p>
+              </div>
+              <input
+                type="checkbox"
+                checked={largeText}
+                onChange={(e) => setLargeText(e.target.checked)}
+                className="w-5 h-5 rounded border-primary-dark/30 text-accent-gold focus:ring-accent-gold"
+              />
+            </label>
+          </div>
+        </div>
+
         {/* Danger Zone */}
-        <div className="bg-red-50 border-2 border-red-200 rounded-lg p-6">
-          <h2 className="font-cinzel text-2xl font-bold text-red-600 mb-4 flex items-center gap-2">
+        <div className="bg-red-50 border-2 border-red-200 dark:bg-red-950/30 dark:border-red-900 rounded-lg p-6">
+          <h2 className="font-cinzel text-2xl font-bold text-red-600 dark:text-red-300 mb-4 flex items-center gap-2">
             <AlertCircle size={24} />
             Danger Zone
           </h2>
           
           <div className="space-y-4">
             <div>
-              <p className="text-sm text-red-600 mb-3">
+              <p className="text-sm text-red-600 dark:text-red-300/90 mb-3">
                 Once you delete your account, there is no going back. All your characters will be permanently deleted.
               </p>
               <button
                 onClick={() => setShowDeleteModal(true)}
-                className="bg-white border-2 border-red-600 text-red-600 px-6 py-2 rounded-lg font-semibold hover:bg-red-50 hover:border-red-700 transition"
+                className="bg-white border-2 border-red-600 text-red-600 dark:bg-red-950/45 dark:border-red-500 dark:text-red-300 px-6 py-2 rounded-lg font-semibold hover:bg-red-50 dark:hover:bg-red-900/55 hover:border-red-700 dark:hover:border-red-400 transition"
               >
                 Delete Account
               </button>
@@ -266,7 +322,7 @@ export default function Settings() {
               />
             </div>
 
-            <div className="pt-4 border-t border-red-200">
+            <div className="pt-4 border-t border-red-200 dark:border-red-900">
               <p className="text-sm text-primary-dark/70 mb-3">
                 Sign out of your account
               </p>

@@ -24,13 +24,16 @@ import {
   Add,
   LibraryBooks,
   Warning,
+  DarkMode,
+  LightMode,
 } from '@mui/icons-material';
-import { useAuthStore, useUIStore } from '../store';
+import { useAccessibilityStore, useAuthStore, useUIStore } from '../store';
 import LoginModal from './auth/LoginModal';
 
 export default function Header() {
   const theme = useTheme();
   const navigate = useNavigate();
+  const { darkMode, setDarkMode } = useAccessibilityStore();
   const { user, isAuthenticated, logout } = useAuthStore();
   const { selectedSystem, setSelectedSystem } = useUIStore();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
@@ -77,6 +80,7 @@ export default function Header() {
             <Select
               value={selectedSystem}
               onChange={(e) => setSelectedSystem(e.target.value)}
+              MenuProps={{ disableScrollLock: true }}
               sx={{
                 fontFamily: 'Cinzel',
                 fontWeight: 500,
@@ -112,6 +116,22 @@ export default function Header() {
           >
             Library
           </Button>
+
+          <IconButton
+            onClick={() => setDarkMode(!darkMode)}
+            aria-label={darkMode ? 'Switch to light mode' : 'Switch to dark mode'}
+            title={darkMode ? 'Light mode' : 'Dark mode'}
+            sx={{
+              mr: 1,
+              bgcolor: 'primary.main',
+              color: 'primary.contrastText',
+              '&:hover': {
+                bgcolor: 'primary.light',
+              },
+            }}
+          >
+            {darkMode ? <LightMode /> : <DarkMode />}
+          </IconButton>
 
           {/* User Menu */}
           {isAuthenticated && user ? (

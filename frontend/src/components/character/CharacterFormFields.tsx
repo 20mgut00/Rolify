@@ -43,8 +43,8 @@ interface CharacterFormFieldsProps {
 }
 
 const textFieldStyles = {
-  '& .MuiInputBase-root': { color: '#0F2B3A' },
-  '& .MuiInputBase-input': { color: '#0F2B3A' },
+  '& .MuiInputBase-root': { color: 'var(--color-primary-dark)' },
+  '& .MuiInputBase-input': { color: 'var(--color-primary-dark)' },
   '& .MuiOutlinedInput-notchedOutline': { borderColor: '#D9A441' }
 };
 

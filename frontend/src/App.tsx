@@ -1,10 +1,11 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useEffect } from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import { ThemeProvider, CssBaseline, CircularProgress, Box } from '@mui/material';
 import { theme } from './theme';
 import Header from './components/Header';
+import { useAccessibilityStore } from './store';
 
 // Lazy load route components for code splitting
 const Hero = lazy(() => import('./components/Hero'));
@@ -51,6 +52,16 @@ function RouteLoader() {
 }
 
 function App() {
+  const { darkMode, reducedMotion, largeText } = useAccessibilityStore();
+
+  useEffect(() => {
+    const root = document.documentElement;
+    root.setAttribute('data-theme', darkMode ? 'dark' : 'light');
+    root.classList.toggle('reduce-motion', reducedMotion);
+    root.classList.toggle('text-large', largeText);
+    root.style.colorScheme = darkMode ? 'dark' : 'light';
+  }, [darkMode, reducedMotion, largeText]);
+
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />

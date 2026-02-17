@@ -59,13 +59,14 @@ function DriveSelector({
               expandIcon={<ChevronsDown className="text-primary-dark" />}
               className="rounded-lg shadow-md"
               sx={{
-                backgroundColor: isDisabled ? '#E3DBD0' : '#F2EDE4',
-                color: '#0F2B3A',
-                border: isDisabled ? '1px solid #D1C7B8' : '1px solid transparent',
+                backgroundColor: 'var(--color-primary-light)',
+                color: 'var(--color-primary-dark)',
+                border: '2px solid rgba(217, 164, 65, 0.3)',
+                opacity: isDisabled ? 0.7 : 1,
                 '&:hover': {
-                  backgroundColor: isDisabled ? '#E3DBD0' : '#E8E3DB',
+                  backgroundColor: 'var(--color-primary-light)',
                 },
-                '& .MuiAccordionSummary-content': { color: '#0F2B3A' }
+                '& .MuiAccordionSummary-content': { color: 'var(--color-primary-dark)' }
               }}
             >
               <FormControlLabel
@@ -79,9 +80,9 @@ function DriveSelector({
                     }}
                     disabled={isDisabled}
                     sx={{
-                      color: '#0F2B3A',
+                      color: 'var(--color-primary-dark)',
                       '&.Mui-checked': { color: '#D9A441' },
-                      '&.Mui-disabled': { color: '#0F2B3A' },
+                      '&.Mui-disabled': { color: 'var(--color-primary-dark)' },
                     }}
                   />
                 }
@@ -91,10 +92,10 @@ function DriveSelector({
                   cursor: isDisabled ? 'not-allowed' : 'pointer',
                   opacity: isDisabled ? 0.6 : 1,
                   '& .MuiFormControlLabel-label': {
-                    color: isDisabled ? '#5B6470' : '#0F2B3A',
+                    color: 'var(--color-primary-dark)',
                   },
                   '& .MuiFormControlLabel-label.Mui-disabled': {
-                    color: '#5B6470',
+                    color: 'var(--color-primary-dark)',
                   }
                 }}
                 slotProps={{
@@ -104,7 +105,7 @@ function DriveSelector({
                 }}
               />
             </AccordionSummary>
-            <AccordionDetails sx={{ backgroundColor: 'white', color: '#0F2B3A' }}>
+            <AccordionDetails sx={{ backgroundColor: 'var(--color-primary-light)', color: 'var(--color-primary-dark)' }}>
               <Typography className="text-sm text-primary-dark opacity-70">
                 {d.description}
               </Typography>

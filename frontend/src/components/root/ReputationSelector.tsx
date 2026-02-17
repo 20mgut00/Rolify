@@ -191,16 +191,16 @@ export default function ReputationSelector({
             onChange={(e) => handleLabelChange(slider.id, e.target.value)}
             placeholder="Etiqueta"
             sx={{
-              '& .MuiInputBase-input': { color: '#0F2B3A' },
+              '& .MuiInputBase-input': { color: 'var(--color-primary-dark)' },
               '& .MuiInputBase-input::placeholder': {
-                color: '#0F2B3A',
+                color: 'var(--color-primary-dark)',
                 opacity: 1,
               },
             }}
             slotProps={{
               input: {
                 className:
-                  "text-primary-dark font-merriweather text-sm border-b-2 border-primary-dark mt-5 mr-3",
+                  "text-primary-dark font-merriweather text-sm border-b-2 border-accent-gold mt-5 mr-3",
               },
             }}
           />

@@ -94,25 +94,16 @@ function WeaponSkillsSelector({
                 className="rounded-lg shadow-md"
                 expandIcon={<ChevronsDown className="text-primary-dark" />}
                 sx={{
-                  backgroundColor: isNotSelectable
-                    ? '#EFE7DC'
-                    : isDisabled
-                    ? '#E3DBD0'
-                    : '#F2EDE4',
-                  color: '#0F2B3A',
+                  backgroundColor: 'var(--color-primary-light)',
+                  color: 'var(--color-primary-dark)',
                   border: isNotSelectable
-                    ? '1px dashed #C7B59F'
-                    : isDisabled
-                    ? '1px solid #D1C7B8'
-                    : '1px solid transparent',
+                    ? '2px dashed rgba(217, 164, 65, 0.4)'
+                    : '2px solid rgba(217, 164, 65, 0.3)',
+                  opacity: isDisabled ? 0.7 : 1,
                   '&:hover': {
-                    backgroundColor: isNotSelectable
-                      ? '#EFE7DC'
-                      : isDisabled
-                      ? '#E3DBD0'
-                      : '#E8E3DB',
+                    backgroundColor: 'var(--color-primary-light)',
                   },
-                  '& .MuiAccordionSummary-content': { color: '#0F2B3A' }
+                  '& .MuiAccordionSummary-content': { color: 'var(--color-primary-dark)' }
                 }}
               >
                 <FormControlLabel
@@ -127,9 +118,9 @@ function WeaponSkillsSelector({
                       }}
                       disabled={isDisabled}
                       sx={{
-                        color: '#0F2B3A',
+                        color: 'var(--color-primary-dark)',
                         '&.Mui-checked': { color: '#D9A441' },
-                        '&.Mui-disabled': { color: isNotSelectable ? '#6B4E2E' : '#0F2B3A' },
+                        '&.Mui-disabled': { color: 'var(--color-primary-dark)' },
                       }}
                     />
                   }
@@ -144,20 +135,16 @@ function WeaponSkillsSelector({
                     cursor: isDisabled ? 'not-allowed' : 'pointer',
                     opacity: isDisabled ? 0.6 : 1,
                     '& .MuiFormControlLabel-label': {
-                      color: isNotSelectable
-                        ? '#6B4E2E'
-                        : isDisabled
-                        ? '#5B6470'
-                        : '#0F2B3A',
+                      color: 'var(--color-primary-dark)',
                     },
                     '& .MuiFormControlLabel-label.Mui-disabled': {
-                      color: isNotSelectable ? '#6B4E2E' : '#5B6470',
+                      color: 'var(--color-primary-dark)',
                     },
                   }}
                 />
               </AccordionSummary>
               {/* AccordionDetails: Muestra la descripción del skill */}
-              <AccordionDetails sx={{ backgroundColor: 'white', color: '#0F2B3A' }}>
+              <AccordionDetails sx={{ backgroundColor: 'var(--color-primary-light)', color: 'var(--color-primary-dark)' }}>
                 <Typography className="text-sm text-primary-dark opacity-70 ml-1">
                   {skill.description}
                 </Typography>

@@ -82,7 +82,7 @@ export default function BackgroundSelector({
                   sx={{
                     opacity: disabled ? 0.6 : 1,
                     '& .MuiFormControlLabel-label.Mui-disabled': {
-                      color: '#0F2B3A',
+                      color: 'var(--color-primary-dark)',
                     },
                   }}
                   slotProps={{
@@ -103,26 +103,26 @@ export default function BackgroundSelector({
               disabled={disabled}
               sx={{
                 '& .MuiInputBase-input': {
-                  color: '#0F2B3A',
+                  color: 'var(--color-primary-dark)',
                 },
                 '& .MuiInputBase-input::placeholder': {
-                  color: '#0F2B3A',
+                  color: 'var(--color-primary-dark)',
                   opacity: 1,
                 },
                 '& .MuiInputBase-root.Mui-disabled': {
-                  color: '#0F2B3A',
+                  color: 'var(--color-primary-dark)',
                   opacity: 0.6,
-                  WebkitTextFillColor: '#0F2B3A',
+                  WebkitTextFillColor: 'var(--color-primary-dark)',
                 },
                 '& .MuiInputBase-input.Mui-disabled': {
-                  color: '#0F2B3A',
-                  WebkitTextFillColor: '#0F2B3A',
+                  color: 'var(--color-primary-dark)',
+                  WebkitTextFillColor: 'var(--color-primary-dark)',
                 },
               }}
               slotProps={{
                 input: {
                   className:
-                    "border-b border-primary-dark",
+                    "border-b-2 border-accent-gold",
                 },
               }}
             />

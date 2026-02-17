@@ -43,7 +43,7 @@ export default function VerifyEmail() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-primary-light">
-      <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 text-center">
+      <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 text-center dark-shared-panel">
         {status === 'loading' && (
           <>
             <Loader2 size={64} className="text-accent-gold animate-spin mx-auto mb-4" />

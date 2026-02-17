@@ -20,7 +20,7 @@ export default function Card({ label, desc, children, className, required, error
         )}
       </label>
 
-      <div className={`w-full px-4 py-3 rounded-lg border-2 bg-white shadow-sm ${error ? 'border-red-400' : 'border-accent-gold/30'}`}>
+      <div className={`w-full px-4 py-3 rounded-lg border-2 bg-white shadow-sm dark-shared-panel ${error ? 'border-red-400' : 'border-accent-gold/30'}`}>
         {children}
       </div>
       {error && (

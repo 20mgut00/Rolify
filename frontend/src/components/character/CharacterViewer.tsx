@@ -96,7 +96,7 @@ export default function CharacterViewer() {
   }
 
   return (
-    <div className="min-h-screen bg-linear-to-b from-primary-light to-white py-12">
+    <main className="max-w-7xl mx-auto px-6 py-8 bg-primary-light min-h-screen">
       <div className="container mx-auto px-4">
         <div className="max-w-5xl mx-auto">
           {/* Header Actions */}
@@ -135,25 +135,25 @@ export default function CharacterViewer() {
                 {showExportMenu && (
                   <>
                     <div className="fixed inset-0 z-10" onClick={() => setShowExportMenu(false)} />
-                    <div className="absolute right-0 mt-2 bg-white rounded-lg shadow-xl py-2 z-20 min-w-30">
+                    <div className="absolute right-0 mt-2 bg-primary-light dark:bg-gray-900 rounded-lg shadow-xl py-2 z-20 min-w-30">
                       <button
                         type="button"
                         onClick={() => handleExport('pdf')}
-                        className="w-full px-4 py-2 text-left hover:bg-primary-dark/5 transition"
+                        className="w-full px-4 py-2 text-left text-primary-dark dark:text-white hover:bg-accent-gold/20 dark:hover:bg-gray-800 transition font-medium"
                       >
                         PDF
                       </button>
                       <button
                         type="button"
                         onClick={() => handleExport('json')}
-                        className="w-full px-4 py-2 text-left hover:bg-primary-dark/5 transition"
+                        className="w-full px-4 py-2 text-left text-primary-dark dark:text-white hover:bg-accent-gold/20 dark:hover:bg-gray-800 transition font-medium"
                       >
                         JSON
                       </button>
                       <button
                         type="button"
                         onClick={() => handleExport('csv')}
-                        className="w-full px-4 py-2 text-left hover:bg-primary-dark/5 transition"
+                        className="w-full px-4 py-2 text-left text-primary-dark dark:text-white hover:bg-accent-gold/20 dark:hover:bg-gray-800 transition font-medium"
                       >
                         CSV
                       </button>
@@ -174,9 +174,9 @@ export default function CharacterViewer() {
           </div>
 
           {/* Character Sheet */}
-          <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
+          <div className="bg-white rounded-2xl shadow-2xl overflow-hidden dark-shared-panel">
             {/* Hero Section */}
-            <div className="bg-linear-to-r from-primary-light via-white to-accent-gold/10 p-8 border-b-4 border-accent-gold relative overflow-hidden">
+            <div className="bg-linear-to-r from-primary-light via-primary-light to-accent-gold/10 p-8 border-b-4 border-accent-gold relative overflow-hidden">
               <div className="relative z-10 flex flex-col md:flex-row items-center gap-6">
                 {character.avatarImage ? (
                   <img
@@ -231,7 +231,7 @@ export default function CharacterViewer() {
                 </h2>
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                   {character.stats.map((stat) => (
-                    <div key={stat.name} className="text-center p-4 bg-primary-dark/5 rounded-lg">
+                    <div key={stat.name} className="text-center p-4 bg-primary-light rounded-lg dark-field">
                       <div className="font-cinzel font-bold text-sm text-primary-dark/70 uppercase mb-1">
                         {stat.name}
                       </div>
@@ -251,7 +251,7 @@ export default function CharacterViewer() {
                 </h2>
                 <div className="space-y-3">
                   {character.background.map((bg, idx) => (
-                    <div key={idx} className="p-4 bg-primary-dark/5 rounded-lg">
+                    <div key={idx} className="p-4 bg-primary-light rounded-lg dark-field">
                       <div className="font-semibold text-primary-dark mb-1">{bg.question}</div>
                       <div className="text-primary-dark/70">{bg.answer}</div>
                     </div>
@@ -268,7 +268,7 @@ export default function CharacterViewer() {
                   </h2>
                   <div className="grid md:grid-cols-2 gap-4">
                     {character.connections.map((connection, idx) => (
-                      <div key={idx} className="p-4 bg-primary-dark/5 rounded-lg border-l-4 border-accent-gold">
+                      <div key={idx} className="p-4 bg-primary-light rounded-lg border-l-4 border-accent-gold dark-field">
                         <div className="font-bold text-primary-dark mb-1">{connection.characterName}</div>
                         <div className="text-sm text-primary-dark/70">{connection.description}</div>
                       </div>
@@ -286,19 +286,19 @@ export default function CharacterViewer() {
                   </h2>
                   <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {Object.entries(character.reputation.factions).map(([factionName, rep]) => (
-                      <div key={factionName} className="p-4 bg-white border-2 border-primary-dark/10 rounded-lg">
+                      <div key={factionName} className="p-4 bg-primary-light border-2 border-accent-gold/30 rounded-lg dark-field">
                         <div className="font-bold text-primary-dark mb-3 text-center">{factionName}</div>
                         <div className="flex justify-around">
                           <div className="text-center">
                             <div className="text-xs text-primary-dark/60 mb-1">Prestige</div>
-                            <div className={`text-2xl font-bold ${rep.prestige >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                            <div className={`text-2xl font-bold ${rep.prestige === 0 ? 'text-gray-300' : rep.prestige > 0 ? 'text-green-600' : 'text-red-600'}`}>
                               {rep.prestige >= 0 ? '+' : ''}{rep.prestige}
                             </div>
                           </div>
                           <div className="w-px bg-primary-dark/10" />
                           <div className="text-center">
                             <div className="text-xs text-primary-dark/60 mb-1">Notoriety</div>
-                            <div className={`text-2xl font-bold ${rep.notoriety >= 0 ? 'text-red-600' : 'text-green-600'}`}>
+                            <div className={`text-2xl font-bold ${rep.notoriety === 0 ? 'text-gray-300' : rep.notoriety > 0 ? 'text-green-600' : 'text-red-600'}`}>
                               {rep.notoriety >= 0 ? '+' : ''}{rep.notoriety}
                             </div>
                           </div>
@@ -350,7 +350,7 @@ export default function CharacterViewer() {
                 </h2>
                 <div className="grid md:grid-cols-2 gap-4">
                   {character.moves.filter(m => m.selected).map((move, idx) => (
-                    <div key={idx} className="p-4 bg-white border-2 border-primary-dark/10 rounded-lg hover:border-accent-gold/50 transition">
+                    <div key={idx} className="p-4 bg-primary-light border-2 border-accent-gold/30 rounded-lg hover:border-accent-gold/50 transition dark-field">
                       <div className="font-bold text-primary-dark mb-2">{move.name}</div>
                       <div className="text-sm text-primary-dark/70">{move.description}</div>
                     </div>
@@ -394,7 +394,7 @@ export default function CharacterViewer() {
                   <h2 className="font-cinzel text-2xl font-bold text-primary-dark mb-4">
                     Equipment & Notes
                   </h2>
-                  <div className="p-4 bg-primary-dark/5 rounded-lg whitespace-pre-wrap text-primary-dark">
+                  <div className="p-4 bg-primary-light rounded-lg whitespace-pre-wrap text-primary-dark dark-field">
                     {typeof character.equipment === 'string'
                       ? character.equipment
                       : JSON.stringify(character.equipment, null, 2)}
@@ -405,6 +405,6 @@ export default function CharacterViewer() {
           </div>
         </div>
       </div>
-    </div>
+    </main>
   );
 }

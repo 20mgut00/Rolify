@@ -14,17 +14,26 @@ interface CharacterBasicInfoProps {
 }
 
 const textFieldStyles = {
-  '& .MuiInputBase-root': { color: '#0F2B3A' },
-  '& .MuiInputBase-input': { color: '#0F2B3A' },
+  '& .MuiInputBase-root': {
+    color: 'var(--color-primary-dark)',
+    backgroundColor: 'var(--color-primary-light)',
+  },
+  '& .MuiInputBase-input': {
+    color: 'var(--color-primary-dark)',
+  },
+  '& .MuiInputBase-input::placeholder': {
+    color: 'var(--color-primary-dark)',
+    opacity: 0.7,
+  },
   '& .MuiOutlinedInput-notchedOutline': { borderColor: '#D9A441' },
   '& .MuiInputBase-root.Mui-disabled': {
-    color: '#0F2B3A',
+    color: 'var(--color-primary-dark)',
     opacity: 0.6,
-    WebkitTextFillColor: '#0F2B3A',
+    WebkitTextFillColor: 'var(--color-primary-dark)',
   },
   '& .MuiInputBase-input.Mui-disabled': {
-    color: '#0F2B3A',
-    WebkitTextFillColor: '#0F2B3A',
+    color: 'var(--color-primary-dark)',
+    WebkitTextFillColor: 'var(--color-primary-dark)',
   },
   '& .MuiOutlinedInput-notchedOutline.Mui-disabled': {
     borderColor: '#D9A441',

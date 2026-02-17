@@ -11,3 +11,42 @@
   --font-inconsolata: 'Inconsolata', monospace;
 }
 
+:root[data-theme='dark'] {
+  --color-primary-dark: #F2EDE4;
+  --color-primary-light: #0F172A;
+  --color-accent-gold: #D9A441;
+}
+
+:root[data-theme='dark'] :is(.hero-shared-panel, .dark-shared-panel) {
+  background-color: transparent !important;
+  background-image: linear-gradient(to right, rgba(217, 164, 65, 0.10), rgba(217, 164, 65, 0.05)) !important;
+}
+
+:root[data-theme='dark'] .dark-field {
+  background-color: rgba(15, 23, 42, 0.85) !important;
+  border-color: rgba(217, 164, 65, 0.35) !important;
+  color: var(--color-primary-dark) !important;
+}
+
+:root[data-theme='dark'] .dark-field::placeholder {
+  color: rgba(242, 237, 228, 0.65) !important;
+}
+
+:root[data-theme='dark'] .dark-field option {
+  background-color: #0f172a;
+  color: #f2ede4;
+}
+
+:root.reduce-motion *,
+:root.reduce-motion *::before,
+:root.reduce-motion *::after {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.01ms !important;
+  scroll-behavior: auto !important;
+}
+
+:root.text-large {
+  font-size: 112.5%;
+}
+

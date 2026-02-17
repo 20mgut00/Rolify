@@ -78,7 +78,7 @@ export default function Statistics() {
           <>
             {/* Overview Cards */}
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-              <div className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition">
+              <div className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition dark-shared-panel">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="font-cinzel text-lg font-bold text-primary-dark">
                     Total Characters
@@ -92,7 +92,7 @@ export default function Statistics() {
                 </p>
               </div>
 
-              <div className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition">
+              <div className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition dark-shared-panel">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="font-cinzel text-lg font-bold text-primary-dark">
                     Public Characters
@@ -106,7 +106,7 @@ export default function Statistics() {
                 </p>
               </div>
 
-              <div className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition">
+              <div className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition dark-shared-panel">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="font-cinzel text-lg font-bold text-primary-dark">
                     Private Characters
@@ -122,7 +122,7 @@ export default function Statistics() {
             </div>
 
             {/* Characters by Class */}
-            <div className="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <div className="bg-white rounded-lg shadow-lg p-6 mb-8 dark-shared-panel">
               <h2 className="font-cinzel text-2xl font-bold text-primary-dark mb-6 flex items-center gap-2">
                 <TrendingUp size={24} className="text-accent-gold" />
                 Characters by Class
@@ -156,7 +156,7 @@ export default function Statistics() {
 
             {/* Account Info */}
             <div className="grid md:grid-cols-2 gap-6">
-              <div className="bg-white rounded-lg shadow-lg p-6">
+              <div className="bg-white rounded-lg shadow-lg p-6 dark-shared-panel">
                 <h3 className="font-cinzel text-xl font-bold text-primary-dark mb-4 flex items-center gap-2">
                   <Calendar size={20} />
                   Account Created
@@ -171,7 +171,7 @@ export default function Statistics() {
               </div>
 
               {stats.mostRecent && (
-                <div className="bg-white rounded-lg shadow-lg p-6">
+                <div className="bg-white rounded-lg shadow-lg p-6 dark-shared-panel">
                   <h3 className="font-cinzel text-xl font-bold text-primary-dark mb-4 flex items-center gap-2">
                     <TrendingUp size={20} />
                     Last Character

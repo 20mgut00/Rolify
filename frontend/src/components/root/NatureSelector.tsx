@@ -53,10 +53,11 @@ export default function NatureSelector({
             expandIcon={<ChevronsDown className="text-primary-dark" />}
             className="rounded-lg shadow-md"
             sx={{
-              backgroundColor: '#F2EDE4',
-              color: '#0F2B3A',
-              '&:hover': { backgroundColor: '#E8E3DB' },
-              '& .MuiAccordionSummary-content': { color: '#0F2B3A' }
+              backgroundColor: 'var(--color-primary-light)',
+              color: 'var(--color-primary-dark)',
+              border: '2px solid rgba(217, 164, 65, 0.3)',
+              '&:hover': { backgroundColor: 'var(--color-primary-light)' },
+              '& .MuiAccordionSummary-content': { color: 'var(--color-primary-dark)' }
             }}
           >
             <FormControlLabel
@@ -67,7 +68,7 @@ export default function NatureSelector({
                     e.stopPropagation();
                     handleChange(e);
                   }}
-                  sx={{ color: '#0F2B3A', '&.Mui-checked': { color: '#D9A441' } }}
+                  sx={{ color: 'var(--color-primary-dark)', '&.Mui-checked': { color: '#D9A441' } }}
                 />
               }
               label={n.name}
@@ -79,7 +80,7 @@ export default function NatureSelector({
               }}
             />
           </AccordionSummary>
-          <AccordionDetails sx={{ backgroundColor: 'white', color: '#0F2B3A' }}>
+          <AccordionDetails sx={{ backgroundColor: 'var(--color-primary-light)', color: 'var(--color-primary-dark)' }}>
             <Typography className="text-sm text-primary-dark opacity-70">
               {n.description}
             </Typography>

@@ -61,7 +61,7 @@ export default function ResetPassword() {
   if (!token) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-primary-light">
-        <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 text-center">
+        <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 text-center dark-shared-panel">
           <h2 className="font-cinzel text-2xl font-bold text-primary-dark mb-3">
             Invalid Reset Link
           </h2>
@@ -82,7 +82,7 @@ export default function ResetPassword() {
   if (isSuccess) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-primary-light">
-        <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 text-center">
+        <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 text-center dark-shared-panel">
           <CheckCircle size={64} className="text-green-600 mx-auto mb-4" />
           <h2 className="font-cinzel text-2xl font-bold text-primary-dark mb-2">
             Password Reset Successfully!
@@ -100,7 +100,7 @@ export default function ResetPassword() {
 
   return (
     <div className="min-h-screen flex items-center justify-center p-4 bg-primary-light">
-      <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8">
+      <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-8 dark-shared-panel">
         <h1 className="font-cinzel text-3xl font-bold text-primary-dark mb-1">
           Reset Password
         </h1>

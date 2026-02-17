@@ -149,6 +149,7 @@ export default function LoginModal({ onClose, open }: LoginModalProps) {
     <Dialog
       open={open}
       onClose={onClose}
+      disableScrollLock
       maxWidth="sm"
       fullWidth
       slotProps={{

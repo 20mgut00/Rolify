@@ -97,3 +97,28 @@ export const useUIStore = create<UIState>((set) => ({
   setSelectedSystem: (system) => set({ selectedSystem: system }),
   setSelectedClass: (className) => set({ selectedClass: className }),
 }));
+
+interface AccessibilityState {
+  darkMode: boolean;
+  reducedMotion: boolean;
+  largeText: boolean;
+  setDarkMode: (enabled: boolean) => void;
+  setReducedMotion: (enabled: boolean) => void;
+  setLargeText: (enabled: boolean) => void;
+}
+
+export const useAccessibilityStore = create<AccessibilityState>()(
+  persist(
+    (set) => ({
+      darkMode: false,
+      reducedMotion: false,
+      largeText: false,
+      setDarkMode: (enabled) => set({ darkMode: enabled }),
+      setReducedMotion: (enabled) => set({ reducedMotion: enabled }),
+      setLargeText: (enabled) => set({ largeText: enabled }),
+    }),
+    {
+      name: 'accessibility-storage',
+    }
+  )
+);
