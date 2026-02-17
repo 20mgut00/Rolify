@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Eye, Edit, Trash2, Download, Globe, Lock } from 'lucide-react';
 import type { CharacterCard as CharacterCardType } from '../../types';
 import { getAvatarUrl } from '../../utils/avatarUrl';
+import ConfirmModal from '../common/ConfirmModal';
 
 interface CharacterCardProps {
   character: CharacterCardType;
@@ -19,6 +20,7 @@ export default function CharacterCard({
   onExport,
 }: CharacterCardProps) {
   const [showExportMenu, setShowExportMenu] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   return (
     <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group flex flex-col">
@@ -143,17 +145,24 @@ export default function CharacterCard({
         )}
         
         {onDelete && (
-          <button
-            onClick={() => {
-              if (window.confirm(`Are you sure you want to delete "${character.name}"?`)) {
-                onDelete(character.id);
-              }
-            }}
-            className="flex items-center justify-center bg-red-50 text-red-600 p-2.5 rounded-lg hover:bg-red-100 transition shadow-md hover:shadow-lg"
-            title="Delete character"
-          >
-            <Trash2 size={16} />
-          </button>
+          <>
+            <button
+              onClick={() => setShowDeleteModal(true)}
+              className="flex items-center justify-center bg-red-50 text-red-600 p-2.5 rounded-lg hover:bg-red-100 transition shadow-md hover:shadow-lg"
+              title="Delete character"
+            >
+              <Trash2 size={16} />
+            </button>
+            <ConfirmModal
+              isOpen={showDeleteModal}
+              onClose={() => setShowDeleteModal(false)}
+              onConfirm={() => onDelete(character.id)}
+              title="Delete Character"
+              message={`Are you sure you want to delete "${character.name}"? This action cannot be undone.`}
+              confirmText="Delete"
+              variant="danger"
+            />
+          </>
         )}
       </div>
     </div>

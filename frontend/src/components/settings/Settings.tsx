@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 import { authAPI } from '../../services/api';
 import { useAuthStore } from '../../store';
 import { useNavigate } from 'react-router-dom';
+import ConfirmModal from '../common/ConfirmModal';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 
 const changePasswordSchema = z.object({
@@ -28,6 +29,7 @@ export default function Settings() {
   const { user, logout } = useAuthStore();
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
 
   const {
     register,
@@ -56,26 +58,14 @@ export default function Settings() {
   };
 
   const handleDeleteAccount = async () => {
-    const confirmed = window.confirm(
-      'Are you sure you want to delete your account? This action cannot be undone and all your characters will be permanently deleted.'
-    );
-
-    if (confirmed) {
-      const doubleCheck = window.prompt(
-        'Type "DELETE" to confirm account deletion:'
-      );
-
-      if (doubleCheck === 'DELETE') {
-        try {
-          await authAPI.deleteAccount();
-          toast.success('Account deleted successfully');
-          logout();
-          navigate('/');
-        } catch (error) {
-          const errorMessage = error instanceof Error ? error.message : 'Failed to delete account';
-          toast.error(errorMessage);
-        }
-      }
+    try {
+      await authAPI.deleteAccount();
+      toast.success('Account deleted successfully');
+      logout();
+      navigate('/');
+    } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Failed to delete account';
+      toast.error(errorMessage);
     }
   };
 
@@ -259,11 +249,21 @@ export default function Settings() {
                 Once you delete your account, there is no going back. All your characters will be permanently deleted.
               </p>
               <button
-                onClick={handleDeleteAccount}
+                onClick={() => setShowDeleteModal(true)}
                 className="bg-white border-2 border-red-600 text-red-600 px-6 py-2 rounded-lg font-semibold hover:bg-red-50 hover:border-red-700 transition"
               >
                 Delete Account
               </button>
+              <ConfirmModal
+                isOpen={showDeleteModal}
+                onClose={() => setShowDeleteModal(false)}
+                onConfirm={handleDeleteAccount}
+                title="Delete Account"
+                message="This action cannot be undone. All your characters will be permanently deleted."
+                confirmText="Delete Account"
+                variant="danger"
+                requireTypedConfirmation="DELETE"
+              />
             </div>
 
             <div className="pt-4 border-t border-red-200">

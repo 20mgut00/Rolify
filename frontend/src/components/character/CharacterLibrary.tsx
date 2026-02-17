@@ -1,12 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Search, Plus, Filter } from 'lucide-react';
+import { Search, Plus, Filter, Upload } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { characterAPI, classTemplateAPI } from '../../services/api';
 import { useAuthStore, useCharacterStore, useUIStore } from '../../store';
 import CharacterCard from './CharacterCard';
-import { exportCharacterToPDF, exportCharacterToJSON, exportCharacterToCSV } from '../../utils/export';
+import { exportCharacterToPDF, exportCharacterToJSON, exportCharacterToCSV, importCharacterFromJSON, importCharacterFromCSV } from '../../utils/export';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 import type { Character, CharacterCard as CharacterCardType } from '../../types';
 
@@ -21,6 +21,7 @@ export default function CharacterLibrary() {
   const { selectedSystem } = useUIStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [classFilter, setClassFilter] = useState<string>('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Fetch user characters if authenticated
   const { data: userCharacters, isLoading } = useQuery({
@@ -96,6 +97,18 @@ export default function CharacterLibrary() {
     }
   };
 
+  // Import mutation
+  const importMutation = useMutation({
+    mutationFn: (data: Partial<Character>) => characterAPI.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['myCharacters'] });
+      toast.success('Character imported successfully!');
+    },
+    onError: () => {
+      toast.error('Failed to import character');
+    },
+  });
+
   const handleExport = async (id: string, format: 'pdf' | 'json' | 'csv') => {
     try {
       // Fetch full character data
@@ -120,6 +133,36 @@ export default function CharacterLibrary() {
     }
   };
 
+  const handleImport = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      let characterData: Partial<Character>;
+
+      if (file.name.endsWith('.json')) {
+        characterData = await importCharacterFromJSON(file);
+      } else if (file.name.endsWith('.csv')) {
+        characterData = await importCharacterFromCSV(file);
+      } else {
+        toast.error('Unsupported file format. Use .json or .csv');
+        return;
+      }
+
+      if (!characterData.name || !characterData.system || !characterData.className) {
+        toast.error('Invalid file: missing required fields (name, system, className)');
+        return;
+      }
+
+      importMutation.mutate(characterData);
+    } catch {
+      toast.error('Failed to parse file. Make sure it was exported from ROLIFY.');
+    } finally {
+      // Reset file input so the same file can be imported again
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
   return (
     <div className="min-h-screen bg-primary-light">
       <div className="container mx-auto px-4 py-12">
@@ -136,14 +179,36 @@ export default function CharacterLibrary() {
             </p>
           </div>
           
-          <button
-            type="button"
-            onClick={() => navigate('/create')}
-            className="bg-accent-gold text-primary-dark px-6 py-3 rounded-lg font-cinzel font-medium hover:bg-opacity-90 transition flex items-center gap-2 shadow-lg"
-          >
-            <Plus size={20} />
-            New Character
-          </button>
+          <div className="flex gap-3">
+            {isAuthenticated && (
+              <>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".json,.csv"
+                  onChange={handleImport}
+                  className="hidden"
+                />
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={importMutation.isPending}
+                  className="bg-primary-dark/10 text-primary-dark px-5 py-3 rounded-lg font-cinzel font-medium hover:bg-primary-dark/20 transition flex items-center gap-2 disabled:opacity-50"
+                >
+                  <Upload size={20} />
+                  {importMutation.isPending ? 'Importing...' : 'Import'}
+                </button>
+              </>
+            )}
+            <button
+              type="button"
+              onClick={() => navigate('/create')}
+              className="bg-accent-gold text-primary-dark px-6 py-3 rounded-lg font-cinzel font-medium hover:bg-opacity-90 transition flex items-center gap-2 shadow-lg"
+            >
+              <Plus size={20} />
+              New Character
+            </button>
+          </div>
         </div>
 
         {/* Auth Warning */}
