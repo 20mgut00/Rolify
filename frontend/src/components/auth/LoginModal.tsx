@@ -131,7 +131,10 @@ export default function LoginModal({ onClose, open }: LoginModalProps) {
   };
 
   const handleGoogleLogin = () => {
-    window.location.href = 'http://localhost:8080/oauth2/authorization/google';
+    // Get base URL from API_URL (remove /api suffix)
+    const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
+    const baseUrl = apiUrl.replace(/\/api$/, '');
+    window.location.href = `${baseUrl}/oauth2/authorization/google`;
   };
 
   const switchMode = (newMode: 'login' | 'register' | 'forgot') => {
