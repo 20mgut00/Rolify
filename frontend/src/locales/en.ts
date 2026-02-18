@@ -25,6 +25,7 @@ const en = {
     found: 'found',
     inYourCollection: 'in your collection',
     typeToConfirm: 'Type <1>{{text}}</1> to confirm:',
+    note: 'Note',
   },
 
   header: {
@@ -110,6 +111,7 @@ const en = {
     passwordResetSuccess: 'Password Reset Successfully!',
     passwordResetSuccessDesc: 'Your password has been changed. You can now login with your new password.',
     passwordResetToast: 'Password reset successfully!',
+    enterNewPasswordBelow: 'Enter your new password below.',
   },
 
   settings: {
@@ -305,10 +307,27 @@ const en = {
     createFirstCharacter: 'Create Your First Character',
   },
 
+  validation: {
+    emailInvalid: 'Invalid email address',
+    passwordRequired: 'Password is required',
+    passwordMinLength: 'Password must be at least 8 characters',
+    nameMinLength: 'Name must be at least 2 characters',
+    currentPasswordRequired: 'Current password is required',
+    passwordsDontMatch: "Passwords don't match",
+  },
+
   errors: {
     somethingWentWrong: 'Oops! Something went wrong',
     errorDescription: "We encountered an unexpected error. Don't worry, your data is safe. Click the button below to return to the home page.",
     returnToHome: 'Return to Home',
+    loginFailed: 'Login failed',
+    registrationFailed: 'Registration failed',
+    sendResetEmailFailed: 'Failed to send reset email',
+    resetPasswordFailed: 'Failed to reset password. The link may have expired.',
+    changePasswordFailed: 'Failed to change password',
+    deleteAccountFailed: 'Failed to delete account',
+    deleteCharacterFailed: 'Failed to delete character',
+    verificationFailed: 'Verification failed. The link may have expired.',
   },
 
   imageSelector: {
@@ -322,6 +341,75 @@ const en = {
     invalidFormat: 'Invalid file format. Accepted: {{formats}}',
     fileTooLarge: 'File too large. Maximum size: {{max}}MB (current: {{current}}MB)',
     uploadFailed: 'Failed to upload image',
+  },
+
+  gameData: {
+    classes: {
+      Adventurer: { name: 'Adventurer', description: 'You are a peaceful, diplomatic vagabond, making allies from those you aid, perhaps toppling greater powers by forging strong bonds with others.' },
+    },
+    stats: {
+      charm: 'Charm',
+      cunning: 'Cunning',
+      finesse: 'Finesse',
+      luck: 'Luck',
+      might: 'Might',
+    },
+    natures: {
+      Extrovert: { name: 'Extrovert', description: 'Clear your exhaustion track when you share a moment of real warmth, friendship, or enjoyment with someone.' },
+      Peacemaker: { name: 'Peacemaker', description: 'Clear your exhaustion track when you resolve a dangerous conflict nonviolently.' },
+    },
+    drives: {
+      Ambition: { name: 'Ambition', description: 'Advance when you increase your reputation with any faction.' },
+      'Clean Paws': { name: 'Clean Paws', description: 'Advance when you accomplish an illicit, criminal goal while maintaining a believable veneer of innocence.' },
+      Principles: { name: 'Principles', description: 'Advance when you express or embody your moral principles at great cost to yourself or your allies.' },
+      Justice: { name: 'Justice', description: 'Advance when you achieve justice for someone wronged by a powerful, wealthy, or high-status individual.' },
+    },
+    connections: {
+      Partner: { name: 'Partner', description: 'When you fill in this connection, you each mark 2-prestige with the faction you helped, and mark 2-notoriety with the faction you harmed. During play, if you are spotted together, then any prestige or notoriety gains with those factions are doubled for the two of you.' },
+      Friend: { name: 'Friend', description: 'When you help them, you can mark 2-exhaustion to give a +2, instead of 1-exhaustion for a +1.' },
+    },
+    moves: {
+      'Sterling Reputation': { name: 'Sterling Reputation', description: 'Whenever you mark any amount of prestige with a faction, mark one additional prestige. When you mark any amount of notoriety with a faction, you can instead clear an equivalent amount of marked prestige.' },
+      'Subduing Strikes': { name: 'Subduing Strikes', description: 'When you aim to subdue an enemy quickly and nonlethally, you can engage in melee with Cunning instead of Might. You cannot choose to inflict serious harm if you do.' },
+      'Talon on the Pulse': { name: 'Talon on the Pulse', description: 'When you gather information about the goings-on in a clearing, roll with Cunning. On a 10+, ask 3. On a 7-9, ask 2: Who holds power in this clearing? Who is the local dissident? What are the denizens afraid of? What do the denizens hope for? What opportunities exist for enterprising vagabonds? On a miss, your questions tip off someone dangerous.' },
+      Orator: { name: 'Orator', description: "When you give a speech to interested denizens of a clearing, say what you are motivating them to do and roll with Charm. On a hit, they will move to do it as they see fit. On a 10+, choose 2. On a 7-9, choose 1: They don't try to take your intent too far; They don't disband at the first sign of real resistance; They don't demand you stand at their head and lead. On a miss, they twist your message in unpredictable ways." },
+      'Well-Read': { name: 'Well-Read', description: 'Take +1 Cunning (max +3).' },
+      'Fast Friends': { name: 'Fast Friends', description: "When you try to befriend an NPC you've just met by matching their personality, body language, and desires, mark exhaustion and roll with Cunning. On a hit, they'll look upon you favorably—ask them any one non-compromising question and they'll answer truthfully, or request a simple favor and they'll do it for you. On a 10+, they really like you—they'll share a valuable secret or grant you a serious favor instead. On a miss, you read them totally wrong, and their displeasure costs you." },
+    },
+    weaponSkills: {
+      Cleave: { name: 'Cleave', description: 'When you cleave armored foes at close range, mark exhaustion and roll with Might. On a hit, you smash through their defenses and equipment; inflict 3-wear. On a 7–9, you overextend your weapon or yourself: mark wear or end up in a bad spot, your choice.' },
+      'Confuse Senses': { name: 'Confuse Senses', description: "When you throw something to confuse an opponent's senses at close or intimate range, roll with Finesse. On a hit, you've thrown them off balance, blinded them, deafened them, or confused them, and given yourself an opportunity. On a 10+, they have to take some time to get their bearings and restore their senses before they can act clearly again. On a 7–9, you have just a few moments." },
+      Disarm: { name: 'Disarm', description: "When you target an opponent's weapon with your strikes at close range, roll with Finesse. On a hit, they have to mark 2-exhaustion or lose their weapon—it's well out of reach. On a 10+, they have to mark 3-exhaustion instead of 2." },
+      Harry: { name: 'Harry', description: 'When you harry a group of enemies at far range, mark wear and roll with Cunning. On a 10+, both. On a 7–9, choose 1: inflict 2-morale harm; they are pinned or blocked.' },
+      Improvise: { name: 'Improvise', description: 'When you make a weapon out of improvised materials around you, roll with Cunning. On a hit, you make a weapon; the GM will tell you its range tag and at least one other beneficial tag based on the materials you used. On a 7–9, the weapon also has a weakness tag.' },
+      Parry: { name: 'Parry', description: "When you try to parry the attacks of an enemy at close range, mark exhaustion and roll with Finesse. On a hit, you consume their attention. On a 10+, all 3. On a 7–9, pick 1: you inflict morale or exhaustion harm (GM's choice); you disarm your opponent—their weapon is out of hand, but in reach; you don't suffer any harm." },
+      'Quick Shot': { name: 'Quick Shot', description: "When you fire a snap shot at an enemy at close range, roll with Luck. On a hit, inflict injury. On a 7–9, choose 1. On a 10+, choose 2: you don't mark wear; you don't mark exhaustion; you move quickly and change your position (and, if you choose, range); you keep your target at bay—they don't move." },
+      'Storm a Group': { name: 'Storm a Group', description: 'When you storm a group of foes in melee, mark exhaustion and roll with Might. On a hit, trade harm. On a 10+, choose 2. On a 7–9, choose 1: you show them up—you inflict 2-morale harm; you keep them off-balance and confused—you inflict 2-exhaustion; you avoid their blows to the best of your ability—you suffer little (-1) harm; you use them against each other—mark exhaustion again and they inflict their harm against themselves.' },
+      'Trick Shot': { name: 'Trick Shot', description: "When you fire a clever shot designed to take advantage of the environment at any range, mark wear and roll with Finesse. On a 7–9, choose 2. On a 10+, choose 3: your shot lands in any target of your choice within range, even if it's behind cover or hidden (inflicting injury or wear if appropriate); your shot strikes a second available target of your choice; your shot cuts something, breaks something, or knocks something over—your choice; your shot distracts an opponent and provides an opportunity." },
+      'Vicious Strike': { name: 'Vicious Strike', description: 'When you viciously strike an opponent where they are weak at intimate or close range, mark exhaustion and roll with Might. On a hit, they suffer serious (+1) harm and cannot mark wear on their armor to block it. On a 10+, you get away with the strike. On a 7–9, they score a blow against you as well.' },
+    },
+    roguishFeats: {
+      Acrobatics: { name: 'Acrobatics', description: 'Adeptly climbing, vaulting, jumping.' },
+      Blindside: { name: 'Blindside', description: 'Backstab, murder, sneak attack, sucker punch.' },
+      Counterfeit: { name: 'Counterfeit', description: 'Copying, forgery, fakery.' },
+      'Disable Device': { name: 'Disable Device', description: 'Disarming traps, turning off mechanisms.' },
+      Hide: { name: 'Hide', description: 'Disappear from view, remain hidden.' },
+      'Pick Lock': { name: 'Pick Lock', description: 'Open a locked door, chest, etc.' },
+      Pickpocket: { name: 'Pickpocket', description: 'Subtly steal from a pocket.' },
+      'Sleight of Hand': { name: 'Sleight of Hand', description: 'Palming, switching, ditching, flourishes.' },
+      Sneak: { name: 'Sneak', description: 'Get into or out of places without being seen.' },
+    },
+    backgrounds: {
+      'Where do you call home?': { question: 'Where do you call home?', answers: { 'A clearing': 'A clearing', 'The forest': 'The forest', 'A place far from here': 'A place far from here' } },
+      'Why are you a vagabond?': { question: 'Why are you a vagabond?', answers: { 'I want to help the Woodland': 'I want to help the Woodland', 'I want to explore the Woodland': 'I want to explore the Woodland', 'I believe the current factions should be overturned': 'I believe the current factions should be overturned', 'I must keep a promise to a loved one': 'I must keep a promise to a loved one', "I want freedom from society's constraints": "I want freedom from society's constraints" } },
+      'Whom have you left behind?': { question: 'Whom have you left behind?', answers: { 'My mentor': 'My mentor', 'My family': 'My family', 'My loved one': 'My loved one', 'My student': 'My student', 'My greatest ally': 'My greatest ally' } },
+      'Which faction have you served the most?': { question: 'Which faction have you served the most?', answers: {} },
+      'With which faction have you earned a special enmity?': { question: 'With which faction have you earned a special enmity?', answers: {} },
+    },
+    placeholders: {
+      enterYourAnswer: 'Enter your answer',
+      enterFactionName: "Enter faction's name",
+    },
   },
 };
 

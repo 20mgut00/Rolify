@@ -229,14 +229,57 @@ export default function Header() {
               </Menu>
             </>
           ) : (
-            <Button
-              variant="outlined"
-              startIcon={<Person />}
-              onClick={() => setShowLoginModal(true)}
-              sx={{ px: 2 }}
-            >
-              {t('header.login')}
-            </Button>
+            <>
+              <IconButton
+                onClick={handleMenuOpen}
+                sx={{
+                  bgcolor: 'primary.main',
+                  color: 'primary.contrastText',
+                  '&:hover': {
+                    bgcolor: 'primary.light',
+                  },
+                }}
+              >
+                <Person />
+              </IconButton>
+
+              <Menu
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleMenuClose}
+                slotProps={{
+                  paper: {
+                    sx: {
+                      mt: 1,
+                      minWidth: 180,
+                    },
+                  },
+                }}
+              >
+                <MenuItem
+                  component={RouterLink}
+                  to="/settings"
+                  onClick={handleMenuClose}
+                  sx={{ py: 1.5 }}
+                >
+                  <Settings sx={{ mr: 1.5, fontSize: 20 }} />
+                  {t('header.settings')}
+                </MenuItem>
+
+                <Divider />
+
+                <MenuItem
+                  onClick={() => {
+                    handleMenuClose();
+                    setShowLoginModal(true);
+                  }}
+                  sx={{ py: 1.5 }}
+                >
+                  <Person sx={{ mr: 1.5, fontSize: 20 }} />
+                  {t('header.login')}
+                </MenuItem>
+              </Menu>
+            </>
           )}
           </Box>
         </Toolbar>

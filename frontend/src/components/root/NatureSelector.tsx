@@ -6,6 +6,7 @@ import AccordionSummary from "@mui/material/AccordionSummary";
 import AccordionDetails from "@mui/material/AccordionDetails";
 import { ChevronsDown } from "lucide-react";
 import Typography from "@mui/material/Typography";
+import { useTranslation } from "react-i18next";
 
 interface NatureSelectorProps {
   nature?: Array<{ name: string; description: string }>;
@@ -18,6 +19,8 @@ export default function NatureSelector({
   value,
   onNatureSelect,
 }: NatureSelectorProps) {
+  const { t } = useTranslation();
+  const tg = (key: string, fallback: string) => { const r = (t as (k: string) => string)(key); return r === key ? fallback : r; };
   const selectedValue = value?.name || nature[0]?.name || "";
 
   const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -71,7 +74,7 @@ export default function NatureSelector({
                   sx={{ color: 'var(--color-primary-dark)', '&.Mui-checked': { color: '#D9A441' } }}
                 />
               }
-              label={n.name}
+              label={tg(`gameData.natures.${n.name}.name`, n.name)}
               onClick={(e) => e.stopPropagation()}
               slotProps={{
                 typography: {
@@ -82,7 +85,7 @@ export default function NatureSelector({
           </AccordionSummary>
           <AccordionDetails sx={{ backgroundColor: 'var(--color-primary-light)', color: 'var(--color-primary-dark)' }}>
             <Typography className="text-sm text-primary-dark opacity-70">
-              {n.description}
+              {tg(`gameData.natures.${n.name}.description`, n.description)}
             </Typography>
           </AccordionDetails>
         </Accordion>

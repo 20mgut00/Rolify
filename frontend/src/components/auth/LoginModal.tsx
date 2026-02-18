@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -29,24 +29,9 @@ import toast from 'react-hot-toast';
 import { authAPI } from '../../services/api';
 import { useAuthStore } from '../../store';
 
-const loginSchema = z.object({
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(1, 'Password is required'),
-});
-
-const registerSchema = z.object({
-  name: z.string().min(2, 'Name must be at least 2 characters'),
-  email: z.string().email('Invalid email address'),
-  password: z.string().min(8, 'Password must be at least 8 characters'),
-});
-
-const forgotPasswordSchema = z.object({
-  email: z.string().email('Invalid email address'),
-});
-
-type LoginFormData = z.infer<typeof loginSchema>;
-type RegisterFormData = z.infer<typeof registerSchema>;
-type ForgotPasswordFormData = z.infer<typeof forgotPasswordSchema>;
+type LoginFormData = { email: string; password: string };
+type RegisterFormData = { name: string; email: string; password: string };
+type ForgotPasswordFormData = { email: string };
 
 interface LoginModalProps {
   onClose: () => void;
@@ -59,6 +44,21 @@ export default function LoginModal({ onClose, open }: LoginModalProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const { setAuth } = useAuthStore();
+
+  const loginSchema = useMemo(() => z.object({
+    email: z.string().email(t('validation.emailInvalid')),
+    password: z.string().min(1, t('validation.passwordRequired')),
+  }), [t]);
+
+  const registerSchema = useMemo(() => z.object({
+    name: z.string().min(2, t('validation.nameMinLength')),
+    email: z.string().email(t('validation.emailInvalid')),
+    password: z.string().min(8, t('validation.passwordMinLength')),
+  }), [t]);
+
+  const forgotPasswordSchema = useMemo(() => z.object({
+    email: z.string().email(t('validation.emailInvalid')),
+  }), [t]);
 
   const {
     register: loginRegister,
@@ -95,7 +95,7 @@ export default function LoginModal({ onClose, open }: LoginModalProps) {
       toast.success(t('auth.welcomeBackToast'));
       onClose();
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Login failed';
+      const errorMessage = error instanceof Error ? error.message : t('errors.loginFailed');
       toast.error(errorMessage);
     } finally {
       setIsLoading(false);
@@ -110,7 +110,7 @@ export default function LoginModal({ onClose, open }: LoginModalProps) {
       toast.success(t('auth.registrationSuccess'));
       onClose();
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Registration failed';
+      const errorMessage = error instanceof Error ? error.message : t('errors.registrationFailed');
       toast.error(errorMessage);
     } finally {
       setIsLoading(false);
@@ -125,7 +125,7 @@ export default function LoginModal({ onClose, open }: LoginModalProps) {
       setMode('login');
       resetForgot();
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to send reset email';
+      const errorMessage = error instanceof Error ? error.message : t('errors.sendResetEmailFailed');
       toast.error(errorMessage);
     } finally {
       setIsLoading(false);

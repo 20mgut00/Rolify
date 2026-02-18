@@ -7,6 +7,7 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import { ChevronsDown } from "lucide-react";
 import Typography from "@mui/material/Typography";
 import { useMemo, useCallback, memo } from "react";
+import { useTranslation } from "react-i18next";
 
 interface MovesSelectorProps {
   moves: Array<{ name: string; description: string }>;
@@ -19,6 +20,8 @@ function MovesSelector({
   value = [],
   onMovesSelect,
 }: MovesSelectorProps) {
+  const { t } = useTranslation();
+  const tg = (key: string, fallback: string) => { const r = (t as (k: string) => string)(key); return r === key ? fallback : r; };
   // useMemo: Cachea la lista de nombres de moves seleccionados
   // Evita recalcular cada render si value no cambia
   // Solo se recalcula si el array value cambia (por referencia)
@@ -98,7 +101,7 @@ function MovesSelector({
                       }}
                   />
                 }
-                label={move.name}
+                label={tg(`gameData.moves.${move.name}.name`, move.name)}
                 onClick={(e) => e.stopPropagation()}
                   sx={{
                   cursor: isDisabled ? 'not-allowed' : 'pointer',
@@ -120,7 +123,7 @@ function MovesSelector({
             {/* AccordionDetails: Muestra la descripción del move */}
             <AccordionDetails sx={{ backgroundColor: 'var(--color-primary-light)', color: 'var(--color-primary-dark)' }}>
               <Typography className="text-sm text-primary-dark opacity-70 ml-1">
-                {move.description}
+                {tg(`gameData.moves.${move.name}.description`, move.description)}
               </Typography>
             </AccordionDetails>
           </Accordion>

@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useTranslation, Trans } from 'react-i18next';
 import { AlertTriangle, X } from 'lucide-react';
 
 interface ConfirmModalProps {
@@ -20,11 +21,14 @@ export default function ConfirmModal({
   onConfirm,
   title,
   message,
-  confirmText = 'Confirm',
-  cancelText = 'Cancel',
+  confirmText,
+  cancelText,
   variant = 'danger',
   requireTypedConfirmation,
 }: ConfirmModalProps) {
+  const { t } = useTranslation();
+  const resolvedConfirmText = confirmText ?? t('common.confirm');
+  const resolvedCancelText = cancelText ?? t('common.cancel');
   const [typedValue, setTypedValue] = useState('');
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -97,7 +101,9 @@ export default function ConfirmModal({
         {requireTypedConfirmation && (
           <div className="mb-6">
             <label className="block text-sm font-medium text-primary-dark mb-2">
-              Type <span className="font-mono font-bold text-red-600">{requireTypedConfirmation}</span> to confirm:
+              <Trans i18nKey="common.typeToConfirm" values={{ text: requireTypedConfirmation }}>
+                Type <span className="font-mono font-bold text-red-600">{'{{text}}'}</span> to confirm:
+              </Trans>
             </label>
             <input
               ref={inputRef}
@@ -117,7 +123,7 @@ export default function ConfirmModal({
             onClick={onClose}
             className="px-5 py-2.5 rounded-lg font-medium text-primary-dark bg-primary-dark/10 hover:bg-primary-dark/20 transition"
           >
-            {cancelText}
+            {resolvedCancelText}
           </button>
           <button
             type="button"
@@ -128,7 +134,7 @@ export default function ConfirmModal({
             disabled={!canConfirm}
             className={`px-5 py-2.5 rounded-lg font-medium transition disabled:cursor-not-allowed ${confirmBtnClass}`}
           >
-            {confirmText}
+            {resolvedConfirmText}
           </button>
         </div>
       </div>

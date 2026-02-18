@@ -7,6 +7,7 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import { ChevronsDown } from "lucide-react";
 import Typography from "@mui/material/Typography";
 import { useMemo, useCallback, memo } from "react";
+import { useTranslation } from "react-i18next";
 
 interface RoguishFeatsSelectorProps {
   roguishFeats?: {
@@ -24,6 +25,8 @@ function RoguishFeatsSelector({
 }: RoguishFeatsSelectorProps) {
   // selectedNames: Cachea la lista de nombres de feats seleccionados por el usuario
   // Solo recalcula si value cambia (el array de objetos del padre)
+  const { t } = useTranslation();
+  const tg = (key: string, fallback: string) => { const r = (t as (k: string) => string)(key); return r === key ? fallback : r; };
   const selectedNames = useMemo(() => value.map((f) => f.name), [value]);
 
   // Cálculo de límites:
@@ -131,7 +134,7 @@ function RoguishFeatsSelector({
                       }}
                     />
                   }
-                  label={feat.name}
+                  label={tg(`gameData.roguishFeats.${feat.name}.name`, feat.name)}
                   onClick={(e) => e.stopPropagation()}
                   sx={{
                     cursor: isDisabled ? 'not-allowed' : 'pointer',
@@ -153,7 +156,7 @@ function RoguishFeatsSelector({
               {/* AccordionDetails: Muestra la descripción del feat */}
               <AccordionDetails sx={{ backgroundColor: 'var(--color-primary-light)', color: 'var(--color-primary-dark)' }}>
                 <Typography className="text-sm text-primary-dark opacity-70 ml-1">
-                  {feat.description}
+                  {tg(`gameData.roguishFeats.${feat.name}.description`, feat.description)}
                 </Typography>
               </AccordionDetails>
             </Accordion>

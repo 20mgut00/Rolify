@@ -151,7 +151,7 @@ export default function Statistics() {
                 </div>
               ) : (
                 <p className="text-primary-dark/50 text-center py-8">
-                  No characters created yet
+                  {t('statistics.noCharactersYet')}
                 </p>
               )}
             </div>
@@ -161,10 +161,10 @@ export default function Statistics() {
               <div className="bg-white rounded-lg shadow-lg p-6 dark-shared-panel">
                 <h3 className="font-cinzel text-xl font-bold text-primary-dark mb-4 flex items-center gap-2">
                   <Calendar size={20} />
-                  Account Created
+                  {t('statistics.accountCreated')}
                 </h3>
                 <p className="text-lg text-primary-dark/70">
-                  {new Date(user.createdAt || '').toLocaleDateString('en-US', {
+                  {new Date(user.createdAt || '').toLocaleDateString(i18n.language, {
                     year: 'numeric',
                     month: 'long',
                     day: 'numeric',
@@ -176,10 +176,10 @@ export default function Statistics() {
                 <div className="bg-white rounded-lg shadow-lg p-6 dark-shared-panel">
                   <h3 className="font-cinzel text-xl font-bold text-primary-dark mb-4 flex items-center gap-2">
                     <TrendingUp size={20} />
-                    Last Character
+                    {t('statistics.lastCharacter')}
                   </h3>
                   <p className="text-lg text-primary-dark/70">
-                    {stats.mostRecent.toLocaleDateString('en-US', {
+                    {stats.mostRecent.toLocaleDateString(i18n.language, {
                       year: 'numeric',
                       month: 'long',
                       day: 'numeric',
@@ -193,16 +193,16 @@ export default function Statistics() {
             {stats.total === 0 && (
               <div className="mt-8 text-center bg-linear-to-r from-accent-gold/20 to-primary-dark/10 rounded-lg p-12">
                 <h3 className="font-cinzel text-2xl font-bold text-primary-dark mb-4">
-                  Start Your Adventure
+                  {t('statistics.startYourAdventure')}
                 </h3>
                 <p className="text-primary-dark/70 mb-6">
-                  You haven't created any characters yet. Create your first character to start building your collection!
+                  {t('statistics.noCharactersDesc')}
                 </p>
                 <button
                   onClick={() => navigate('/create')}
                   className="bg-accent-gold text-primary-dark px-8 py-3 rounded-lg font-cinzel font-medium hover:bg-opacity-90 transition shadow-lg"
                 >
-                  Create Your First Character
+                  {t('statistics.createFirstCharacter')}
                 </button>
               </div>
             )}

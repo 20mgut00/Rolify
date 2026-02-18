@@ -68,7 +68,7 @@ export default function ClassSelector({
       </div>
 
       <h1 className="text-3xl font-semibold mt-1 text-primary-dark">
-        {currentRole}
+        {t(`gameData.classes.${currentRole}.name`, { defaultValue: currentRole })}
       </h1>
     </div>
   );

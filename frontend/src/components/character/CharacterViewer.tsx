@@ -208,16 +208,16 @@ export default function CharacterViewer() {
                     {character.isPublic ? (
                       <span className="flex items-center gap-1 bg-accent-gold/20 border border-accent-gold/40 px-3 py-1 rounded-full text-sm text-primary-dark font-medium">
                         <Globe size={14} />
-                        Public
+                        {t('common.public')}
                       </span>
                     ) : (
                       <span className="flex items-center gap-1 bg-primary-dark/10 border border-primary-dark/20 px-3 py-1 rounded-full text-sm text-primary-dark font-medium">
                         <Lock size={14} />
-                        Private
+                        {t('common.private')}
                       </span>
                     )}
                     <span className="text-primary-dark/60 text-sm">
-                      Created {new Date(character.createdAt || '').toLocaleDateString()}
+                      {t('common.created')} {new Date(character.createdAt || '').toLocaleDateString(i18n.language)}
                     </span>
                   </div>
                 </div>
@@ -229,7 +229,7 @@ export default function CharacterViewer() {
               <section className="mb-8">
                 <h2 className="font-cinzel text-2xl font-bold text-primary-dark mb-4 flex items-center gap-2">
                   <Zap className="text-accent-gold" size={24} />
-                  Stats
+                  {t('characterViewer.stats')}
                 </h2>
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
                   {character.stats.map((stat) => (
@@ -249,7 +249,7 @@ export default function CharacterViewer() {
               <section className="mb-8">
                 <h2 className="font-cinzel text-2xl font-bold text-primary-dark mb-4 flex items-center gap-2">
                   <Heart className="text-accent-gold" size={24} />
-                  Background
+                  {t('characterViewer.background')}
                 </h2>
                 <div className="space-y-3">
                   {character.background.map((bg, idx) => (
@@ -266,7 +266,7 @@ export default function CharacterViewer() {
                 <section className="mb-8">
                   <h2 className="font-cinzel text-2xl font-bold text-primary-dark mb-4 flex items-center gap-2">
                     <Users className="text-accent-gold" size={24} />
-                    Connections
+                    {t('characterViewer.connections')}
                   </h2>
                   <div className="grid md:grid-cols-2 gap-4">
                     {character.connections.map((connection, idx) => (
@@ -284,7 +284,7 @@ export default function CharacterViewer() {
                 <section className="mb-8">
                   <h2 className="font-cinzel text-2xl font-bold text-primary-dark mb-4 flex items-center gap-2">
                     <TrendingUp className="text-accent-gold" size={24} />
-                    Reputation
+                    {t('characterViewer.reputation')}
                   </h2>
                   <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
                     {Object.entries(character.reputation.factions).map(([factionName, rep]) => (
@@ -292,14 +292,14 @@ export default function CharacterViewer() {
                         <div className="font-bold text-primary-dark mb-3 text-center">{factionName}</div>
                         <div className="flex justify-around">
                           <div className="text-center">
-                            <div className="text-xs text-primary-dark/60 mb-1">Prestige</div>
+                            <div className="text-xs text-primary-dark/60 mb-1">{t('characterViewer.prestige')}</div>
                             <div className={`text-2xl font-bold ${rep.prestige === 0 ? 'text-gray-300' : rep.prestige > 0 ? 'text-green-600' : 'text-red-600'}`}>
                               {rep.prestige >= 0 ? '+' : ''}{rep.prestige}
                             </div>
                           </div>
                           <div className="w-px bg-primary-dark/10" />
                           <div className="text-center">
-                            <div className="text-xs text-primary-dark/60 mb-1">Notoriety</div>
+                            <div className="text-xs text-primary-dark/60 mb-1">{t('characterViewer.notoriety')}</div>
                             <div className={`text-2xl font-bold ${rep.notoriety === 0 ? 'text-gray-300' : rep.notoriety > 0 ? 'text-green-600' : 'text-red-600'}`}>
                               {rep.notoriety >= 0 ? '+' : ''}{rep.notoriety}
                             </div>
@@ -316,7 +316,7 @@ export default function CharacterViewer() {
                 <section>
                   <h2 className="font-cinzel text-2xl font-bold text-primary-dark mb-4 flex items-center gap-2">
                     <Target className="text-accent-gold" size={24} />
-                    Nature
+                    {t('characterViewer.nature')}
                   </h2>
                   <div className="space-y-3">
                     {character.nature.filter(n => n.selected).map((nature, idx) => (
@@ -331,7 +331,7 @@ export default function CharacterViewer() {
                 <section>
                   <h2 className="font-cinzel text-2xl font-bold text-primary-dark mb-4 flex items-center gap-2">
                     <Sparkles className="text-accent-gold" size={24} />
-                    Drives
+                    {t('characterViewer.drives')}
                   </h2>
                   <div className="space-y-3">
                     {character.drives.filter(d => d.selected).map((drive, idx) => (
@@ -348,7 +348,7 @@ export default function CharacterViewer() {
               <section className="mb-8">
                 <h2 className="font-cinzel text-2xl font-bold text-primary-dark mb-4 flex items-center gap-2">
                   <Shield className="text-accent-gold" size={24} />
-                  Moves
+                  {t('characterViewer.moves')}
                 </h2>
                 <div className="grid md:grid-cols-2 gap-4">
                   {character.moves.filter(m => m.selected).map((move, idx) => (
@@ -365,7 +365,7 @@ export default function CharacterViewer() {
                 <section>
                   <h2 className="font-cinzel text-2xl font-bold text-primary-dark mb-4 flex items-center gap-2">
                     <Sword className="text-accent-gold" size={24} />
-                    Weapon Skills
+                    {t('characterViewer.weaponSkills')}
                   </h2>
                   <div className="flex flex-wrap gap-2">
                     {character.weaponSkills.skills.filter(s => s.selected).map((skill, idx) => (
@@ -378,7 +378,7 @@ export default function CharacterViewer() {
 
                 <section>
                   <h2 className="font-cinzel text-2xl font-bold text-primary-dark mb-4">
-                    Roguish Feats
+                    {t('characterViewer.roguishFeats')}
                   </h2>
                   <div className="flex flex-wrap gap-2">
                     {character.roguishFeats.feats.filter(f => f.selected).map((feat, idx) => (
@@ -394,7 +394,7 @@ export default function CharacterViewer() {
               {character.equipment && (
                 <section>
                   <h2 className="font-cinzel text-2xl font-bold text-primary-dark mb-4">
-                    Equipment & Notes
+                    {t('characterViewer.equipment')}
                   </h2>
                   <div className="p-4 bg-primary-light rounded-lg whitespace-pre-wrap text-primary-dark dark-field">
                     {typeof character.equipment === 'string'

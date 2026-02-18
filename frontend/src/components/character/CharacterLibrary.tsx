@@ -12,7 +12,7 @@ import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 import type { Character, CharacterCard as CharacterCardType } from '../../types';
 
 export default function CharacterLibrary() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
 
   // React 19 feature: Dynamic document title
   useDocumentTitle(`${t('characterLibrary.title')} - RPG Character Creator`);
@@ -52,7 +52,7 @@ export default function CharacterLibrary() {
       toast.success(t('characterLibrary.characterDeleted'));
     },
     onError: (error) => {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to delete character';
+      const errorMessage = error instanceof Error ? error.message : t('errors.deleteCharacterFailed');
       toast.error(errorMessage);
     },
   });
@@ -217,7 +217,7 @@ export default function CharacterLibrary() {
         {!isAuthenticated && sessionCharacters.length > 0 && (
           <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-8">
             <p className="text-yellow-800">
-              <strong>Note:</strong> {t('characterLibrary.authWarning')}
+              <strong>{t('common.note')}:</strong> {t('characterLibrary.authWarning')}
               <button
                 type="button"
                 onClick={() => navigate('/')}
@@ -238,7 +238,7 @@ export default function CharacterLibrary() {
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              placeholder="Search your characters..."
+              placeholder={t('characterLibrary.searchPlaceholder')}
               className="w-full pl-10 pr-4 py-3 border border-primary-dark/20 rounded-lg focus:ring-2 focus:ring-accent-gold focus:border-transparent text-primary-dark bg-white dark-field"
             />
           </div>
@@ -251,7 +251,7 @@ export default function CharacterLibrary() {
               onChange={(e) => setClassFilter(e.target.value)}
               className="w-full pl-10 pr-4 py-3 border border-primary-dark/20 rounded-lg focus:ring-2 focus:ring-accent-gold focus:border-transparent text-primary-dark bg-white appearance-none cursor-pointer dark-field"
             >
-              <option value="">All Classes</option>
+              <option value="">{t('common.allClasses')}</option>
               {templates?.map((template) => (
                 <option key={template.id} value={template.className}>
                   {template.className}
@@ -300,16 +300,16 @@ export default function CharacterLibrary() {
               <Plus size={48} className="text-accent-gold" />
             </div>
             <h3 className="font-cinzel text-2xl font-bold text-primary-dark mb-2">
-              No characters yet
+              {t('characterLibrary.noCharactersYet')}
             </h3>
             <p className="text-primary-dark/70 mb-6">
-              Create your first character to get started on your adventure!
+              {t('characterLibrary.noCharactersDesc')}
             </p>
             <button
               onClick={() => navigate('/create')}
               className="bg-accent-gold text-primary-dark px-6 py-3 rounded-lg font-cinzel font-medium hover:bg-opacity-90 transition"
             >
-              Create Your First Character
+              {t('characterLibrary.createFirstCharacter')}
             </button>
           </div>
         )}
@@ -321,12 +321,12 @@ export default function CharacterLibrary() {
               <Search size={48} className="text-primary-dark/50" />
             </div>
             <h3 className="font-cinzel text-2xl font-bold text-primary-dark mb-2">
-              No characters found
+              {t('characterLibrary.noCharactersFound')}
             </h3>
             <p className="text-primary-dark/70 mb-4">
               {searchTerm || classFilter
-                ? 'Try adjusting your filters to find more characters'
-                : `No characters found for ${selectedSystem} system`}
+                ? t('characterLibrary.adjustFilters')
+                : t('characterLibrary.noCharactersForSystem', { system: selectedSystem })}
             </p>
             <button
               type="button"
@@ -336,7 +336,7 @@ export default function CharacterLibrary() {
               }}
               className="text-accent-gold hover:underline font-medium"
             >
-              Clear filters
+              {t('characterLibrary.clearFilters')}
             </button>
           </div>
         )}

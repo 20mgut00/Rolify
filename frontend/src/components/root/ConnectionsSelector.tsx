@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import TextField from "@mui/material/TextField";
 import Accordion from "@mui/material/Accordion";
 import AccordionSummary from "@mui/material/AccordionSummary";
@@ -22,6 +23,8 @@ export default function ConnectionsSelector({
   onConnectionsSelect,
   initialValues,
 }: ConnectionsSelectorProps) {
+  const { t } = useTranslation();
+  const tg = (key: string, fallback: string) => { const r = (t as (k: string) => string)(key); return r === key ? fallback : r; };
   const [answers, setAnswers] = useState<string[]>(
     initialValues
       ? connections.map((_, idx) => initialValues[idx]?.answer || "")
@@ -72,12 +75,12 @@ export default function ConnectionsSelector({
               }}
             >
               <Typography className="text-lg text-primary-dark font-semibold">
-                {connection.name}
+                {tg(`gameData.connections.${connection.name}.name`, connection.name)}
               </Typography>
             </AccordionSummary>
             <AccordionDetails sx={{ backgroundColor: 'var(--color-primary-light)', color: 'var(--color-primary-dark)' }}>
               <Typography className="text-sm text-primary-dark opacity-70 mb-2">
-                {connection.description}
+                {tg(`gameData.connections.${connection.name}.description`, connection.description)}
               </Typography>
             </AccordionDetails>
           </Accordion>
@@ -85,7 +88,7 @@ export default function ConnectionsSelector({
             fullWidth
             variant="outlined"
             size="small"
-            placeholder={`Enter your answer`}
+            placeholder={tg('gameData.placeholders.enterYourAnswer', 'Enter your answer')}
             value={answers[index] || ""}
             sx={{
               marginTop: 1,

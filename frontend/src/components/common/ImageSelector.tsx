@@ -1,5 +1,6 @@
 import { Upload, X, Loader2, AlertCircle, RotateCcw } from "lucide-react";
 import { useState, useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useDragAndDrop } from "../../hooks/useDragAndDrop";
 import { avatarAPI } from "../../services/api";
 import { getAvatarUrl } from "../../utils/avatarUrl";
@@ -23,6 +24,7 @@ export default function ImageSelector({
   width = "w-96",
   height = "h-96",
 }: ImageSelectorProps) {
+  const { t } = useTranslation();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string>("");
 
@@ -43,14 +45,14 @@ export default function ImageSelector({
     try {
       // Validate file type
       if (!acceptedFormats.includes(file.type)) {
-        throw new Error(`Invalid file format. Accepted: ${formatsList}`);
+        throw new Error(t('imageSelector.invalidFormat', { formats: formatsList }));
       }
 
       // Validate file size
       const fileSizeInMB = file.size / (1024 * 1024);
       if (fileSizeInMB > maxSizeInMB) {
         throw new Error(
-          `File too large. Maximum size: ${maxSizeInMB}MB (current: ${fileSizeInMB.toFixed(2)}MB)`
+          t('imageSelector.fileTooLarge', { max: maxSizeInMB, current: fileSizeInMB.toFixed(2) })
         );
       }
 
@@ -59,7 +61,7 @@ export default function ImageSelector({
       onChange?.(avatarUrl);
     } catch (err) {
       const errorMessage =
-        err instanceof Error ? err.message : "Failed to upload image";
+        err instanceof Error ? err.message : t('imageSelector.uploadFailed');
       setError(errorMessage);
     } finally {
       setIsLoading(false);
@@ -108,7 +110,7 @@ export default function ImageSelector({
         <div className="relative">
           <img
             src={resolvedUrl}
-            alt="Character avatar preview"
+            alt={t('imageSelector.avatarPreview')}
             className={`${width} ${height} object-contain rounded-lg mx-auto`}
           />
 
@@ -116,7 +118,7 @@ export default function ImageSelector({
           <label className="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-white/90 border-2 border-accent-gold text-primary-dark px-4 py-2 rounded-lg hover:bg-accent-gold/20 transition shadow-md cursor-pointer">
             <Upload size={16} />
             <span className="text-sm font-medium">
-              {hasCustomImage ? "Change image" : "Upload custom"}
+              {hasCustomImage ? t('imageSelector.changeImage') : t('imageSelector.uploadCustom')}
             </span>
             <input
               type="file"
@@ -133,7 +135,7 @@ export default function ImageSelector({
               type="button"
               onClick={handleRevertToDefault}
               className="absolute top-2 left-2 flex items-center gap-1 bg-white border-2 border-primary-dark/30 text-primary-dark p-2 rounded-full hover:bg-gray-100 transition shadow-md"
-              title="Revert to class default"
+              title={t('imageSelector.revertToDefault')}
               disabled={isLoading}
             >
               <RotateCcw size={16} />
@@ -164,14 +166,13 @@ export default function ImageSelector({
           {isLoading ? (
             <div className="flex flex-col items-center justify-center pointer-events-none">
               <Loader2 className="w-10 h-10 mb-3 text-primary-dark animate-spin" />
-              <p className="text-sm text-primary-dark">Uploading image...</p>
+              <p className="text-sm text-primary-dark">{t('imageSelector.uploadingImage')}</p>
             </div>
           ) : (
             <div className="flex flex-col items-center justify-center pt-5 pb-6 pointer-events-none">
               <Upload className="w-10 h-10 mb-3 text-primary-dark" />
               <p className="mb-2 text-sm text-primary-dark">
-                <span className="font-semibold">Click to upload</span> or drag
-                and drop
+                <span className="font-semibold">{t('imageSelector.clickToUpload')}</span> {t('imageSelector.orDragAndDrop')}
               </p>
               <p className="text-xs text-primary-dark/60">
                 {formatsList} (max {maxSizeInMB}MB)

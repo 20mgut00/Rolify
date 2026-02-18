@@ -3,6 +3,7 @@ import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import { AlertTriangle } from 'lucide-react';
+import i18next from 'i18next';
 
 interface Props {
   children: ReactNode;
@@ -51,14 +52,13 @@ class ErrorBoundary extends Component<Props, State> {
             variant="h4"
             sx={{ mt: 3, mb: 2, color: '#0F2B3A', fontWeight: 'bold' }}
           >
-            Oops! Something went wrong
+            {i18next.t('errors.somethingWentWrong')}
           </Typography>
           <Typography
             variant="body1"
             sx={{ mb: 4, color: '#5B6470', textAlign: 'center', maxWidth: 600 }}
           >
-            We encountered an unexpected error. Don't worry, your data is safe.
-            Click the button below to return to the home page.
+            {i18next.t('errors.errorDescription')}
           </Typography>
           {import.meta.env.DEV && this.state.error && (
             <Box
@@ -88,7 +88,7 @@ class ErrorBoundary extends Component<Props, State> {
               padding: '12px 32px',
             }}
           >
-            Return to Home
+            {i18next.t('errors.returnToHome')}
           </Button>
         </Box>
       );

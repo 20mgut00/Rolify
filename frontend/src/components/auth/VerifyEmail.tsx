@@ -34,7 +34,7 @@ export default function VerifyEmail() {
         }, 3000);
       } catch (error) {
         setStatus('error');
-        const errorMessage = error instanceof Error ? error.message : 'Verification failed. The link may have expired.';
+        const errorMessage = error instanceof Error ? error.message : t('errors.verificationFailed');
         setMessage(errorMessage);
         toast.error(t('auth.emailVerificationFailed'));
       }

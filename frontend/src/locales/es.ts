@@ -25,6 +25,7 @@ const es = {
     found: 'encontrados',
     inYourCollection: 'en tu colecci\u00f3n',
     typeToConfirm: 'Escribe <1>{{text}}</1> para confirmar:',
+    note: 'Nota',
   },
 
   header: {
@@ -110,6 +111,7 @@ const es = {
     passwordResetSuccess: '\u00a1Contrase\u00f1a Restablecida!',
     passwordResetSuccessDesc: 'Tu contrase\u00f1a ha sido cambiada. Ya puedes iniciar sesi\u00f3n con tu nueva contrase\u00f1a.',
     passwordResetToast: '\u00a1Contrase\u00f1a restablecida exitosamente!',
+    enterNewPasswordBelow: 'Ingresa tu nueva contrase\u00f1a a continuaci\u00f3n.',
   },
 
   settings: {
@@ -305,10 +307,27 @@ const es = {
     createFirstCharacter: 'Crea Tu Primer Personaje',
   },
 
+  validation: {
+    emailInvalid: 'Direcci\u00f3n de email inv\u00e1lida',
+    passwordRequired: 'La contrase\u00f1a es requerida',
+    passwordMinLength: 'La contrase\u00f1a debe tener al menos 8 caracteres',
+    nameMinLength: 'El nombre debe tener al menos 2 caracteres',
+    currentPasswordRequired: 'La contrase\u00f1a actual es requerida',
+    passwordsDontMatch: 'Las contrase\u00f1as no coinciden',
+  },
+
   errors: {
     somethingWentWrong: '\u00a1Ups! Algo sali\u00f3 mal',
     errorDescription: 'Encontramos un error inesperado. No te preocupes, tus datos est\u00e1n seguros. Haz clic en el bot\u00f3n de abajo para volver a la p\u00e1gina principal.',
     returnToHome: 'Volver al Inicio',
+    loginFailed: 'Error al iniciar sesi\u00f3n',
+    registrationFailed: 'Error al registrarse',
+    sendResetEmailFailed: 'Error al enviar el email de restablecimiento',
+    resetPasswordFailed: 'Error al restablecer la contrase\u00f1a. El enlace puede haber expirado.',
+    changePasswordFailed: 'Error al cambiar la contrase\u00f1a',
+    deleteAccountFailed: 'Error al eliminar la cuenta',
+    deleteCharacterFailed: 'Error al eliminar el personaje',
+    verificationFailed: 'Verificaci\u00f3n fallida. El enlace puede haber expirado.',
   },
 
   imageSelector: {
@@ -322,6 +341,75 @@ const es = {
     invalidFormat: 'Formato de archivo inv\u00e1lido. Aceptados: {{formats}}',
     fileTooLarge: 'Archivo demasiado grande. Tama\u00f1o m\u00e1ximo: {{max}}MB (actual: {{current}}MB)',
     uploadFailed: 'Error al subir la imagen',
+  },
+
+  gameData: {
+    classes: {
+      Adventurer: { name: 'Aventurero', description: 'Eres un vagabundo pac\u00edfico y diplom\u00e1tico, haciendo aliados de aquellos a quienes ayudas, quiz\u00e1s derrocando poderes mayores al forjar v\u00ednculos s\u00f3lidos con otros.' },
+    },
+    stats: {
+      charm: 'Encanto',
+      cunning: 'Astucia',
+      finesse: 'Destreza',
+      luck: 'Suerte',
+      might: 'Fuerza',
+    },
+    natures: {
+      Extrovert: { name: 'Extrovertido', description: 'Limpia tu pista de agotamiento cuando compartes un momento de verdadera calidez, amistad o disfrute con alguien.' },
+      Peacemaker: { name: 'Pacificador', description: 'Limpia tu pista de agotamiento cuando resuelves un conflicto peligroso de forma no violenta.' },
+    },
+    drives: {
+      Ambition: { name: 'Ambici\u00f3n', description: 'Avanza cuando aumentas tu reputaci\u00f3n con cualquier facci\u00f3n.' },
+      'Clean Paws': { name: 'Manos Limpias', description: 'Avanza cuando logras un objetivo il\u00edcito o criminal manteniendo una apariencia cre\u00edble de inocencia.' },
+      Principles: { name: 'Principios', description: 'Avanza cuando expresas o encarnas tus principios morales a gran costo para ti o tus aliados.' },
+      Justice: { name: 'Justicia', description: 'Avanza cuando logras justicia para alguien agraviado por un individuo poderoso, rico o de alto estatus.' },
+    },
+    connections: {
+      Partner: { name: 'Compa\u00f1ero', description: 'Cuando rellenas esta conexi\u00f3n, ambos marc\u00e1is 2-prestigio con la facci\u00f3n a la que ayudasteis, y marc\u00e1is 2-notoriedad con la facci\u00f3n a la que perjudicasteis. Durante el juego, si os ven juntos, cualquier ganancia de prestigio o notoriedad con esas facciones se duplica para los dos.' },
+      Friend: { name: 'Amigo', description: 'Cuando les ayudas, puedes marcar 2-agotamiento para dar +2, en lugar de 1-agotamiento por +1.' },
+    },
+    moves: {
+      'Sterling Reputation': { name: 'Reputaci\u00f3n Impecable', description: 'Siempre que marques cualquier cantidad de prestigio con una facci\u00f3n, marca un prestigio adicional. Cuando marques cualquier cantidad de notoriedad con una facci\u00f3n, puedes en su lugar borrar una cantidad equivalente de prestigio marcado.' },
+      'Subduing Strikes': { name: 'Golpes de Sometimiento', description: 'Cuando intentas someter a un enemigo r\u00e1pida y no letalmente, puedes combatir cuerpo a cuerpo con Astucia en lugar de Fuerza. No puedes elegir infligir da\u00f1o grave si lo haces.' },
+      'Talon on the Pulse': { name: 'Garra en el Pulso', description: 'Cuando re\u00fanes informaci\u00f3n sobre los asuntos de un claro, tira con Astucia. Con 10+, haz 3 preguntas. Con 7-9, haz 2: \u00bfQui\u00e9n ostenta el poder en este claro? \u00bfQui\u00e9n es el disidente local? \u00bfA qu\u00e9 temen los habitantes? \u00bfQu\u00e9 esperan los habitantes? \u00bfQu\u00e9 oportunidades existen para vagabundos emprendedores? Con un fallo, tus preguntas alertan a alguien peligroso.' },
+      Orator: { name: 'Orador', description: 'Cuando das un discurso a los habitantes interesados de un claro, di qu\u00e9 les est\u00e1s motivando a hacer y tira con Encanto. Con un \u00e9xito, lo har\u00e1n seg\u00fan vean conveniente. Con 10+, elige 2. Con 7-9, elige 1: No intentan llevar demasiado lejos tu intenci\u00f3n; No se dispersan ante la primera se\u00f1al de resistencia real; No exigen que est\u00e9s a su cabeza y los lideres. Con un fallo, tuercen tu mensaje de formas impredecibles.' },
+      'Well-Read': { name: 'Bien Le\u00eddo', description: 'Obt\u00e9n +1 Astucia (m\u00e1x. +3).' },
+      'Fast Friends': { name: 'Amigos R\u00e1pidos', description: 'Cuando intentas hacerte amigo de un PNJ que acabas de conocer adapt\u00e1ndote a su personalidad, lenguaje corporal y deseos, marca agotamiento y tira con Astucia. Con un \u00e9xito, te mirar\u00e1 favorablemente: hazle cualquier pregunta no comprometedora y responder\u00e1 con sinceridad, o pide un favor sencillo y lo har\u00e1 por ti. Con 10+, realmente te aprecia: compartir\u00e1 un secreto valioso o te conceder\u00e1 un favor importante. Con un fallo, los has le\u00eddo totalmente mal, y su disgusto te costar\u00e1.' },
+    },
+    weaponSkills: {
+      Cleave: { name: 'Hendidura', description: 'Cuando hiendas a enemigos acorazados a corta distancia, marca agotamiento y tira con Fuerza. Con un \u00e9xito, atraviesas sus defensas y equipo; infliges 3-desgaste. Con 7-9, sobreextiendes tu arma o a ti mismo: marca desgaste o terminas en una mala posici\u00f3n, a tu elecci\u00f3n.' },
+      'Confuse Senses': { name: 'Confundir Sentidos', description: 'Cuando lanzas algo para confundir los sentidos de un oponente a corta o \u00edntima distancia, tira con Destreza. Con un \u00e9xito, lo has desequilibrado, cegado, ensordecido o confundido, y te has dado una oportunidad. Con 10+, necesita algo de tiempo para orientarse y recuperar sus sentidos antes de poder actuar con claridad. Con 7-9, tienes solo unos momentos.' },
+      Disarm: { name: 'Desarmar', description: 'Cuando atacas el arma de un oponente a corta distancia, tira con Destreza. Con un \u00e9xito, debe marcar 2-agotamiento o perder su arma, que queda fuera de alcance. Con 10+, debe marcar 3-agotamiento en lugar de 2.' },
+      Harry: { name: 'Hostigar', description: 'Cuando hostiga a un grupo de enemigos a larga distancia, marca desgaste y tira con Astucia. Con 10+, ambos. Con 7-9, elige 1: infliges 2-da\u00f1o de moral; quedan inmovilizados o bloqueados.' },
+      Improvise: { name: 'Improvisar', description: 'Cuando fabricas un arma con materiales improvisados a tu alrededor, tira con Astucia. Con un \u00e9xito, creas un arma; el GM te dir\u00e1 su etiqueta de alcance y al menos otra etiqueta beneficiosa basada en los materiales usados. Con 7-9, el arma tambi\u00e9n tiene una etiqueta de debilidad.' },
+      Parry: { name: 'Parar', description: 'Cuando intentas parar los ataques de un enemigo a corta distancia, marca agotamiento y tira con Destreza. Con un \u00e9xito, consumes su atenci\u00f3n. Con 10+, los 3. Con 7-9, elige 1: infliges da\u00f1o de moral o agotamiento (a elecci\u00f3n del GM); desarmas a tu oponente (su arma est\u00e1 fuera de su mano, pero al alcance); no sufres ning\u00fan da\u00f1o.' },
+      'Quick Shot': { name: 'Disparo R\u00e1pido', description: 'Cuando disparas un tiro r\u00e1pido a un enemigo a corta distancia, tira con Suerte. Con un \u00e9xito, infliges da\u00f1o. Con 7-9, elige 1. Con 10+, elige 2: no marcas desgaste; no marcas agotamiento; te mueves r\u00e1pido y cambias tu posici\u00f3n (y, si eliges, distancia); mantienes a tu objetivo a raya, no se mueve.' },
+      'Storm a Group': { name: 'Arremeter contra un Grupo', description: 'Cuando arremetes contra un grupo de enemigos en combate, marca agotamiento y tira con Fuerza. Con un \u00e9xito, intercambia da\u00f1o. Con 10+, elige 2. Con 7-9, elige 1: los humillas, infliges 2-da\u00f1o de moral; los mantienes desequilibrados y confundidos, infliges 2-agotamiento; evitas sus golpes lo mejor que puedes, sufres poco (-1) da\u00f1o; los usas unos contra otros, marca agotamiento de nuevo y ellos infligen su da\u00f1o contra s\u00ed mismos.' },
+      'Trick Shot': { name: 'Disparo Astuto', description: 'Cuando disparas un tiro ingenioso dise\u00f1ado para aprovechar el entorno a cualquier distancia, marca desgaste y tira con Destreza. Con 7-9, elige 2. Con 10+, elige 3: tu disparo aterriza en cualquier objetivo de tu elecci\u00f3n dentro del alcance, incluso si est\u00e1 cubierto u oculto; tu disparo golpea un segundo objetivo disponible de tu elecci\u00f3n; tu disparo corta, rompe o derriba algo a tu elecci\u00f3n; tu disparo distrae a un oponente y proporciona una oportunidad.' },
+      'Vicious Strike': { name: 'Golpe Vicioso', description: 'Cuando golpeas viciosamente a un oponente donde es d\u00e9bil a distancia \u00edntima o corta, marca agotamiento y tira con Fuerza. Con un \u00e9xito, sufre da\u00f1o grave (+1) y no puede marcar desgaste en su armadura para bloquearlo. Con 10+, te sales con la tuya. Con 7-9, tambi\u00e9n te golpean.' },
+    },
+    roguishFeats: {
+      Acrobatics: { name: 'Acrobacia', description: 'Escalar, saltar, hacer piruetas con destreza.' },
+      Blindside: { name: 'Golpe por la Espalda', description: 'Apu\u00f1alar por la espalda, asesinar, ataque furtivo, golpe traicionero.' },
+      Counterfeit: { name: 'Falsificar', description: 'Copiar, falsificar, imitar.' },
+      'Disable Device': { name: 'Desactivar Mecanismo', description: 'Desactivar trampas, apagar mecanismos.' },
+      Hide: { name: 'Esconderse', description: 'Desaparecer de la vista, permanecer oculto.' },
+      'Pick Lock': { name: 'Ganz\u00faa', description: 'Abrir una puerta cerrada, cofre, etc.' },
+      Pickpocket: { name: 'Carterista', description: 'Robar sutilmente de un bolsillo.' },
+      'Sleight of Hand': { name: 'Prestidigitaci\u00f3n', description: 'Hacer malabares, cambiar, esconder, florituras.' },
+      Sneak: { name: 'Sigilo', description: 'Entrar o salir de lugares sin ser visto.' },
+    },
+    backgrounds: {
+      'Where do you call home?': { question: '\u00bfD\u00f3nde llamas hogar?', answers: { 'A clearing': 'Un claro', 'The forest': 'El bosque', 'A place far from here': 'Un lugar lejos de aqu\u00ed' } },
+      'Why are you a vagabond?': { question: '\u00bfPor qu\u00e9 eres un vagabundo?', answers: { 'I want to help the Woodland': 'Quiero ayudar al Bosque', 'I want to explore the Woodland': 'Quiero explorar el Bosque', 'I believe the current factions should be overturned': 'Creo que las facciones actuales deber\u00edan ser derrocadas', 'I must keep a promise to a loved one': 'Debo cumplir una promesa a un ser querido', "I want freedom from society's constraints": 'Quiero libertad de las restricciones de la sociedad' } },
+      'Whom have you left behind?': { question: '\u00bfA qui\u00e9n has dejado atr\u00e1s?', answers: { 'My mentor': 'Mi mentor', 'My family': 'Mi familia', 'My loved one': 'Mi ser querido', 'My student': 'Mi estudiante', 'My greatest ally': 'Mi mayor aliado' } },
+      'Which faction have you served the most?': { question: '\u00bfA qu\u00e9 facci\u00f3n has servido m\u00e1s?', answers: {} },
+      'With which faction have you earned a special enmity?': { question: '\u00bfCon qu\u00e9 facci\u00f3n te has ganado una enemistad especial?', answers: {} },
+    },
+    placeholders: {
+      enterYourAnswer: 'Escribe tu respuesta',
+      enterFactionName: 'Nombre de la facci\u00f3n',
+    },
   },
 };
 

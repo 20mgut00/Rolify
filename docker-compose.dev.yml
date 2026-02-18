@@ -9,7 +9,7 @@ services:
     container_name: rpg-backend-dev
     ports:
       - "8080:8080"
-      - "5005:5005"  # Remote debug port
+      - "8000:8000"  # Remote debug port
     environment:
       SPRING_DATA_MONGODB_URI: ${MONGODB_URI}
       SPRING_DATA_MONGODB_DATABASE: ${MONGODB_DATABASE:-rpg-characters}
@@ -23,7 +23,7 @@ services:
       MAIL_USERNAME: ${MAIL_USERNAME:-resend}
       MAIL_PASSWORD: ${RESEND_API_KEY:-your-api-key}
       EMAIL_FROM: ${EMAIL_FROM:-noreply@rpgcharacters.com}
-      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:5173}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
       GEMINI_API_KEY: ${GEMINI_API_KEY}
       SPRING_DEVTOOLS_RESTART_ENABLED: "true"
     volumes:
@@ -48,7 +48,7 @@ services:
       dockerfile: Dockerfile.dev
     container_name: rpg-frontend-dev
     ports:
-      - "5173:5173"
+      - "3000:5173"
     environment:
       VITE_API_URL: http://localhost:8080/api
       DOCKER_ENV: "true"

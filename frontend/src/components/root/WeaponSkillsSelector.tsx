@@ -7,6 +7,7 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import Typography from "@mui/material/Typography";
 import { ChevronsDown } from "lucide-react";
 import { useMemo, useCallback, memo } from "react";
+import { useTranslation } from "react-i18next";
 
 interface WeaponSkillsSelectorProps {
   weaponSkills?: {
@@ -26,6 +27,8 @@ function WeaponSkillsSelector({
 }: WeaponSkillsSelectorProps) {
   // selectedNames: Cachea la lista de nombres de skills seleccionados por el usuario
   // Solo recalcula si value cambia (el array de objetos del padre)
+  const { t } = useTranslation();
+  const tg = (key: string, fallback: string) => { const r = (t as (k: string) => string)(key); return r === key ? fallback : r; };
   const selectedNames = useMemo(() => value.map((s) => s.name), [value]);
 
   // maxSelections: Número máximo de skills que pueden seleccionarse
@@ -124,7 +127,7 @@ function WeaponSkillsSelector({
                       }}
                     />
                   }
-                  label={skill.name}
+                  label={tg(`gameData.weaponSkills.${skill.name}.name`, skill.name)}
                   onClick={(e) => e.stopPropagation()}
                   slotProps={{
                     typography: {
@@ -146,7 +149,7 @@ function WeaponSkillsSelector({
               {/* AccordionDetails: Muestra la descripción del skill */}
               <AccordionDetails sx={{ backgroundColor: 'var(--color-primary-light)', color: 'var(--color-primary-dark)' }}>
                 <Typography className="text-sm text-primary-dark opacity-70 ml-1">
-                  {skill.description}
+                  {tg(`gameData.weaponSkills.${skill.name}.description`, skill.description)}
                 </Typography>
               </AccordionDetails>
             </Accordion>

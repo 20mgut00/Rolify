@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Radio from "@mui/material/Radio";
@@ -22,6 +23,8 @@ export default function BackgroundSelector({
   initialValues,
   disabled = false,
 }: BackgroundSelectorProps) {
+  const { t } = useTranslation();
+  const tg = (key: string, fallback: string) => { const r = (t as (k: string) => string)(key); return r === key ? fallback : r; };
   const [answers, setAnswers] = useState<string[]>(
     initialValues
       ? background.map((_, idx) => initialValues[idx]?.answer || "")
@@ -64,7 +67,7 @@ export default function BackgroundSelector({
       {background.map((question, index) => (
         <div key={question.name} className="mb-4">
           <h1 className="text-lg text-primary-dark mb-1 tracking-wide">
-            {question.name}
+            {tg(`gameData.backgrounds.${question.name}.question`, question.name)}
           </h1>
 
           {question.answers.length > 0 ? (
@@ -77,7 +80,7 @@ export default function BackgroundSelector({
                   key={answer}
                   value={answer}
                   control={<Radio size="small" disabled={disabled} />}
-                  label={answer}
+                  label={tg(`gameData.backgrounds.${question.name}.answers.${answer}`, answer)}
                   disabled={disabled}
                   sx={{
                     opacity: disabled ? 0.6 : 1,
@@ -97,7 +100,7 @@ export default function BackgroundSelector({
             <TextField
               fullWidth
               variant="standard"
-              placeholder={`Enter faction's name`}
+              placeholder={tg('gameData.placeholders.enterFactionName', "Enter faction's name")}
               value={answers[index] || ""}
               onChange={(e) => handleTextChange(index, e.target.value)}
               disabled={disabled}

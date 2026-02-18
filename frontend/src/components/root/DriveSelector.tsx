@@ -7,6 +7,7 @@ import AccordionDetails from "@mui/material/AccordionDetails";
 import { ChevronsDown } from "lucide-react";
 import Typography from "@mui/material/Typography";
 import { useMemo, useCallback, memo } from "react";
+import { useTranslation } from "react-i18next";
 
 interface DriveSelectorProps {
   drives?: Array<{ name: string; description: string }>;
@@ -21,6 +22,8 @@ function DriveSelector({
   value = [],
   onDrivesSelect,
 }: DriveSelectorProps) {
+  const { t } = useTranslation();
+  const tg = (key: string, fallback: string) => { const r = (t as (k: string) => string)(key); return r === key ? fallback : r; };
   const selectedNames = useMemo(() => value.map((d) => d.name), [value]);
 
   const handleChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
@@ -86,7 +89,7 @@ function DriveSelector({
                     }}
                   />
                 }
-                label={d.name}
+                label={tg(`gameData.drives.${d.name}.name`, d.name)}
                 onClick={(e) => e.stopPropagation()}
                 sx={{
                   cursor: isDisabled ? 'not-allowed' : 'pointer',
@@ -107,7 +110,7 @@ function DriveSelector({
             </AccordionSummary>
             <AccordionDetails sx={{ backgroundColor: 'var(--color-primary-light)', color: 'var(--color-primary-dark)' }}>
               <Typography className="text-sm text-primary-dark opacity-70">
-                {d.description}
+                {tg(`gameData.drives.${d.name}.description`, d.description)}
               </Typography>
             </AccordionDetails>
           </Accordion>

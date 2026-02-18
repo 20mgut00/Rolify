@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -8,15 +8,7 @@ import { authAPI } from '../../services/api';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 
-const resetPasswordSchema = z.object({
-  newPassword: z.string().min(8, 'Password must be at least 8 characters'),
-  confirmPassword: z.string(),
-}).refine((data) => data.newPassword === data.confirmPassword, {
-  message: "Passwords don't match",
-  path: ['confirmPassword'],
-});
-
-type ResetPasswordFormData = z.infer<typeof resetPasswordSchema>;
+type ResetPasswordFormData = { newPassword: string; confirmPassword: string };
 
 export default function ResetPassword() {
   const { t } = useTranslation();
@@ -27,6 +19,14 @@ export default function ResetPassword() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const token = searchParams.get('token');
+
+  const resetPasswordSchema = useMemo(() => z.object({
+    newPassword: z.string().min(8, t('validation.passwordMinLength')),
+    confirmPassword: z.string(),
+  }).refine((data) => data.newPassword === data.confirmPassword, {
+    message: t('validation.passwordsDontMatch'),
+    path: ['confirmPassword'],
+  }), [t]);
 
   const {
     register,
@@ -53,7 +53,7 @@ export default function ResetPassword() {
         navigate('/');
       }, 3000);
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Failed to reset password. The link may have expired.';
+      const errorMessage = error instanceof Error ? error.message : t('errors.resetPasswordFailed');
       toast.error(errorMessage);
     } finally {
       setIsLoading(false);
@@ -106,7 +106,7 @@ export default function ResetPassword() {
         <h1 className="font-cinzel text-3xl font-bold text-primary-dark mb-1">
           {t('auth.resetPassword')}
         </h1>
-        <p className="text-primary-dark/70 mb-6">Enter your new password below.</p>
+        <p className="text-primary-dark/70 mb-6">{t('auth.enterNewPasswordBelow')}</p>
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
