@@ -23,6 +23,7 @@ import {
   BarChart,
   Add,
   LibraryBooks,
+  Public,
   Warning,
   DarkMode,
   LightMode,
@@ -114,9 +115,19 @@ export default function Header() {
             to="/library"
             variant="outlined"
             startIcon={<LibraryBooks />}
-            sx={{ mr: 2, px: 2 }}
+            sx={{ mr: 1, px: 2 }}
           >
             {t('header.library')}
+          </Button>
+
+          <Button
+            component={RouterLink}
+            to="/gallery"
+            variant="outlined"
+            startIcon={<Public />}
+            sx={{ mr: 2, px: 2 }}
+          >
+            {t('header.gallery')}
           </Button>
 
           <IconButton

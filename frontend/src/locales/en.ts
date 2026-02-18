@@ -31,6 +31,7 @@ const en = {
   header: {
     newCharacter: 'New Character',
     library: 'Library',
+    gallery: 'Gallery',
     statistics: 'Statistics',
     settings: 'Settings',
     logout: 'Logout',

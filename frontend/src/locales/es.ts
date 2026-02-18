@@ -31,6 +31,7 @@ const es = {
   header: {
     newCharacter: 'Nuevo Personaje',
     library: 'Biblioteca',
+    gallery: 'Galer\u00eda',
     statistics: 'Estad\u00edsticas',
     settings: 'Ajustes',
     logout: 'Cerrar Sesi\u00f3n',
