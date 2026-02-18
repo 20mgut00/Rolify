@@ -216,12 +216,14 @@ export const characterAPI = {
   generateCharacter: async (
     system: string,
     className: string,
-    prompt?: string
+    prompt?: string,
+    language?: string
   ): Promise<GeneratedCharacter> => {
     const response = await api.post('/characters/generate', {
       system,
       className,
       prompt,
+      language,
     });
     return response.data;
   },

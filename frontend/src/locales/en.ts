@@ -41,6 +41,7 @@ const en = {
     switchToDark: 'Switch to dark mode',
     lightMode: 'Light mode',
     darkMode: 'Dark mode',
+    changeLanguage: 'Change language',
   },
 
   hero: {

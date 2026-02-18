@@ -92,7 +92,7 @@ public class CharacterController {
                 .findBySystemAndClassName(request.getSystem(), request.getClassName())
                 .orElseThrow(() -> new RuntimeException("Class template not found"));
 
-        Map<String, Object> generatedData = geminiService.generateCharacter(template, request.getPrompt());
+        Map<String, Object> generatedData = geminiService.generateCharacter(template, request.getPrompt(), request.getLanguage());
         return ResponseEntity.ok(generatedData);
     }
 }

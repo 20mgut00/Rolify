@@ -22,6 +22,8 @@ public class GenerateCharacterDTO {
 
         @Size(max = 1000, message = "Prompt cannot exceed 1000 characters")
         private String prompt; // Optional additional context from user
+
+        private String language; // Language code (e.g. "es", "en") for AI response
     }
 
     @Data

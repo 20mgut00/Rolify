@@ -109,13 +109,17 @@ interface AccessibilityState {
   setLanguage: (lang: string) => void;
 }
 
+const supportedLngs = ['en', 'es'];
+const browserLng = navigator.language.split('-')[0];
+const defaultLanguage = supportedLngs.includes(browserLng) ? browserLng : 'en';
+
 export const useAccessibilityStore = create<AccessibilityState>()(
   persist(
     (set) => ({
       darkMode: false,
       reducedMotion: false,
       largeText: false,
-      language: 'en',
+      language: defaultLanguage,
       setDarkMode: (enabled) => set({ darkMode: enabled }),
       setReducedMotion: (enabled) => set({ reducedMotion: enabled }),
       setLargeText: (enabled) => set({ largeText: enabled }),

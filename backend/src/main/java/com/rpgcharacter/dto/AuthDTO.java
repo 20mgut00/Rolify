@@ -8,6 +8,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 public class AuthDTO {
     
     @Data
@@ -62,6 +64,7 @@ public class AuthDTO {
         private Boolean emailVerified;
         private Long totalCharacters;
         private Long publicCharacters;
+        private LocalDateTime createdAt;
     }
     
     @Data

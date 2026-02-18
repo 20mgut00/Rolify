@@ -17,7 +17,7 @@ import CharacterFormFields from './CharacterFormFields';
 
 export default function CharacterForm() {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [isGenerating, setIsGenerating] = useState(false);
   const { reducedMotion } = useAccessibilityStore();
 
@@ -55,7 +55,9 @@ export default function CharacterForm() {
     try {
       const generatedData = await characterAPI.generateCharacter(
         selectedClass.system,
-        selectedClass.className
+        selectedClass.className,
+        undefined,
+        i18n.language
       );
 
       // Update form fields with generated data

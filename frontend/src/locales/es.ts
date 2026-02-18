@@ -41,6 +41,7 @@ const es = {
     switchToDark: 'Cambiar a modo oscuro',
     lightMode: 'Modo claro',
     darkMode: 'Modo oscuro',
+    changeLanguage: 'Cambiar idioma',
   },
 
   hero: {

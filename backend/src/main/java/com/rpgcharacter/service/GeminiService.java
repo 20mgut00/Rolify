@@ -33,13 +33,13 @@ public class GeminiService {
         this.restTemplate = new RestTemplate();
     }
 
-    public Map<String, Object> generateCharacter(ClassTemplate classTemplate, String additionalPrompt) {
+    public Map<String, Object> generateCharacter(ClassTemplate classTemplate, String additionalPrompt, String language) {
         try {
             if (apiKey == null || apiKey.isBlank()) {
                 throw new IllegalStateException("AI generation is not configured. Missing GEMINI_API_KEY.");
             }
 
-            String prompt = buildPrompt(classTemplate, additionalPrompt);
+            String prompt = buildPrompt(classTemplate, additionalPrompt, language);
             String response = callGeminiAPI(prompt);
             return parseCharacterResponse(response, classTemplate);
         } catch (IllegalStateException e) {
@@ -56,11 +56,14 @@ public class GeminiService {
         }
     }
 
-    private String buildPrompt(ClassTemplate classTemplate, String additionalPrompt) {
+    private String buildPrompt(ClassTemplate classTemplate, String additionalPrompt, String language) {
         StringBuilder prompt = new StringBuilder();
         prompt.append("Generate a detailed RPG character for the game system '").append(classTemplate.getSystem()).append("'.\n");
         prompt.append("Class: ").append(classTemplate.getClassName()).append("\n");
         prompt.append("Description: ").append(classTemplate.getDescription()).append("\n\n");
+        prompt.append("IMPORTANT: Be highly creative and unique with the character name. Avoid common/overused names like 'Pip', 'Bramble', 'Thistle', etc. ");
+        prompt.append("Use a random seed of ").append(System.currentTimeMillis() % 10000).append(" to inspire uniqueness. ");
+        prompt.append("Think of unusual, memorable names that feel fresh and original.\n\n");
 
         prompt.append("Please generate the following fields in JSON format:\n");
         prompt.append("{\n");
@@ -91,8 +94,8 @@ public class GeminiService {
         if (classTemplate.getBackground() != null && !classTemplate.getBackground().isEmpty()) {
             prompt.append("  \"background\": [\n");
             for (ClassTemplate.BackgroundQuestion q : classTemplate.getBackground()) {
-                prompt.append("    {\"question\": \"").append(q.getName()).append("\", \"answer\": \"one of: ")
-                      .append(String.join(", ", q.getAnswers())).append("\"},\n");
+                prompt.append("    {\"question\": \"").append(q.getName()).append("\", \"answer\": \"EXACTLY one of: ")
+                      .append(String.join(", ", q.getAnswers())).append(" (copy the exact text, do NOT modify or translate)\"},\n");
             }
             prompt.append("  ],\n");
         }
@@ -143,6 +146,10 @@ public class GeminiService {
 
         if (additionalPrompt != null && !additionalPrompt.isEmpty()) {
             prompt.append("Additional context: ").append(additionalPrompt).append("\n");
+        }
+
+        if (language != null && !language.isBlank()) {
+            prompt.append("\nIMPORTANT: Generate ALL text content (name, species, demeanor, details, equipment) in the '").append(language).append("' language. Option names like natures, drives, moves, roguish feats, weapon skills, and background answers must remain EXACTLY as provided above (do NOT translate them).\n");
         }
 
         prompt.append("\nIMPORTANT: Return ONLY valid JSON without any markdown formatting, code blocks, or extra text. The response must be parseable as JSON.");
@@ -259,15 +266,25 @@ public class GeminiService {
                 result.put("moves", moves);
             }
 
-            // Parse background
-            if (jsonResponse.has("background")) {
+            // Parse background - validate answers against template options
+            if (jsonResponse.has("background") && classTemplate.getBackground() != null) {
                 List<Map<String, String>> background = new ArrayList<>();
                 JsonNode backgroundNode = jsonResponse.path("background");
                 if (backgroundNode.isArray()) {
-                    for (JsonNode answerNode : backgroundNode) {
+                    for (int i = 0; i < backgroundNode.size() && i < classTemplate.getBackground().size(); i++) {
+                        JsonNode answerNode = backgroundNode.get(i);
+                        ClassTemplate.BackgroundQuestion templateQuestion = classTemplate.getBackground().get(i);
+                        String aiAnswer = answerNode.path("answer").asText("");
+
+                        // Match against valid template answers (case-insensitive)
+                        String matchedAnswer = templateQuestion.getAnswers().stream()
+                                .filter(a -> a.equalsIgnoreCase(aiAnswer.trim()))
+                                .findFirst()
+                                .orElse(aiAnswer);
+
                         background.add(Map.of(
-                            "question", answerNode.path("question").asText(""),
-                            "answer", answerNode.path("answer").asText("")
+                            "question", templateQuestion.getName(),
+                            "answer", matchedAnswer
                         ));
                     }
                 }

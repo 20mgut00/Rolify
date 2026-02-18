@@ -251,6 +251,7 @@ public class AuthService {
                 .emailVerified(user.getEmailVerified())
                 .totalCharacters(user.getTotalCharacters())
                 .publicCharacters(user.getPublicCharacters())
+                .createdAt(user.getCreatedAt())
                 .build();
     }
 }

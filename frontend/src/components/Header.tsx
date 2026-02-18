@@ -27,20 +27,26 @@ import {
   Warning,
   DarkMode,
   LightMode,
+  Language,
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { useAccessibilityStore, useAuthStore, useUIStore } from '../store';
 import LoginModal from './auth/LoginModal';
 
 export default function Header() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const theme = useTheme();
   const navigate = useNavigate();
-  const { darkMode, setDarkMode } = useAccessibilityStore();
+  const { darkMode, setDarkMode, language, setLanguage } = useAccessibilityStore();
   const { user, isAuthenticated, logout } = useAuthStore();
   const { selectedSystem, setSelectedSystem } = useUIStore();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [showLoginModal, setShowLoginModal] = useState(false);
+
+  const handleLanguageChange = (lang: string) => {
+    setLanguage(lang);
+    i18n.changeLanguage(lang);
+  };
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -129,6 +135,27 @@ export default function Header() {
           >
             {t('header.gallery')}
           </Button>
+
+          <FormControl size="small" sx={{ minWidth: 80 }}>
+            <Select
+              value={language}
+              onChange={(e) => handleLanguageChange(e.target.value)}
+              MenuProps={{ disableScrollLock: true }}
+              startAdornment={<Language sx={{ mr: 0.5, fontSize: 18, color: 'primary.main' }} />}
+              sx={{
+                fontFamily: 'Cinzel',
+                fontWeight: 500,
+                fontSize: '0.85rem',
+                '& .MuiOutlinedInput-notchedOutline': {
+                  borderColor: 'primary.main',
+                  borderWidth: 2,
+                },
+              }}
+            >
+              <MenuItem value="es" sx={{ fontFamily: 'Cinzel' }}>ES</MenuItem>
+              <MenuItem value="en" sx={{ fontFamily: 'Cinzel' }}>EN</MenuItem>
+            </Select>
+          </FormControl>
 
           <IconButton
             onClick={() => setDarkMode(!darkMode)}
