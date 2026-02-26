@@ -4,7 +4,6 @@ import com.rpgcharacter.config.JwtUtil;
 import com.rpgcharacter.dto.AuthDTO;
 import com.rpgcharacter.exception.BusinessException;
 import com.rpgcharacter.exception.ResourceNotFoundException;
-import com.rpgcharacter.exception.ValidationException;
 import com.rpgcharacter.model.User;
 import com.rpgcharacter.model.VerificationToken;
 import com.rpgcharacter.repository.UserRepository;
@@ -40,9 +39,12 @@ public class AuthService {
     
     @Transactional
     public AuthDTO.AuthResponse register(AuthDTO.RegisterRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new RuntimeException("Email already registered");
-        }
+        userRepository.findByEmail(request.getEmail()).ifPresent(existing -> {
+            if (existing.getProvider() == User.AuthProvider.GOOGLE) {
+                throw new BusinessException("This email is already registered with Google. Please sign in with Google.");
+            }
+            throw new BusinessException("This email is already registered. Please sign in.");
+        });
         
         User user = User.builder()
                 .email(request.getEmail())
@@ -97,8 +99,8 @@ public class AuthService {
         );
         
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
         String jwtToken = jwtUtil.generateToken(user.getEmail());
         String refreshToken = jwtUtil.generateRefreshToken(user.getEmail());
         
@@ -112,18 +114,18 @@ public class AuthService {
     @Transactional
     public void verifyEmail(String token) {
         VerificationToken verificationToken = tokenRepository.findByToken(token)
-                .orElseThrow(() -> new RuntimeException("Invalid verification token"));
-        
+                .orElseThrow(() -> new BusinessException("Invalid verification token"));
+
         if (verificationToken.isExpired()) {
-            throw new RuntimeException("Verification token has expired");
+            throw new BusinessException("Verification token has expired");
         }
-        
+
         if (verificationToken.getUsed()) {
-            throw new RuntimeException("Verification token already used");
+            throw new BusinessException("Verification token already used");
         }
-        
+
         User user = userRepository.findById(verificationToken.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         
         user.setEmailVerified(true);
         userRepository.save(user);
@@ -135,8 +137,8 @@ public class AuthService {
     @Transactional
     public void requestPasswordReset(String email) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
         // Delete any existing password reset tokens
         tokenRepository.findByUserIdAndType(user.getId(), VerificationToken.TokenType.PASSWORD_RESET)
                 .ifPresent(tokenRepository::delete);
@@ -166,18 +168,18 @@ public class AuthService {
     @Transactional
     public void resetPassword(AuthDTO.PasswordResetConfirm request) {
         VerificationToken resetToken = tokenRepository.findByToken(request.getToken())
-                .orElseThrow(() -> new RuntimeException("Invalid reset token"));
-        
+                .orElseThrow(() -> new BusinessException("Invalid reset token"));
+
         if (resetToken.isExpired()) {
-            throw new RuntimeException("Reset token has expired");
+            throw new BusinessException("Reset token has expired");
         }
-        
+
         if (resetToken.getUsed()) {
-            throw new RuntimeException("Reset token already used");
+            throw new BusinessException("Reset token already used");
         }
-        
+
         User user = userRepository.findById(resetToken.getUserId())
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
         userRepository.save(user);
@@ -189,10 +191,10 @@ public class AuthService {
     @Transactional
     public void changePassword(String email, AuthDTO.ChangePasswordRequest request) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
         if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
-            throw new RuntimeException("Current password is incorrect");
+            throw new BusinessException("Current password is incorrect");
         }
         
         user.setPassword(passwordEncoder.encode(request.getNewPassword()));
@@ -202,10 +204,10 @@ public class AuthService {
     public AuthDTO.AuthResponse refreshToken(String refreshToken) {
         String email = jwtUtil.extractUsername(refreshToken);
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
         if (!jwtUtil.validateToken(refreshToken, email)) {
-            throw new RuntimeException("Invalid refresh token");
+            throw new BusinessException("Invalid refresh token");
         }
         
         String newToken = jwtUtil.generateToken(email);
@@ -220,14 +222,14 @@ public class AuthService {
 
     public AuthDTO.UserDTO getUserInfo(String email) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         return mapToUserDTO(user);
     }
 
     @Transactional
     public void deleteAccount(String email) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
         // Delete all characters associated with the user
         long deletedCharacters = characterRepository.deleteByUserId(user.getId());

@@ -1,6 +1,9 @@
 package com.rpgcharacter.service;
 
 import com.rpgcharacter.dto.CharacterDTO;
+import com.rpgcharacter.exception.BusinessException;
+import com.rpgcharacter.exception.ResourceNotFoundException;
+import com.rpgcharacter.exception.UnauthorizedException;
 import com.rpgcharacter.model.Character;
 import com.rpgcharacter.model.ClassTemplate;
 import com.rpgcharacter.repository.CharacterRepository;
@@ -35,7 +38,7 @@ public class CharacterService {
         // Validate class template exists
         ClassTemplate template = classTemplateRepository
                 .findBySystemAndClassName(request.getSystem(), request.getClassName())
-                .orElseThrow(() -> new RuntimeException("Class template not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Class template not found"));
 
         // Validate character data against template
         validateCharacter(request, template);
@@ -65,19 +68,19 @@ public class CharacterService {
     @Transactional
     public CharacterDTO.Response updateCharacter(String id, CharacterDTO.UpdateRequest request, String userEmail) {
         Character character = characterRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Character not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Character not found"));
 
         // Verify ownership
         if (userEmail != null) {
             final Character finalCharacter = character;
             userRepository.findByEmail(userEmail).ifPresent(user -> {
                 if (!user.getId().equals(finalCharacter.getUserId())) {
-                    throw new RuntimeException("Unauthorized to update this character");
+                    throw new UnauthorizedException("Unauthorized to update this character");
                 }
             });
         } else {
             if (character.getUserId() != null && !character.getUserId().isBlank()) {
-                throw new RuntimeException("Must be logged in to update this character");
+                throw new UnauthorizedException("Must be logged in to update this character");
             }
         }
         
@@ -122,13 +125,13 @@ public class CharacterService {
     @Transactional
     public void deleteCharacter(String id, String userEmail) {
         Character character = characterRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Character not found"));
-        
+                .orElseThrow(() -> new ResourceNotFoundException("Character not found"));
+
         // Verify ownership
         if (userEmail != null) {
             userRepository.findByEmail(userEmail).ifPresent(user -> {
                 if (!user.getId().equals(character.getUserId())) {
-                    throw new RuntimeException("Unauthorized to delete this character");
+                    throw new UnauthorizedException("Unauthorized to delete this character");
                 }
                 
                 // Update user statistics
@@ -139,7 +142,7 @@ public class CharacterService {
                 userRepository.save(user);
             });
         } else {
-            throw new RuntimeException("Must be logged in to delete character");
+            throw new UnauthorizedException("Must be logged in to delete character");
         }
         
         characterRepository.delete(character);
@@ -154,13 +157,13 @@ public class CharacterService {
                     .map(character -> mapToCardResponse(character, creatorNamesById))
                     .collect(Collectors.toList());
             })
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
     }
     
     public CharacterDTO.Response getCharacter(String id, String userEmail) {
         Character character = characterRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Character not found"));
-        
+                .orElseThrow(() -> new ResourceNotFoundException("Character not found"));
+
         // Check if user can access this character
         if (!Boolean.TRUE.equals(character.getIsPublic())) {
             if (character.getUserId() == null || character.getUserId().isBlank()) {
@@ -168,12 +171,12 @@ public class CharacterService {
             }
 
             if (userEmail == null) {
-                throw new RuntimeException("Character is private");
+                throw new UnauthorizedException("Character is private");
             }
-            
+
             userRepository.findByEmail(userEmail).ifPresent(user -> {
                 if (!user.getId().equals(character.getUserId())) {
-                    throw new RuntimeException("Unauthorized to view this character");
+                    throw new UnauthorizedException("Unauthorized to view this character");
                 }
             });
         }
@@ -236,7 +239,7 @@ public class CharacterService {
                     .filter(CharacterDTO.SelectedOptionDTO::getSelected)
                     .count();
             if (template.getMaxDrives() != null && selectedDrives > template.getMaxDrives()) {
-                throw new RuntimeException("Too many drives selected. Max: " + template.getMaxDrives());
+                throw new BusinessException("Too many drives selected. Max: " + template.getMaxDrives());
             }
         }
         
@@ -246,7 +249,7 @@ public class CharacterService {
                     .filter(CharacterDTO.SelectedOptionDTO::getSelected)
                     .count();
             if (template.getMaxMoves() != null && selectedMoves > template.getMaxMoves()) {
-                throw new RuntimeException("Too many moves selected. Max: " + template.getMaxMoves());
+                throw new BusinessException("Too many moves selected. Max: " + template.getMaxMoves());
             }
         }
         
@@ -256,7 +259,7 @@ public class CharacterService {
                     .filter(CharacterDTO.SelectedOptionDTO::getSelected)
                     .count();
             if (template.getMaxNature() != null && selectedNature > template.getMaxNature()) {
-                throw new RuntimeException("Too many nature options selected. Max: " + template.getMaxNature());
+                throw new BusinessException("Too many nature options selected. Max: " + template.getMaxNature());
             }
         }
     }

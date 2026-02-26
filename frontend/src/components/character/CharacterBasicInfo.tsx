@@ -11,7 +11,6 @@ interface CharacterBasicInfoProps {
   defaultImage?: string;
   onImageChange: (image: string) => void;
   validationErrors?: Record<string, string>;
-  isEditing?: boolean;
 }
 
 const textFieldStyles = {
@@ -54,7 +53,6 @@ export default function CharacterBasicInfo({
   defaultImage,
   onImageChange,
   validationErrors = {},
-  isEditing = false,
 }: CharacterBasicInfoProps) {
   const { t } = useTranslation();
 

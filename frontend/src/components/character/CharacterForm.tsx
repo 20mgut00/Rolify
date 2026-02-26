@@ -163,7 +163,6 @@ export default function CharacterForm() {
               avatarImage={watchedFields.avatarImage}
               onImageChange={setField('avatarImage')}
               validationErrors={validationErrors}
-              isEditing={isEditing}
             />
 
             <CharacterFormFields

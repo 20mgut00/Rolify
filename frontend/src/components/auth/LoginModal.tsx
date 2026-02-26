@@ -117,7 +117,15 @@ export default function LoginModal({ onClose, open }: LoginModalProps) {
       toast.success(t('auth.registrationSuccess'));
       onClose();
     } catch (error) {
-      toast.error(getErrorMessage(error, t('errors.registrationFailed')));
+      const message = getErrorMessage(error, t('errors.registrationFailed'));
+      const isGoogleAccount = axios.isAxiosError(error) &&
+        error.response?.data?.message?.toLowerCase().includes('google');
+      if (isGoogleAccount) {
+        switchMode('login');
+        toast.error(message, { duration: 6000 });
+      } else {
+        toast.error(message);
+      }
     } finally {
       setIsLoading(false);
     }
