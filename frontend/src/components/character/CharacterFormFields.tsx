@@ -97,7 +97,6 @@ export default function CharacterFormFields({
             background={selectedClass.background}
             onBackgroundSelect={onBackgroundChange}
             initialValues={watchedFields.background}
-            disabled={isEditing}
           />
         </Card>
       </div>

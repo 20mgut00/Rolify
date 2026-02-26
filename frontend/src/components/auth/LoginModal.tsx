@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react';
+import axios from 'axios';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -87,6 +88,13 @@ export default function LoginModal({ onClose, open }: LoginModalProps) {
     resolver: zodResolver(forgotPasswordSchema),
   });
 
+  const getErrorMessage = (error: unknown, fallback: string): string => {
+    if (axios.isAxiosError(error)) {
+      return error.response?.data?.message || error.response?.data?.error || fallback;
+    }
+    return fallback;
+  };
+
   const onLogin = async (data: LoginFormData) => {
     setIsLoading(true);
     try {
@@ -95,8 +103,7 @@ export default function LoginModal({ onClose, open }: LoginModalProps) {
       toast.success(t('auth.welcomeBackToast'));
       onClose();
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : t('errors.loginFailed');
-      toast.error(errorMessage);
+      toast.error(getErrorMessage(error, t('errors.loginFailed')));
     } finally {
       setIsLoading(false);
     }
@@ -110,8 +117,7 @@ export default function LoginModal({ onClose, open }: LoginModalProps) {
       toast.success(t('auth.registrationSuccess'));
       onClose();
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : t('errors.registrationFailed');
-      toast.error(errorMessage);
+      toast.error(getErrorMessage(error, t('errors.registrationFailed')));
     } finally {
       setIsLoading(false);
     }
@@ -125,8 +131,7 @@ export default function LoginModal({ onClose, open }: LoginModalProps) {
       setMode('login');
       resetForgot();
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : t('errors.sendResetEmailFailed');
-      toast.error(errorMessage);
+      toast.error(getErrorMessage(error, t('errors.sendResetEmailFailed')));
     } finally {
       setIsLoading(false);
     }

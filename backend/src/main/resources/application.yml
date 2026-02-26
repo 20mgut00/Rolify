@@ -7,18 +7,6 @@ spring:
       # La URI se lee automáticamente desde la variable SPRING_DATA_MONGODB_URI
       database: ${MONGODB_DATABASE:rpg-characters}
   
-  mail:
-    host: ${MAIL_HOST:smtp.resend.com}
-    port: ${MAIL_PORT:587}
-    username: ${MAIL_USERNAME:resend}
-    password: ${MAIL_PASSWORD:your-api-key}
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
-  
   security:
     oauth2:
       client:
@@ -62,7 +50,8 @@ app:
     url: ${FRONTEND_URL:http://localhost:5173}
 
   email:
-    from: ${EMAIL_FROM:noreply@rpgcharacters.com}
+    from: ${EMAIL_FROM:onboarding@resend.dev}
+    resend-api-key: ${RESEND_API_KEY}
     verification:
       expiration: 3600000 # 1 hour
 

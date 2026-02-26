@@ -80,7 +80,6 @@ export default function CharacterBasicInfo({
             variant="outlined"
             size="small"
             fullWidth
-            disabled={isEditing}
             {...register('name')}
             sx={textFieldStyles}
             slotProps={inputProps}
@@ -97,7 +96,6 @@ export default function CharacterBasicInfo({
             variant="outlined"
             size="small"
             fullWidth
-            disabled={isEditing}
             {...register('species')}
             sx={textFieldStyles}
             slotProps={inputProps}
@@ -114,7 +112,6 @@ export default function CharacterBasicInfo({
             variant="outlined"
             size="small"
             fullWidth
-            disabled={isEditing}
             {...register('details')}
             sx={textFieldStyles}
             slotProps={inputProps}
@@ -131,7 +128,6 @@ export default function CharacterBasicInfo({
             variant="outlined"
             size="small"
             fullWidth
-            disabled={isEditing}
             {...register('demeanor')}
             sx={textFieldStyles}
             slotProps={inputProps}
