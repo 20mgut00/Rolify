@@ -42,6 +42,7 @@ const es = {
     lightMode: 'Modo claro',
     darkMode: 'Modo oscuro',
     changeLanguage: 'Cambiar idioma',
+    menu: 'Menú',
   },
 
   hero: {
