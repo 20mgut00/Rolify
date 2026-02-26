@@ -15,15 +15,15 @@ export default function CharacterFormHeader({ isEditing }: CharacterFormHeaderPr
       <button
         type="button"
         onClick={() => navigate('/library')}
-        className="flex items-center gap-2 text-primary-dark hover:text-accent-gold transition"
+        className="flex items-center gap-2 text-primary-dark hover:text-accent-gold transition shrink-0"
       >
         <ArrowLeft size={20} />
-        <span className="font-medium">{t('characterForm.backToLibrary')}</span>
+        <span className="font-medium hidden sm:inline">{t('characterForm.backToLibrary')}</span>
       </button>
-      <h1 className="text-3xl font-bold text-primary-dark">
+      <h1 className="text-lg sm:text-3xl font-bold text-primary-dark text-center px-2">
         {isEditing ? t('characterForm.editCharacter') : t('characterForm.characterSheet')}
       </h1>
-      <div className="w-32" />
+      <div className="w-8 sm:w-32 shrink-0" />
     </div>
   );
 }

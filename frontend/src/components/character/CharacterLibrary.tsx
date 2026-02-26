@@ -168,12 +168,12 @@ export default function CharacterLibrary() {
 
   return (
     <div className="min-h-screen bg-primary-light">
-      <div className="container mx-auto px-4 py-12">
+      <div className="container mx-auto px-4 py-6 sm:py-12">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-8">
           <div>
-            <h1 className="font-cinzel text-4xl md:text-5xl font-bold text-primary-dark mb-2">
+            <h1 className="font-cinzel text-3xl sm:text-4xl md:text-5xl font-bold text-primary-dark mb-2">
               {t('characterLibrary.title')}
             </h1>
             <p className="text-primary-dark/70">
@@ -181,7 +181,7 @@ export default function CharacterLibrary() {
             </p>
           </div>
           
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-3">
             {isAuthenticated && (
               <>
                 <input

@@ -87,9 +87,9 @@ export default function Settings() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-12">
+    <div className="container mx-auto px-4 py-6 sm:py-12">
       <div className="max-w-3xl mx-auto">
-        <h1 className="font-cinzel text-4xl font-bold text-primary-dark mb-8">
+        <h1 className="font-cinzel text-3xl sm:text-4xl font-bold text-primary-dark mb-6 sm:mb-8">
           {t('settings.title')}
         </h1>
 

@@ -212,7 +212,7 @@ export default function Header() {
 
   return (
     <>
-      <AppBar position="sticky" sx={{ bgcolor: 'background.paper' }}>
+      <AppBar position="relative" sx={{ bgcolor: 'background.paper' }}>
         <Toolbar sx={{ py: 1, display: 'flex', justifyContent: 'space-between' }}>
           {/* Logo */}
           <Box

@@ -110,8 +110,8 @@ export default function CharacterForm() {
   }
 
   return (
-    <main className="max-w-7xl mx-auto px-6 py-8 bg-primary-light min-h-screen">
-      <div className="bg-white rounded-xl shadow-xl p-8 border border-accent-gold/20 dark-shared-panel">
+    <main className="max-w-7xl mx-auto px-3 sm:px-6 py-6 sm:py-8 bg-primary-light min-h-screen">
+      <div className="bg-white rounded-xl shadow-xl p-4 sm:p-8 border border-accent-gold/20 dark-shared-panel">
         <CharacterFormHeader isEditing={isEditing} />
 
         <ClassSelector
@@ -129,7 +129,7 @@ export default function CharacterForm() {
           }}
         />
 
-        <div className="flex items-center justify-between mt-6 mb-4">
+        <div className="flex flex-wrap items-center justify-between gap-2 mt-6 mb-4">
           <h3 className="text-xl font-semibold text-primary-dark">
             {t('characterForm.characterDetails')}
           </h3>
@@ -138,17 +138,17 @@ export default function CharacterForm() {
               type="button"
               onClick={handleGenerateCharacter}
               disabled={isGenerating || !selectedClass}
-              className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed relative"
+              className="flex items-center gap-2 px-3 py-2 text-sm bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed relative"
               title={!isAuthenticated ? t('characterForm.loginRequiredAI') : undefined}
             >
               {isGenerating ? (
                 <>
-                  {!reducedMotion && <CircularProgress size={18} sx={{ color: 'white' }} />}
+                  {!reducedMotion && <CircularProgress size={16} sx={{ color: 'white' }} />}
                   <span className={reducedMotion ? '' : 'animate-pulse'}>{t('characterForm.generatingWithAI')}</span>
                 </>
               ) : (
                 <>
-                  <Wand2 size={18} />
+                  <Wand2 size={16} />
                   {t('characterForm.autoFillWithAI')}
                 </>
               )}
@@ -157,7 +157,7 @@ export default function CharacterForm() {
         </div>
 
         <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <CharacterBasicInfo
               register={register}
               avatarImage={watchedFields.avatarImage}
@@ -184,9 +184,9 @@ export default function CharacterForm() {
               validationErrors={validationErrors}
             />
 
-            {/* Public Toggle - col-span-2 (only if authenticated) */}
+            {/* Public Toggle - col-span-2 on desktop only */}
             {isAuthenticated && (
-              <div className="col-span-2">
+              <div className="md:col-span-2">
                 <Card label={t('characterForm.visibility')}>
                   <label className="flex items-center gap-3 cursor-pointer">
                     <input
@@ -204,7 +204,7 @@ export default function CharacterForm() {
             )}
 
             {/* Submit Button */}
-            <div className="col-span-2">
+            <div className="md:col-span-2">
               <button
                 type="submit"
                 disabled={isSaving}

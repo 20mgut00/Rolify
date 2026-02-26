@@ -32,7 +32,7 @@ export default function NatureSelector({
   };
 
   if (!nature || nature.length === 0) {
-    return <p className="text-sm text-primary-dark/60">No nature options available</p>;
+    return <p className="text-sm text-primary-dark/60">{t('characterFormFields.noNatureOptions')}</p>;
   }
 
   return (

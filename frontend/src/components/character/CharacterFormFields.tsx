@@ -89,8 +89,8 @@ export default function CharacterFormFields({
         </Card>
       </div>
 
-      {/* Background - row-span-3 */}
-      <div className="row-span-3">
+      {/* Background - row-span-3 on desktop only */}
+      <div className="md:row-span-3">
         <Card label={t('characterFormFields.background')}>
           <BackgroundSelector
             key={isEditing ? `background-edit-${editId}` : `background-${selectedClass.className || selectedClassIndex}`}
@@ -101,8 +101,8 @@ export default function CharacterFormFields({
         </Card>
       </div>
 
-      {/* Drives - row-span-2 */}
-      <div className="row-span-2">
+      {/* Drives - row-span-2 on desktop only */}
+      <div className="md:row-span-2">
         <Card
           label={t('characterFormFields.drives')}
           desc={t('characterFormFields.drivesDesc', { count: maxDrives })}
@@ -141,8 +141,8 @@ export default function CharacterFormFields({
         </Card>
       </div>
 
-      {/* Reputation - col-span-2 */}
-      <div className="col-span-2">
+      {/* Reputation - col-span-2 on desktop only */}
+      <div className="md:col-span-2">
         <Card label={t('characterFormFields.reputation')} desc={t('characterFormFields.reputationDesc')}>
           <ReputationSelector
             key={isEditing ? `reputation-edit-${editId}` : `reputation-${selectedClass.className || selectedClassIndex}`}
@@ -153,8 +153,8 @@ export default function CharacterFormFields({
         </Card>
       </div>
 
-      {/* Moves - col-span-2 */}
-      <div className="col-span-2">
+      {/* Moves - col-span-2 on desktop only */}
+      <div className="md:col-span-2">
         <Card label={t('characterFormFields.moves')} desc={t('characterFormFields.movesDesc')} required error={validationErrors.moves}>
           <MovesSelector
             moves={selectedClass.moves}
@@ -196,8 +196,8 @@ export default function CharacterFormFields({
         </Card>
       </div>
 
-      {/* Equipment - col-span-2 */}
-      <div className="col-span-2">
+      {/* Equipment - col-span-2 on desktop only */}
+      <div className="md:col-span-2">
         <Card label={t('characterFormFields.equipment')} desc={t('characterFormFields.equipmentDesc')}>
           <TextField
             id="equipment"

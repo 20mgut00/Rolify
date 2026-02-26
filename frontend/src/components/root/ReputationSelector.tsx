@@ -2,6 +2,7 @@ import TextField from "@mui/material/TextField";
 import { useState, useEffect, useRef } from "react";
 import { CircleX, Minus, Plus } from "lucide-react";
 import Button from "../common/Button";
+import { useTranslation } from "react-i18next";
 
 // Infamia:  0–9 marks  → 3 marks per level → nivel 0, -1, -2, -3
 // Prestigio: 0–15 marks → 5 marks per level → nivel 0, +1, +2, +3
@@ -49,6 +50,7 @@ export default function ReputationSelector({
   backgroundAnswers,
   initialValues,
 }: ReputationSelectorProps) {
+  const { t } = useTranslation();
   const onChangeRef = useRef(onChange);
   const hasInitialized = useRef(false);
   const isFirstRender = useRef(true);
@@ -144,7 +146,7 @@ export default function ReputationSelector({
   return (
     <div className="space-y-3">
       <Button
-        label="Añadir facción"
+        label={t('reputationSelector.addFaction')}
         onClick={() =>
           setFactions((prev) => [
             ...prev,
@@ -176,9 +178,9 @@ export default function ReputationSelector({
                 variant="standard"
                 value={faction.name}
                 onChange={(e) => handleNameChange(faction.id, e.target.value)}
-                placeholder="Nombre de la facción"
+                placeholder={t('reputationSelector.factionNamePlaceholder')}
                 error={duplicate}
-                helperText={duplicate ? "Nombre duplicado" : undefined}
+                helperText={duplicate ? t('reputationSelector.duplicateName') : undefined}
                 fullWidth
                 sx={{
                   "& .MuiInputBase-input": { color: "var(--color-primary-dark)" },
@@ -209,12 +211,12 @@ export default function ReputationSelector({
               <div className="flex gap-2 flex-wrap">
                 {isServedMost && (
                   <span className="text-xs px-2 py-0.5 rounded-full border border-green-600/50 text-green-400 bg-green-900/20">
-                    +2 prestigio (trasfondo)
+                    {t('reputationSelector.prestigeFromBackground')}
                   </span>
                 )}
                 {isEnmity && (
                   <span className="text-xs px-2 py-0.5 rounded-full border border-red-600/50 text-red-400 bg-red-900/20">
-                    −1 infamia (trasfondo)
+                    {t('reputationSelector.notorietyFromBackground')}
                   </span>
                 )}
               </div>
@@ -225,7 +227,7 @@ export default function ReputationSelector({
               {/* Infamia */}
               <div className="flex flex-col items-center gap-1.5">
                 <span className="text-xs font-semibold uppercase tracking-wider text-red-400">
-                  Infamia
+                  {t('characterViewer.notoriety')}
                 </span>
                 <div className="flex items-center gap-2">
                   <button
@@ -263,7 +265,7 @@ export default function ReputationSelector({
                   </button>
                 </div>
                 <span className="text-xs text-red-400/70">
-                  {notorietyLevel === 0 ? "sin infamia" : `nivel ${notorietyLevel}`}
+                  {notorietyLevel === 0 ? t('reputationSelector.noNotoriety') : `${t('reputationSelector.level')} ${notorietyLevel}`}
                 </span>
               </div>
 
@@ -273,7 +275,7 @@ export default function ReputationSelector({
               {/* Prestigio */}
               <div className="flex flex-col items-center gap-1.5">
                 <span className="text-xs font-semibold uppercase tracking-wider text-accent-gold">
-                  Prestigio
+                  {t('characterViewer.prestige')}
                 </span>
                 <div className="flex items-center gap-2">
                   <button
@@ -311,7 +313,7 @@ export default function ReputationSelector({
                   </button>
                 </div>
                 <span className="text-xs text-accent-gold/70">
-                  {prestigeLevel === 0 ? "sin prestigio" : `nivel +${prestigeLevel}`}
+                  {prestigeLevel === 0 ? t('reputationSelector.noPrestige') : `${t('reputationSelector.level')} +${prestigeLevel}`}
                 </span>
               </div>
             </div>

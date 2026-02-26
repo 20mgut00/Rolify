@@ -72,7 +72,7 @@ function RoguishFeatsSelector({
   }, [selectedNames, lockedFeats, roguishFeats?.feats, onFeatsSelect]);
 
   if (!roguishFeats || !roguishFeats.feats || roguishFeats.feats.length === 0) {
-    return <p className="text-sm text-primary-dark/60">No roguish feats available</p>;
+    return <p className="text-sm text-primary-dark/60">{t('characterFormFields.noRoguishFeats')}</p>;
   }
 
   return (

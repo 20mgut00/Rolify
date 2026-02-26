@@ -17,6 +17,7 @@ export default function CharacterViewer() {
   const navigate = useNavigate();
   const { user } = useAuthStore();
   const { t, i18n } = useTranslation();
+  const tg = (key: string, fallback: string) => { const r = (t as (k: string) => string)(key); return r === key ? fallback : r; };
   const [showExportMenu, setShowExportMenu] = useState(false);
 
   const { data: character, isLoading } = useQuery({
@@ -98,11 +99,11 @@ export default function CharacterViewer() {
   }
 
   return (
-    <main className="max-w-7xl mx-auto px-6 py-8 bg-primary-light min-h-screen">
-      <div className="container mx-auto px-4">
+    <main className="max-w-7xl mx-auto px-3 sm:px-6 py-6 sm:py-8 bg-primary-light min-h-screen">
+      <div className="container mx-auto px-0 sm:px-4">
         <div className="max-w-5xl mx-auto">
           {/* Header Actions */}
-          <div className="flex flex-wrap items-center justify-between gap-4 mb-8">
+          <div className="flex flex-wrap items-center justify-between gap-3 mb-6 sm:mb-8">
             <button
               type="button"
               onClick={() => navigate(-1)}
@@ -112,7 +113,7 @@ export default function CharacterViewer() {
               <span className="font-medium">{t('common.back')}</span>
             </button>
 
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               {isOwner && (
                 <button
                   type="button"
@@ -178,30 +179,30 @@ export default function CharacterViewer() {
           {/* Character Sheet */}
           <div className="bg-white rounded-2xl shadow-2xl overflow-hidden dark-shared-panel">
             {/* Hero Section */}
-            <div className="bg-linear-to-r from-primary-light via-primary-light to-accent-gold/10 p-8 border-b-4 border-accent-gold relative overflow-hidden">
-              <div className="relative z-10 flex flex-col md:flex-row items-center gap-6">
+            <div className="bg-linear-to-r from-primary-light via-primary-light to-accent-gold/10 p-4 sm:p-8 border-b-4 border-accent-gold relative overflow-hidden">
+              <div className="relative z-10 flex flex-col md:flex-row items-center gap-4 sm:gap-6">
                 {character.avatarImage ? (
                   <img
                     src={getAvatarUrl(character.avatarImage)}
                     alt={character.name}
-                    className="w-32 h-32 rounded-full border-4 border-accent-gold shadow-xl object-cover"
+                    className="w-24 h-24 sm:w-32 sm:h-32 rounded-full border-4 border-accent-gold shadow-xl object-cover"
                   />
                 ) : (
-                  <div className="w-32 h-32 rounded-full border-4 border-accent-gold shadow-xl bg-primary-light flex items-center justify-center">
-                    <span className="font-cinzel text-6xl text-primary-dark/40">
+                  <div className="w-24 h-24 sm:w-32 sm:h-32 rounded-full border-4 border-accent-gold shadow-xl bg-primary-light flex items-center justify-center">
+                    <span className="font-cinzel text-5xl sm:text-6xl text-primary-dark/40">
                       {character.name[0]}
                     </span>
                   </div>
                 )}
 
                 <div className="text-center md:text-left flex-1">
-                  <h1 className="font-cinzel text-4xl md:text-5xl font-bold mb-2 text-primary-dark">
+                  <h1 className="font-cinzel text-2xl sm:text-4xl md:text-5xl font-bold mb-2 text-primary-dark">
                     {character.name}
                   </h1>
-                  <p className="text-xl text-accent-gold font-semibold mb-1">
-                    {character.className} • {character.system}
+                  <p className="text-base sm:text-xl text-accent-gold font-semibold mb-1">
+                    {tg(`gameData.classes.${character.className}.name`, character.className)} • {character.system}
                   </p>
-                  <p className="text-primary-dark/80 mb-2">
+                  <p className="text-sm sm:text-base text-primary-dark/80 mb-2">
                     {character.species} • {character.demeanor}
                   </p>
                   <div className="flex items-center justify-center md:justify-start gap-2">
@@ -224,18 +225,18 @@ export default function CharacterViewer() {
               </div>
             </div>
 
-            <div className="p-8">
+            <div className="p-4 sm:p-8">
               {/* Stats */}
-              <section className="mb-8">
-                <h2 className="font-cinzel text-2xl font-bold text-primary-dark mb-4 flex items-center gap-2">
-                  <Zap className="text-accent-gold" size={24} />
+              <section className="mb-6 sm:mb-8">
+                <h2 className="font-cinzel text-xl sm:text-2xl font-bold text-primary-dark mb-4 flex items-center gap-2">
+                  <Zap className="text-accent-gold" size={22} />
                   {t('characterViewer.stats')}
                 </h2>
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                <div className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-5 gap-3 sm:gap-4">
                   {character.stats.map((stat) => (
                     <div key={stat.name} className="text-center p-4 bg-primary-light rounded-lg dark-field">
                       <div className="font-cinzel font-bold text-sm text-primary-dark/70 uppercase mb-1">
-                        {stat.name}
+                        {tg(`gameData.stats.${stat.name}`, stat.name)}
                       </div>
                       <div className={`text-3xl font-bold ${stat.value >= 0 ? 'text-accent-gold' : 'text-primary-dark/50'}`}>
                         {stat.value >= 0 ? '+' : ''}{stat.value}
@@ -246,16 +247,16 @@ export default function CharacterViewer() {
               </section>
 
               {/* Background */}
-              <section className="mb-8">
-                <h2 className="font-cinzel text-2xl font-bold text-primary-dark mb-4 flex items-center gap-2">
-                  <Heart className="text-accent-gold" size={24} />
+              <section className="mb-6 sm:mb-8">
+                <h2 className="font-cinzel text-xl sm:text-2xl font-bold text-primary-dark mb-4 flex items-center gap-2">
+                  <Heart className="text-accent-gold" size={22} />
                   {t('characterViewer.background')}
                 </h2>
                 <div className="space-y-3">
                   {character.background.map((bg, idx) => (
                     <div key={idx} className="p-4 bg-primary-light rounded-lg dark-field">
-                      <div className="font-semibold text-primary-dark mb-1">{bg.question}</div>
-                      <div className="text-primary-dark/70">{bg.answer}</div>
+                      <div className="font-semibold text-primary-dark mb-1">{tg(`gameData.backgrounds.${bg.question}.question`, bg.question)}</div>
+                      <div className="text-primary-dark/70">{tg(`gameData.backgrounds.${bg.question}.answers.${bg.answer}`, bg.answer)}</div>
                     </div>
                   ))}
                 </div>
@@ -263,9 +264,9 @@ export default function CharacterViewer() {
 
               {/* Connections */}
               {character.connections && character.connections.length > 0 && (
-                <section className="mb-8">
-                  <h2 className="font-cinzel text-2xl font-bold text-primary-dark mb-4 flex items-center gap-2">
-                    <Users className="text-accent-gold" size={24} />
+                <section className="mb-6 sm:mb-8">
+                  <h2 className="font-cinzel text-xl sm:text-2xl font-bold text-primary-dark mb-4 flex items-center gap-2">
+                    <Users className="text-accent-gold" size={22} />
                     {t('characterViewer.connections')}
                   </h2>
                   <div className="grid md:grid-cols-2 gap-4">
@@ -281,9 +282,9 @@ export default function CharacterViewer() {
 
               {/* Reputation */}
               {character.reputation && character.reputation.factions && Object.keys(character.reputation.factions).length > 0 && (
-                <section className="mb-8">
-                  <h2 className="font-cinzel text-2xl font-bold text-primary-dark mb-4 flex items-center gap-2">
-                    <TrendingUp className="text-accent-gold" size={24} />
+                <section className="mb-6 sm:mb-8">
+                  <h2 className="font-cinzel text-xl sm:text-2xl font-bold text-primary-dark mb-4 flex items-center gap-2">
+                    <TrendingUp className="text-accent-gold" size={22} />
                     {t('characterViewer.reputation')}
                   </h2>
                   <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -312,32 +313,32 @@ export default function CharacterViewer() {
               )}
 
               {/* Nature & Drives */}
-              <div className="grid md:grid-cols-2 gap-8 mb-8">
+              <div className="grid md:grid-cols-2 gap-4 md:gap-8 mb-6 sm:mb-8">
                 <section>
-                  <h2 className="font-cinzel text-2xl font-bold text-primary-dark mb-4 flex items-center gap-2">
-                    <Target className="text-accent-gold" size={24} />
+                  <h2 className="font-cinzel text-xl sm:text-2xl font-bold text-primary-dark mb-4 flex items-center gap-2">
+                    <Target className="text-accent-gold" size={22} />
                     {t('characterViewer.nature')}
                   </h2>
                   <div className="space-y-3">
                     {character.nature.filter(n => n.selected).map((nature, idx) => (
                       <div key={idx} className="p-4 bg-linear-to-r from-accent-gold/10 to-transparent rounded-lg border-l-4 border-accent-gold">
-                        <div className="font-bold text-primary-dark mb-1">{nature.name}</div>
-                        <div className="text-sm text-primary-dark/70">{nature.description}</div>
+                        <div className="font-bold text-primary-dark mb-1">{tg(`gameData.natures.${nature.name}.name`, nature.name)}</div>
+                        <div className="text-sm text-primary-dark/70">{tg(`gameData.natures.${nature.name}.description`, nature.description)}</div>
                       </div>
                     ))}
                   </div>
                 </section>
 
                 <section>
-                  <h2 className="font-cinzel text-2xl font-bold text-primary-dark mb-4 flex items-center gap-2">
-                    <Sparkles className="text-accent-gold" size={24} />
+                  <h2 className="font-cinzel text-xl sm:text-2xl font-bold text-primary-dark mb-4 flex items-center gap-2">
+                    <Sparkles className="text-accent-gold" size={22} />
                     {t('characterViewer.drives')}
                   </h2>
                   <div className="space-y-3">
                     {character.drives.filter(d => d.selected).map((drive, idx) => (
                       <div key={idx} className="p-4 bg-linear-to-r from-accent-gold/10 to-transparent rounded-lg border-l-4 border-accent-gold">
-                        <div className="font-bold text-primary-dark mb-1">{drive.name}</div>
-                        <div className="text-sm text-primary-dark/70">{drive.description}</div>
+                        <div className="font-bold text-primary-dark mb-1">{tg(`gameData.drives.${drive.name}.name`, drive.name)}</div>
+                        <div className="text-sm text-primary-dark/70">{tg(`gameData.drives.${drive.name}.description`, drive.description)}</div>
                       </div>
                     ))}
                   </div>
@@ -345,45 +346,45 @@ export default function CharacterViewer() {
               </div>
 
               {/* Moves */}
-              <section className="mb-8">
-                <h2 className="font-cinzel text-2xl font-bold text-primary-dark mb-4 flex items-center gap-2">
-                  <Shield className="text-accent-gold" size={24} />
+              <section className="mb-6 sm:mb-8">
+                <h2 className="font-cinzel text-xl sm:text-2xl font-bold text-primary-dark mb-4 flex items-center gap-2">
+                  <Shield className="text-accent-gold" size={22} />
                   {t('characterViewer.moves')}
                 </h2>
                 <div className="grid md:grid-cols-2 gap-4">
                   {character.moves.filter(m => m.selected).map((move, idx) => (
                     <div key={idx} className="p-4 bg-primary-light border-2 border-accent-gold/30 rounded-lg hover:border-accent-gold/50 transition dark-field">
-                      <div className="font-bold text-primary-dark mb-2">{move.name}</div>
-                      <div className="text-sm text-primary-dark/70">{move.description}</div>
+                      <div className="font-bold text-primary-dark mb-2">{tg(`gameData.moves.${move.name}.name`, move.name)}</div>
+                      <div className="text-sm text-primary-dark/70">{tg(`gameData.moves.${move.name}.description`, move.description)}</div>
                     </div>
                   ))}
                 </div>
               </section>
 
               {/* Weapon Skills & Roguish Feats */}
-              <div className="grid md:grid-cols-2 gap-8 mb-8">
+              <div className="grid md:grid-cols-2 gap-4 md:gap-8 mb-6 sm:mb-8">
                 <section>
-                  <h2 className="font-cinzel text-2xl font-bold text-primary-dark mb-4 flex items-center gap-2">
-                    <Sword className="text-accent-gold" size={24} />
+                  <h2 className="font-cinzel text-xl sm:text-2xl font-bold text-primary-dark mb-4 flex items-center gap-2">
+                    <Sword className="text-accent-gold" size={22} />
                     {t('characterViewer.weaponSkills')}
                   </h2>
                   <div className="flex flex-wrap gap-2">
                     {character.weaponSkills.skills.filter(s => s.selected).map((skill, idx) => (
                       <div key={idx} className="px-3 py-2 bg-accent-gold/20 text-primary-dark rounded-lg font-medium text-sm">
-                        {skill.name}
+                        {tg(`gameData.weaponSkills.${skill.name}.name`, skill.name)}
                       </div>
                     ))}
                   </div>
                 </section>
 
                 <section>
-                  <h2 className="font-cinzel text-2xl font-bold text-primary-dark mb-4">
+                  <h2 className="font-cinzel text-xl sm:text-2xl font-bold text-primary-dark mb-4">
                     {t('characterViewer.roguishFeats')}
                   </h2>
                   <div className="flex flex-wrap gap-2">
                     {character.roguishFeats.feats.filter(f => f.selected).map((feat, idx) => (
                       <div key={idx} className="px-3 py-2 bg-primary-dark/10 text-primary-dark rounded-lg font-medium text-sm">
-                        {feat.name}
+                        {tg(`gameData.roguishFeats.${feat.name}.name`, feat.name)}
                       </div>
                     ))}
                   </div>
@@ -393,7 +394,7 @@ export default function CharacterViewer() {
               {/* Equipment & Notes */}
               {character.equipment && (
                 <section>
-                  <h2 className="font-cinzel text-2xl font-bold text-primary-dark mb-4">
+                  <h2 className="font-cinzel text-xl sm:text-2xl font-bold text-primary-dark mb-4">
                     {t('characterViewer.equipment')}
                   </h2>
                   <div className="p-4 bg-primary-light rounded-lg whitespace-pre-wrap text-primary-dark dark-field">

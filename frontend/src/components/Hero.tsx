@@ -14,7 +14,7 @@ import { getAvatarUrl } from '../utils/avatarUrl';
 export default function Hero() {
   const { t, i18n } = useTranslation();
   // React 19 feature: Dynamic document title
-  useDocumentTitle('RPG Character Creator - Create Your Adventure');
+  useDocumentTitle(t('hero.pageTitle'));
   const containerRef = useRef<HTMLDivElement | null>(null);
   const isDraggingRef = useRef(false);
   const hasDraggedRef = useRef(false);
@@ -185,13 +185,13 @@ export default function Hero() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-24">
+    <div className="container mx-auto px-4 py-12 sm:py-24">
       {/* Hero Section */}
-      <div className="text-center mb-20">
-        <h1 className="font-cinzel text-5xl md:text-6xl font-bold text-primary-dark mb-4 leading-tight">
+      <div className="text-center mb-10 sm:mb-20">
+        <h1 className="font-cinzel text-3xl sm:text-5xl md:text-6xl font-bold text-primary-dark mb-4 leading-tight">
           {t('hero.title')}
         </h1>
-        <p className="text-lg md:text-2xl text-primary-dark/70 mb-8 max-w-3xl mx-auto">
+        <p className="text-base sm:text-lg md:text-2xl text-primary-dark/70 mb-8 max-w-3xl mx-auto">
           {t('hero.subtitle')}
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -214,8 +214,8 @@ export default function Hero() {
 
       {/* Carousel */}
       {!isLoading && characters.length > 0 && (
-        <div className="mb-20">
-          <h2 className="font-cinzel text-4xl font-bold text-center text-primary-dark mb-8">
+        <div className="mb-10 sm:mb-20">
+          <h2 className="font-cinzel text-2xl sm:text-4xl font-bold text-center text-primary-dark mb-6 sm:mb-8">
             {t('hero.featuredCharacters')}
           </h2>
           <div className="relative bg-white rounded-lg shadow-lg overflow-hidden hero-shared-panel">
@@ -223,7 +223,7 @@ export default function Hero() {
             <style>{`.hide-scrollbar::-webkit-scrollbar{display:none} .hide-scrollbar{-ms-overflow-style:none; scrollbar-width:none;}`}</style>
             <div
               ref={containerRef}
-              className="relative min-h-96 md:min-h-125 flex flex-nowrap gap-6 overflow-auto hide-scrollbar"
+              className="relative min-h-64 sm:min-h-96 md:min-h-125 flex flex-nowrap gap-4 sm:gap-6 overflow-auto hide-scrollbar"
               style={{ touchAction: 'pan-y', cursor: 'grab' }}
               onPointerDown={handlePointerDown}
               onPointerMove={handlePointerMove}
@@ -234,20 +234,20 @@ export default function Hero() {
               {[...characters, ...characters].map((char, index) => (
                 <div
                   key={`${char.id}-${index}`}
-                  className="p-6 md:p-10 flex items-center justify-center shrink-0 min-w-72 sm:min-w-80 md:min-w-96 border-r border-accent-gold/30"
+                  className="p-4 sm:p-6 md:p-10 flex items-center justify-center shrink-0 min-w-56 sm:min-w-80 md:min-w-96 border-r border-accent-gold/30"
                 >
-                  <div className="flex flex-col md:flex-row items-center gap-8 w-full">
+                  <div className="flex flex-col md:flex-row items-center gap-4 sm:gap-8 w-full">
                     {/* Avatar */}
                     <div className="shrink-0">
                       {char.avatarImage ? (
                         <img
                           src={getAvatarUrl(char.avatarImage)}
                           alt={char.name}
-                          className="w-32 h-32 md:w-80 md:h-80 border-accent-gold object-contain"
+                          className="w-24 h-24 sm:w-40 sm:h-40 md:w-64 md:h-64 border-accent-gold object-contain"
                         />
                       ) : (
-                        <div className="w-32 h-32 md:w-48 md:h-48 rounded-full border-4 border-accent-gold shadow-lg bg-accent-gold/10 flex items-center justify-center">
-                          <span className="font-cinzel text-4xl md:text-6xl font-bold text-accent-gold">
+                        <div className="w-20 h-20 sm:w-32 sm:h-32 md:w-48 md:h-48 rounded-full border-4 border-accent-gold shadow-lg bg-accent-gold/10 flex items-center justify-center">
+                          <span className="font-cinzel text-3xl sm:text-4xl md:text-6xl font-bold text-accent-gold">
                             {char.name[0]}
                           </span>
                         </div>
@@ -256,22 +256,22 @@ export default function Hero() {
 
                     {/* Info */}
                     <div className="text-center md:text-left flex-1">
-                      <h3 className="font-cinzel text-3xl md:text-4xl font-bold text-primary-dark mb-2">
+                      <h3 className="font-cinzel text-xl sm:text-3xl md:text-4xl font-bold text-primary-dark mb-1 sm:mb-2">
                         {char.name}
                       </h3>
-                      <p className="text-accent-gold font-semibold mb-2 text-lg">
+                      <p className="text-accent-gold font-semibold mb-1 sm:mb-2 text-sm sm:text-lg">
                         {char.className} • {char.system}
                       </p>
-                      <p className="text-primary-dark/70 mb-1">{char.species}</p>
+                      <p className="text-primary-dark/70 mb-1 text-sm sm:text-base">{char.species}</p>
                       {char.creatorName && (
-                        <p className="text-primary-dark/60 text-sm mb-2">{`${t('common.by')} ${char.creatorName}`}</p>
+                        <p className="text-primary-dark/60 text-xs sm:text-sm mb-1 sm:mb-2">{`${t('common.by')} ${char.creatorName}`}</p>
                       )}
-                      <p className="text-primary-dark/50 text-sm mb-6">
-                        Created {new Date(char.createdAt).toLocaleDateString(i18n.language)}
+                      <p className="text-primary-dark/50 text-xs sm:text-sm mb-3 sm:mb-6">
+                        {t('common.created')} {new Date(char.createdAt).toLocaleDateString(i18n.language)}
                       </p>
                       <RouterLink
                         to={`/character/${char.id}`}
-                        className="bg-accent-gold text-primary-dark px-6 py-2 rounded-lg font-cinzel font-medium cursor-pointer transition-all duration-200 transform-gpu hover:bg-opacity-90 hover:scale-[1.02] hover:-translate-y-px hover:brightness-105 inline-block"
+                        className="bg-accent-gold text-primary-dark px-4 sm:px-6 py-2 rounded-lg font-cinzel font-medium text-sm sm:text-base cursor-pointer transition-all duration-200 transform-gpu hover:bg-opacity-90 hover:scale-[1.02] hover:-translate-y-px hover:brightness-105 inline-block"
                       >
                         {t('hero.viewCharacter')}
                       </RouterLink>
@@ -287,7 +287,7 @@ export default function Hero() {
       )}
 
       {/* Features */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-20">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 mb-10 sm:mb-20">
         {/* Feature 1 */}
         <div className="bg-white rounded-lg shadow-lg p-8 text-center hover:shadow-xl hover:scale-105 transition hero-shared-panel">
           <div className="w-20 h-20 bg-accent-gold rounded-full flex items-center justify-center mx-auto mb-4">
@@ -329,11 +329,11 @@ export default function Hero() {
       </div>
 
       {/* CTA Section */}
-      <div className="bg-linear-to-r from-accent-gold/10 to-accent-gold/5 rounded-lg p-12 text-center mb-20 border border-accent-gold/20">
-        <h2 className="font-cinzel text-4xl font-bold text-primary-dark mb-3">
+      <div className="bg-linear-to-r from-accent-gold/10 to-accent-gold/5 rounded-lg p-6 sm:p-12 text-center mb-10 sm:mb-20 border border-accent-gold/20">
+        <h2 className="font-cinzel text-2xl sm:text-4xl font-bold text-primary-dark mb-3">
           {t('hero.readyToBegin')}
         </h2>
-        <p className="text-lg text-primary-dark/70 mb-8 max-w-2xl mx-auto">
+        <p className="text-base sm:text-lg text-primary-dark/70 mb-6 sm:mb-8 max-w-2xl mx-auto">
           {t('hero.readyToBeginDesc')}
         </p>
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -354,10 +354,10 @@ export default function Hero() {
 
       {/* How It Works */}
       <div className="mb-8">
-        <h2 className="font-cinzel text-4xl font-bold text-center text-primary-dark mb-12">
+        <h2 className="font-cinzel text-2xl sm:text-4xl font-bold text-center text-primary-dark mb-8 sm:mb-12">
           {t('hero.howItWorks')}
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
           {/* Step 1 */}
           <div className="text-center">
             <div className="w-12 h-12 bg-accent-gold rounded-full flex items-center justify-center mx-auto mb-4 font-cinzel text-lg font-bold text-primary-dark">

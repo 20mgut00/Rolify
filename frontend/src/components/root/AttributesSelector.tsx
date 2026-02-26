@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import Radio from "@mui/material/Radio";
+import { useTranslation } from "react-i18next";
 
 interface Attribute {
   name: string;
@@ -17,6 +18,7 @@ export default function AttributesSelector({
   onAttributesSelect,
   initialValues,
 }: AttributesSelectorProps) {
+  const { t } = useTranslation();
   // Calculate which stat was selected based on initialValues
   const getInitialSelectedStat = () => {
     if (!initialValues || !stats.length) return null;
@@ -62,7 +64,8 @@ export default function AttributesSelector({
     const total = stat.value + (selectedStat === statName ? 1 : 0);
     const isDisabled = stat.value + 1 > 2;
     const sign = total > 0 ? "+" : "";
-    const label = stat.name.charAt(0).toUpperCase() + stat.name.slice(1);
+    const tg = (key: string, fallback: string) => { const r = (t as (k: string) => string)(key); return r === key ? fallback : r; };
+    const label = tg(`gameData.stats.${stat.name}`, stat.name.charAt(0).toUpperCase() + stat.name.slice(1));
 
     return (
       <div className="flex items-center gap-4 p-3 border-2 border-accent-gold rounded-lg bg-primary-light">
@@ -83,10 +86,16 @@ export default function AttributesSelector({
 
   return (
     <div className="text-start">
-      <h3 className="text-xl font-semibold text-primary-dark mb-4">
-        Attributes
-      </h3>
-      <div className="grid grid-cols-4 gap-4">
+
+      {/* Mobile: vertical list */}
+      <div className="md:hidden space-y-2">
+        {['charm', 'cunning', 'finesse', 'luck', 'might'].map((stat) => (
+          <div key={stat}>{renderAttribute(stat)}</div>
+        ))}
+      </div>
+
+      {/* Desktop: diamond layout */}
+      <div className="hidden md:grid grid-cols-4 gap-4">
         <div className="col-span-2">{renderAttribute("charm")}</div>
         <div className="col-span-2">{renderAttribute("cunning")}</div>
         <div className="col-span-2 col-start-2">

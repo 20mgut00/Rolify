@@ -76,23 +76,25 @@ function App() {
       <CssBaseline />
       <QueryClientProvider client={queryClient}>
         <BrowserRouter>
-          <div className="min-h-screen bg-primary-light [&_button]:cursor-pointer [&_button:disabled]:cursor-not-allowed [&_button:disabled]:opacity-60 [&_button.bg-accent-gold]:transition-all [&_button.bg-accent-gold]:duration-200 [&_button.bg-accent-gold]:transform-gpu [&_button.bg-accent-gold:hover:not(:disabled)]:scale-[1.02] [&_button.bg-accent-gold:hover:not(:disabled)]:-translate-y-px [&_button.bg-accent-gold:hover:not(:disabled)]:brightness-105 [&_a.bg-accent-gold]:transition-all [&_a.bg-accent-gold]:duration-200 [&_a.bg-accent-gold]:transform-gpu [&_a.bg-accent-gold:hover]:scale-[1.02] [&_a.bg-accent-gold:hover]:-translate-y-px [&_a.bg-accent-gold:hover]:brightness-105">
+          <div className="h-dvh flex flex-col bg-primary-light [&_button]:cursor-pointer [&_button:disabled]:cursor-not-allowed [&_button:disabled]:opacity-60 [&_button.bg-accent-gold]:transition-all [&_button.bg-accent-gold]:duration-200 [&_button.bg-accent-gold]:transform-gpu [&_button.bg-accent-gold:hover:not(:disabled)]:scale-[1.02] [&_button.bg-accent-gold:hover:not(:disabled)]:-translate-y-px [&_button.bg-accent-gold:hover:not(:disabled)]:brightness-105 [&_a.bg-accent-gold]:transition-all [&_a.bg-accent-gold]:duration-200 [&_a.bg-accent-gold]:transform-gpu [&_a.bg-accent-gold:hover]:scale-[1.02] [&_a.bg-accent-gold:hover]:-translate-y-px [&_a.bg-accent-gold:hover]:brightness-105">
             <Header />
 
-            <Suspense fallback={<RouteLoader />}>
-              <Routes>
-                <Route path="/" element={<Hero />} />
-                <Route path="/create" element={<CharacterForm />} />
-                <Route path="/library" element={<CharacterLibrary />} />
-                <Route path="/character/:id" element={<CharacterViewer />} />
-                <Route path="/gallery" element={<PublicGallery />} />
-                <Route path="/settings" element={<Settings />} />
-                <Route path="/statistics" element={<Statistics />} />
-                <Route path="/verify-email" element={<VerifyEmail />} />
-                <Route path="/reset-password" element={<ResetPassword />} />
-                <Route path="/oauth/callback" element={<OAuthCallback />} />
-              </Routes>
-            </Suspense>
+            <div className="flex-1 overflow-y-auto min-h-0">
+              <Suspense fallback={<RouteLoader />}>
+                <Routes>
+                  <Route path="/" element={<Hero />} />
+                  <Route path="/create" element={<CharacterForm />} />
+                  <Route path="/library" element={<CharacterLibrary />} />
+                  <Route path="/character/:id" element={<CharacterViewer />} />
+                  <Route path="/gallery" element={<PublicGallery />} />
+                  <Route path="/settings" element={<Settings />} />
+                  <Route path="/statistics" element={<Statistics />} />
+                  <Route path="/verify-email" element={<VerifyEmail />} />
+                  <Route path="/reset-password" element={<ResetPassword />} />
+                  <Route path="/oauth/callback" element={<OAuthCallback />} />
+                </Routes>
+              </Suspense>
+            </div>
 
             <Toaster position="top-right" />
           </div>

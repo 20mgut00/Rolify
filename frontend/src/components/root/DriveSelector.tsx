@@ -39,7 +39,7 @@ function DriveSelector({
   }, [selectedNames, drives, onDrivesSelect]);
 
   if (!drives || drives.length === 0) {
-    return <p className="text-sm text-primary-dark/60">No drive options available</p>;
+    return <p className="text-sm text-primary-dark/60">{t('characterFormFields.noDriveOptions')}</p>;
   }
 
   return (

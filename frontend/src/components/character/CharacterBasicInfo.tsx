@@ -58,13 +58,15 @@ export default function CharacterBasicInfo({
 
   return (
     <>
-      {/* Avatar Image - row-span-4 */}
-      <div className="row-span-4">
+      {/* Avatar Image - row-span-4 on desktop only */}
+      <div className="md:row-span-4">
         <Card label={t('characterBasicInfo.avatarImage')}>
           <ImageSelector
             value={avatarImage}
             defaultImage={defaultImage}
             onChange={onImageChange}
+            width="w-full"
+            height="h-64 sm:h-80 md:h-96"
           />
         </Card>
       </div>

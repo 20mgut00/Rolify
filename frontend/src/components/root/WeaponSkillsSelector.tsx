@@ -60,7 +60,7 @@ function WeaponSkillsSelector({
     !weaponSkills.skills ||
     weaponSkills.skills.length === 0
   ) {
-    return <p className="text-sm text-primary-dark/60">No weapon skills available</p>;
+    return <p className="text-sm text-primary-dark/60">{t('characterFormFields.noWeaponSkills')}</p>;
   }
 
   return (

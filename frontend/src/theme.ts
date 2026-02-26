@@ -115,6 +115,16 @@ export const theme = createTheme({
         },
       },
     },
+    MuiInputBase: {
+      styleOverrides: {
+        root: {
+          '& input': {
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+          },
+        },
+      },
+    },
     MuiTextField: {
       styleOverrides: {
         root: {
