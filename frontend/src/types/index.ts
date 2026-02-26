@@ -44,8 +44,8 @@ export interface WeaponSkillDB {
 
 export interface FactionReputationDB {
   name: string;
-  notoriety: number;
-  prestige: number;
+  notoriety: number; // raw marks: 0–9  (0-2=lvl0, 3-5=lvl-1, 6-8=lvl-2, 9=lvl-3)
+  prestige: number;  // raw marks: 0–15 (0-4=lvl0, 5-9=lvl+1, 10-14=lvl+2, 15=lvl+3)
 }
 
 // Gemini AI Generated Character Response

@@ -266,25 +266,17 @@ export function useCharacterForm(onSuccess: (characterId: string) => void) {
 
     setValidationErrors({});
 
-    // Add factions from background if not in reputations
+    // Create background factions if not manually added (bonus already applied via ReputationSelector)
     const reputations = [...data.reputations];
     const servedMost = data.background?.[3]?.answer?.trim().toLowerCase();
     const specialEnmity = data.background?.[4]?.answer?.trim().toLowerCase();
 
-    if (servedMost && !reputations.some((r) => r.name.toLowerCase() === servedMost)) {
-      reputations.push({
-        name: data.background[3].answer,
-        notoriety: 0,
-        prestige: 2,
-      });
+    if (servedMost && !reputations.some((r) => r.name.trim().toLowerCase() === servedMost)) {
+      reputations.push({ name: data.background[3].answer, notoriety: 0, prestige: 2 });
     }
 
-    if (specialEnmity && !reputations.some((r) => r.name.toLowerCase() === specialEnmity)) {
-      reputations.push({
-        name: data.background[4].answer,
-        notoriety: -1,
-        prestige: 0,
-      });
+    if (specialEnmity && !reputations.some((r) => r.name.trim().toLowerCase() === specialEnmity)) {
+      reputations.push({ name: data.background[4].answer, notoriety: 1, prestige: 0 });
     }
 
     // Use class default avatar if no custom image was uploaded
