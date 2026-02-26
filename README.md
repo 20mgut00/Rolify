@@ -1,51 +1,72 @@
-# RPG Character Creator
+# ROLIFY — RPG Character Creator
 
-Una aplicación web moderna para la creación y gestión de personajes de juegos de rol de mesa, comenzando con el sistema Root RPG.
+Aplicación web fullstack para crear y gestionar fichas de personajes de juegos de rol de mesa (TTRPG). Actualmente soporta el sistema **Root RPG** de Magpie Games.
 
-## 🎯 Características
+## Características
 
-- ✨ Creación de personajes con validación en tiempo real
-- 🔐 Autenticación completa (Email/Password + Google OAuth)
-- 📧 Verificación de email y recuperación de contraseña
-- 💾 Almacenamiento persistente con MongoDB Atlas
-- 🎨 Interfaz moderna con Tailwind CSS v4
-- 📱 Diseño responsive
-- 📄 Exportación de personajes (PDF, JSON, CSV)
-- 🌐 Galería pública de personajes
-- 👤 Biblioteca personal de personajes
-- 📊 Estadísticas del usuario
+- Formulario interactivo guiado paso a paso para crear personajes de Root RPG
+- Generación automática de fichas con IA (Google Gemini gemini-2.5-flash)
+- Modo invitado: crea personajes sin registro, con migración a la nube al autenticarse
+- Autenticación con email/contraseña (JWT + refresh tokens) y Google OAuth2
+- Verificación de email y recuperación de contraseña por enlace
+- Biblioteca personal con opciones de editar, eliminar y cambiar visibilidad (público/privado)
+- Galería pública con filtros por clase e infinite scroll
+- Exportación de fichas en PDF, JSON y CSV
+- Subida de imagen de avatar personalizada
+- Internacionalización completa: español e inglés (i18next)
+- Modo oscuro persistente y opciones de accesibilidad (texto grande, reduced motion)
+- Estadísticas de usuario
+- Despliegue con Docker y docker-compose
 
-## 🛠️ Stack Tecnológico
+## Stack tecnológico
 
 ### Backend
-- **Framework**: Spring Boot 4.0.0
-- **Lenguaje**: Java 21
-- **Base de datos**: MongoDB Atlas
-- **Seguridad**: Spring Security 6 + JWT
-- **OAuth**: Google OAuth2
-- **Email**: Spring Mail + Resend
-- **Build**: Maven
+| Tecnología | Versión |
+|---|---|
+| Java | 21 |
+| Spring Boot | 4.0.0 |
+| Spring Security | 6 |
+| Spring Data MongoDB | — |
+| JJWT | 0.12.5 |
+| Lombok | 1.18.38 |
+| Maven | 3.9+ |
 
 ### Frontend
-- **Framework**: React 19
-- **Build Tool**: Vite 6
-- **Lenguaje**: TypeScript 5
-- **Estilos**: Tailwind CSS v4
-- **Routing**: React Router v7
-- **Estado**: Zustand + React Query
-- **Formularios**: React Hook Form + Zod
-- **Animaciones**: Framer Motion
-- **PDF**: jsPDF + html2canvas
+| Tecnología | Versión |
+|---|---|
+| React | 19 |
+| TypeScript | 5.7.3 |
+| Vite | 6 |
+| Tailwind CSS | 4 |
+| Material UI | 7 |
+| Zustand | 5 |
+| TanStack Query | 5 |
+| React Router | 7 |
+| React Hook Form + Zod | 7 + 3 |
+| Framer Motion | 11 |
+| i18next | 25 |
+| Axios | 1.7 |
+| jsPDF + html2canvas | — |
+| Lucide React | — |
 
-## 📋 Prerrequisitos
+### Servicios externos
+- **MongoDB Atlas** — base de datos en la nube
+- **Google Gemini API** (gemini-2.5-flash) — generación de personajes con IA
+- **Google Cloud** — OAuth2
+- **Resend / Gmail / SendGrid** — envío de emails (configurable)
+
+## Prerrequisitos
 
 - Java 21+
-- Node.js 20+
-- MongoDB Atlas account
 - Maven 3.9+
-- npm o yarn
+- Node.js 20+ y npm 10+
+- Docker y docker-compose (opcional, recomendado para producción)
+- Cuenta en MongoDB Atlas
+- API key de Google Gemini
+- Credenciales de Google OAuth2 (Cloud Console)
+- Cuenta en Resend, Gmail o SendGrid (para emails)
 
-## 🚀 Instalación
+## Instalación
 
 ### 1. Clonar el repositorio
 
@@ -54,348 +75,201 @@ git clone <repository-url>
 cd rpg-character-creator
 ```
 
-### 2. Configurar Backend
+### 2. Variables de entorno
 
+Copia `.env.example` como `.env` en la raíz del proyecto y rellena los valores:
+
+```env
+# MongoDB
+MONGODB_URI=mongodb+srv://user:password@cluster.mongodb.net/
+MONGODB_DATABASE=rpg-characters
+
+# JWT
+JWT_SECRET=your-256-bit-secret-key
+
+# Google OAuth2
+GOOGLE_CLIENT_ID=your-google-client-id
+GOOGLE_CLIENT_SECRET=your-google-client-secret
+
+# Google Gemini
+GEMINI_API_KEY=your-gemini-api-key
+
+# Email (ejemplo con Resend)
+MAIL_HOST=smtp.resend.com
+MAIL_PORT=587
+MAIL_USERNAME=resend
+MAIL_PASSWORD=re_your_api_key
+EMAIL_FROM=noreply@yourdomain.com
+
+# URLs
+FRONTEND_URL=http://localhost:5173
+```
+
+### 3a. Desarrollo local
+
+**Backend:**
 ```bash
 cd backend
+./mvnw spring-boot:run
 ```
+Disponible en `http://localhost:8080`
 
-Editar `src/main/resources/application.yml`:
-
-```yaml
-spring:
-  data:
-    mongodb:
-      uri: mongodb+srv://<user>:<password>@<cluster>.mongodb.net/rpg-characters
-      database: rpg-characters
-  
-  mail:
-    host: smtp.resend.com
-    port: 587
-    username: resend
-    password: <your-resend-api-key>
-  
-  security:
-    oauth2:
-      client:
-        registration:
-          google:
-            client-id: <your-google-client-id>
-            client-secret: <your-google-client-secret>
-
-app:
-  jwt:
-    secret: <your-256-bit-secret>
-  cors:
-    allowed-origins: http://localhost:5173
-  frontend:
-    url: http://localhost:5173
-  email:
-    from: noreply@yourapp.com
-```
-
-Instalar dependencias y ejecutar:
-
+**Frontend:**
 ```bash
-mvn clean install
-mvn spring-boot:run
-```
-
-El backend estará disponible en `http://localhost:8080`
-
-### 3. Configurar Frontend
-
-```bash
-cd ../frontend
+cd frontend
 npm install
+npm run dev
 ```
+Disponible en `http://localhost:5173`
 
-Crear archivo `.env`:
-
+El archivo `frontend/.env` solo necesita:
 ```env
 VITE_API_URL=http://localhost:8080/api
 ```
 
-Ejecutar en desarrollo:
+### 3b. Docker (recomendado para producción)
 
 ```bash
-npm run dev
+# Producción
+docker-compose up
+
+# Desarrollo (con hot reload)
+docker-compose -f docker-compose.dev.yml up
 ```
 
-El frontend estará disponible en `http://localhost:5173`
+Los ClassTemplates de Root RPG se cargan automáticamente al arrancar si la base de datos está vacía.
 
-## 📁 Estructura del Proyecto
+## Configuración de servicios externos
+
+### MongoDB Atlas
+1. Crea un cluster gratuito en [mongodb.com/cloud/atlas](https://www.mongodb.com/cloud/atlas)
+2. Crea un usuario de base de datos y añade tu IP a la whitelist
+3. Copia la connection string como `MONGODB_URI`
+
+### Google Gemini
+1. Accede a [Google AI Studio](https://aistudio.google.com)
+2. Genera una API key y cópiala como `GEMINI_API_KEY`
+
+### Google OAuth2
+1. Ve a [Google Cloud Console](https://console.cloud.google.com)
+2. Crea un proyecto y habilita la API de Google+
+3. Crea credenciales OAuth 2.0 (aplicación web)
+4. Añade como URI de redirección autorizado: `http://localhost:8080/api/auth/oauth2/callback/google`
+5. Copia `client-id` y `client-secret`
+
+### Email
+El proyecto soporta Resend, Gmail y SendGrid. Configura las variables `MAIL_*` según el proveedor. Ver `.env.example` para las tres opciones.
+
+## Estructura del proyecto
 
 ```
 rpg-character-creator/
 ├── backend/
-│   ├── src/
-│   │   ├── main/
-│   │   │   ├── java/com/rpgcharacter/
-│   │   │   │   ├── config/          # Configuraciones
-│   │   │   │   ├── controller/      # REST Controllers
-│   │   │   │   ├── dto/             # Data Transfer Objects
-│   │   │   │   ├── exception/       # Manejo de excepciones
-│   │   │   │   ├── model/           # Entidades MongoDB
-│   │   │   │   ├── repository/      # Repositorios
-│   │   │   │   └── service/         # Lógica de negocio
-│   │   │   └── resources/
-│   │   │       └── application.yml
-│   │   └── test/
-│   └── pom.xml
-│
-└── frontend/
-    ├── src/
-    │   ├── components/
-    │   │   ├── auth/              # Login, Register, etc.
-    │   │   ├── character/         # Character form, viewer
-    │   │   ├── gallery/           # Public gallery
-    │   │   └── settings/          # User settings
-    │   ├── services/              # API calls
-    │   ├── store/                 # Zustand stores
-    │   ├── types/                 # TypeScript types
-    │   ├── utils/                 # Utilities
-    │   ├── App.tsx
-    │   ├── main.tsx
-    │   └── index.css
-    ├── index.html
-    ├── package.json
-    ├── tsconfig.json
-    └── vite.config.ts
+│   └── src/main/java/com/rpgcharacter/
+│       ├── config/          # Security, JWT, MongoDB, OAuth2, CORS
+│       ├── controller/      # AuthController, CharacterController, AvatarController, ClassTemplateController
+│       ├── dto/             # AuthDTO, CharacterDTO, GenerateCharacterDTO
+│       ├── exception/       # GlobalExceptionHandler, BusinessException, ResourceNotFoundException
+│       ├── mapper/          # CharacterMapper (CharacterDB ↔ Character)
+│       ├── model/           # Character, User, ClassTemplate, VerificationToken
+│       ├── repository/      # MongoDB repositories
+│       ├── service/         # AuthService, CharacterService, GeminiService, EmailService
+│       └── validator/       # CharacterValidator
+├── frontend/src/
+│   ├── components/
+│   │   ├── auth/            # LoginModal, OAuthCallback, ResetPassword, VerifyEmail
+│   │   ├── character/       # CharacterForm, CharacterCard, CharacterLibrary, CharacterViewer
+│   │   ├── common/          # Button, Card, ConfirmModal, ErrorBoundary, ImageSelector
+│   │   ├── gallery/         # PublicGallery
+│   │   ├── root/            # Selectores Root RPG: clase, naturaleza, drives, moves, stats...
+│   │   ├── settings/        # Settings, Statistics
+│   │   ├── Header.tsx
+│   │   └── Hero.tsx
+│   ├── hooks/               # useCharacterForm, useDocumentTitle, useDragAndDrop...
+│   ├── i18n/                # en.json, es.json
+│   ├── locales/             # en.ts, es.ts
+│   ├── services/api.ts      # Axios con interceptor de JWT refresh automático
+│   ├── store/index.ts       # Zustand: useAuthStore, useCharacterStore, useUIStore, useAccessibilityStore
+│   ├── types/index.ts       # Interfaces TypeScript
+│   ├── utils/               # avatarUrl, characterMapper, export
+│   └── theme.ts             # Tema MUI
+├── docker-compose.yml
+├── docker-compose.dev.yml
+└── .env.example
 ```
 
-## 🎮 Uso
+## Rutas
 
-### Crear un Personaje
+| Ruta | Descripción |
+|---|---|
+| `/` | Landing page |
+| `/create` | Formulario de creación de personaje |
+| `/library` | Biblioteca personal de personajes |
+| `/character/:id` | Visor de ficha de personaje |
+| `/gallery` | Galería pública |
+| `/settings` | Configuración y estadísticas |
+| `/verify-email` | Verificación de email |
+| `/reset-password` | Reseteo de contraseña |
+| `/oauth/callback` | Callback de Google OAuth2 |
 
-1. Selecciona el sistema de juego en el header (actualmente solo Root)
-2. Haz clic en "New Character"
-3. Completa el formulario con la información del personaje:
-   - Información básica (nombre, especie, etc.)
-   - Stats (Charm, Cunning, Finesse, Luck, Might)
-   - Background
-   - Drives (máximo 2)
-   - Nature (máximo 2)
-   - Moves (máximo 3)
-   - Weapon Skills
-   - Roguish Feats
-   - Equipment
-4. Marca como público si deseas compartirlo
-5. Guarda el personaje
+## API
 
-### Gestionar Personajes
+| Método | Endpoint | Descripción |
+|---|---|---|
+| POST | `/api/auth/register` | Registro con email |
+| POST | `/api/auth/login` | Login |
+| POST | `/api/auth/refresh` | Renovar JWT |
+| POST | `/api/auth/verify-email` | Verificar email |
+| POST | `/api/auth/forgot-password` | Solicitar reset |
+| POST | `/api/auth/reset-password` | Cambiar contraseña con token |
+| POST | `/api/auth/change-password` | Cambiar contraseña autenticado |
+| DELETE | `/api/auth/delete-account` | Eliminar cuenta |
+| GET | `/api/characters/my` | Personajes del usuario |
+| GET | `/api/characters/public` | Galería pública (paginada) |
+| POST | `/api/characters` | Crear personaje |
+| PUT | `/api/characters/:id` | Actualizar personaje |
+| DELETE | `/api/characters/:id` | Eliminar personaje |
+| POST | `/api/characters/generate` | Generar personaje con IA |
+| POST | `/api/avatars/upload` | Subir imagen de avatar |
+| GET | `/api/class-templates` | Plantillas de clase de Root RPG |
 
-- **Biblioteca**: Ve tus personajes creados
-- **Editar**: Modifica los detalles de un personaje existente
-- **Eliminar**: Borra personajes no deseados
-- **Exportar**: Descarga en PDF, JSON o CSV
+## Modelo de datos principal
 
-### Galería Pública
+### Character
+`id, userId, name, system, className, species, demeanor, details, avatarImage, stats (List<Stat>), background (List<BackgroundAnswer>), nature, drives, moves (List<SelectedOption>), connections (List<Connection>), weaponSkills, roguishFeats, equipment, reputation (Map<String, FactionReputation>), isPublic, createdAt, updatedAt`
 
-- Explora personajes públicos de otros usuarios
-- Filtra por clase
-- Scroll infinito
+### User
+`id, email, password (BCrypt), name, avatarUrl, provider (LOCAL/GOOGLE), providerId, emailVerified, totalCharacters, publicCharacters, createdAt, updatedAt`
 
-## 🔒 Autenticación
+### ClassTemplate
+`id, system, className, description, background (List<BackgroundQuestion>), nature, drives, moves, connections, weaponSkills, roguishFeats, stats, maxDrives, maxMoves, maxNature`
 
-### Registro con Email
-
-1. Haz clic en "Login" en el header
-2. Selecciona "Register"
-3. Completa nombre, email y contraseña
-4. Verifica tu email (link enviado)
-
-### Login con Google
-
-1. Haz clic en "Login with Google"
-2. Autoriza la aplicación
-3. Automáticamente iniciado sesión
-
-### Recuperar Contraseña
-
-1. Haz clic en "Forgot Password"
-2. Ingresa tu email
-3. Sigue el link recibido por correo
-4. Establece nueva contraseña
-
-## 🗄️ Base de Datos
-
-### Colecciones MongoDB
-
-#### users
-```json
-{
-  "_id": "ObjectId",
-  "email": "string",
-  "password": "string (hashed)",
-  "name": "string",
-  "avatarUrl": "string",
-  "provider": "LOCAL | GOOGLE",
-  "providerId": "string",
-  "emailVerified": "boolean",
-  "enabled": "boolean",
-  "totalCharacters": "number",
-  "publicCharacters": "number",
-  "createdAt": "DateTime",
-  "updatedAt": "DateTime"
-}
-```
-
-#### characters
-```json
-{
-  "_id": "ObjectId",
-  "userId": "string",
-  "name": "string",
-  "system": "string",
-  "className": "string",
-  "species": "string",
-  "demeanor": "string",
-  "details": "string",
-  "avatarImage": "string (base64)",
-  "stats": [...],
-  "background": [...],
-  "drives": [...],
-  "nature": [...],
-  "moves": [...],
-  "connections": [...],
-  "weaponSkills": {...},
-  "roguishFeats": {...},
-  "equipment": {...},
-  "reputation": {...},
-  "isPublic": "boolean",
-  "createdAt": "DateTime",
-  "updatedAt": "DateTime"
-}
-```
-
-#### class_templates
-```json
-{
-  "_id": "ObjectId",
-  "system": "Root",
-  "className": "Adventurer",
-  "description": "string",
-  "background": [...],
-  "nature": [...],
-  "drives": [...],
-  "moves": [...],
-  "weaponSkills": {...},
-  "roguishFeats": {...},
-  "stats": [...],
-  "maxDrives": 2,
-  "maxMoves": 3,
-  "maxNature": 2
-}
-```
-
-## 🔧 Configuración de Servicios
-
-### MongoDB Atlas
-
-1. Crea una cuenta en [MongoDB Atlas](https://www.mongodb.com/cloud/atlas)
-2. Crea un cluster gratuito
-3. Crea un usuario de base de datos
-4. Añade tu IP a la whitelist
-5. Obtén la connection string
-6. Actualiza `application.yml`
-
-### Resend (Email)
-
-1. Regístrate en [Resend](https://resend.com)
-2. Obtén tu API key
-3. Verifica tu dominio (opcional para producción)
-4. Actualiza `application.yml`
-
-### Google OAuth
-
-1. Ve a [Google Cloud Console](https://console.cloud.google.com)
-2. Crea un nuevo proyecto
-3. Habilita Google+ API
-4. Crea credenciales OAuth 2.0
-5. Configura URLs de redirect: `http://localhost:8080/api/auth/oauth2/callback/google`
-6. Actualiza `application.yml`
-
-## 📦 Build para Producción
-
-### Backend
+## Build para producción
 
 ```bash
+# Backend
 cd backend
-mvn clean package
-java -jar target/rpg-character-creator-1.0.0.jar
-```
+./mvnw clean package
+java -jar target/rpg-character-creator-*.jar
 
-### Frontend
-
-```bash
+# Frontend
 cd frontend
 npm run build
+# Archivos estáticos en dist/
 ```
 
-Los archivos estáticos estarán en `dist/`
+## Notas de desarrollo
 
-## 🚢 Deployment
+- El frontend maneja dos formatos de Character: `Character` (UI, con `SelectedOption[]`) y `CharacterDB` (MongoDB). La conversión se hace en `characterMapper.ts` con `fromCharacterDB` / `toCharacterDB`.
+- El token JWT se renueva automáticamente mediante un interceptor de Axios en `services/api.ts`.
+- El modo invitado guarda personajes en localStorage. Al autenticarse, se ofrece migración a la cuenta.
+- Los estilos mezclan Tailwind CSS 4 (layout, componentes custom) con Material UI 7 (selectores, modales, grids).
+- El estado global usa cuatro stores de Zustand con `persist` middleware selectivo.
 
-### Backend Options
-- Railway
-- Render
-- Heroku
-- AWS Elastic Beanstalk
+## Autor
 
-### Frontend Options
-- Vercel (recomendado)
-- Netlify
-- GitHub Pages
-- AWS S3 + CloudFront
+Miguel Gutiérrez Vázquez
 
-## 🧪 Testing
+## Licencia
 
-### Backend
-```bash
-cd backend
-mvn test
-```
-
-### Frontend
-```bash
-cd frontend
-npm test
-```
-
-## 📝 Variables de Entorno
-
-### Backend (application.yml)
-- `MONGODB_URI`: MongoDB connection string
-- `JWT_SECRET`: Secret para JWT tokens
-- `GOOGLE_CLIENT_ID`: Google OAuth client ID
-- `GOOGLE_CLIENT_SECRET`: Google OAuth secret
-- `MAIL_PASSWORD`: Resend API key
-
-### Frontend (.env)
-- `VITE_API_URL`: URL del backend API
-
-## 🤝 Contribuir
-
-1. Fork el proyecto
-2. Crea una rama (`git checkout -b feature/AmazingFeature`)
-3. Commit tus cambios (`git commit -m 'Add AmazingFeature'`)
-4. Push a la rama (`git push origin feature/AmazingFeature`)
-5. Abre un Pull Request
-
-## 📄 Licencia
-
-Este proyecto está bajo la licencia MIT.
-
-## 👥 Autores
-
-- Tu Nombre - Desarrollo inicial
-
-## 🙏 Agradecimientos
-
-- Root RPG por Leder Games
-- Comunidad de desarrolladores
-
-## 📞 Soporte
-
-Para soporte, abre un issue en GitHub o contacta via email.
+MIT
