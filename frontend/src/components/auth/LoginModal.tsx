@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -138,6 +138,16 @@ export default function LoginModal({ onClose, open }: LoginModalProps) {
     const baseUrl = apiUrl.replace(/\/api$/, '');
     window.location.href = `${baseUrl}/oauth2/authorization/google`;
   };
+
+  useEffect(() => {
+    if (open) {
+      setMode('login');
+      setShowPassword(false);
+      resetLogin();
+      resetSignup();
+      resetForgot();
+    }
+  }, [open]);
 
   const switchMode = (newMode: 'login' | 'register' | 'forgot') => {
     setMode(newMode);
