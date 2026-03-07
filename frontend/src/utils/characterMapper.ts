@@ -7,7 +7,47 @@ import type {
   RoguishFeatDB,
   WeaponSkillDB,
   FactionReputationDB,
+  SelectedOption,
+  RoguishFeats,
+  WeaponSkills,
+  Reputation,
+  Equipment,
 } from '../types';
+
+/**
+ * Represents the raw API response from the backend, which may use different
+ * field formats depending on the API version or data origin.
+ */
+interface CharacterAPIResponse {
+  id?: string;
+  _id?: string;
+  userId?: string;
+  idUsuario?: string;
+  name: string;
+  system: string;
+  className: string;
+  species: string;
+  demeanor: string;
+  details: string;
+  avatarImage?: string;
+  stats: { name: string; value: number }[];
+  background: { question: string; answer: string }[];
+  connections: { type?: string; characterName: string; description: string; story?: string }[];
+  // nature can be a single object (backend v1) or an array (backend v2)
+  nature?: NatureDB | SelectedOption[] | NatureDB[];
+  drives?: (DriveDB | SelectedOption)[];
+  moves?: (MoveDB | SelectedOption)[];
+  // roguishFeats can be an array (old format) or an object with remaining+feats (new format)
+  roguishFeats?: RoguishFeatDB[] | RoguishFeats;
+  // weaponSkills can be an array (old format) or an object with remaining+skills (new format)
+  weaponSkills?: WeaponSkillDB[] | WeaponSkills;
+  reputations?: FactionReputationDB[];
+  reputation?: Reputation;
+  equipment?: string | Equipment;
+  isPublic?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
 
 /**
  * Converts UI Character to MongoDB CharacterDB format
@@ -83,13 +123,13 @@ export function toCharacterDB(
 /**
  * Converts MongoDB CharacterDB to UI Character format
  */
-export function fromCharacterDB(characterDB: any): Character {
+export function fromCharacterDB(characterDB: CharacterAPIResponse): Character {
   // Convert nature - handle both object and array formats
-  let nature = [];
+  let nature: SelectedOption[] = [];
   if (characterDB.nature) {
     if (Array.isArray(characterDB.nature)) {
       // If it's already an array, use it
-      nature = characterDB.nature.map((n: any) => ({ ...n, selected: true }));
+      nature = characterDB.nature.map((n) => ({ ...n, selected: true }));
     } else {
       // If it's an object, convert to array
       nature = [{ ...characterDB.nature, selected: true }];
@@ -97,38 +137,38 @@ export function fromCharacterDB(characterDB: any): Character {
   }
 
   // Convert drives (add selected field)
-  const drives = (characterDB.drives || []).map((d: any) => ({ ...d, selected: true }));
+  const drives: SelectedOption[] = (characterDB.drives || []).map((d) => ({ ...d, selected: true }));
 
   // Convert moves (add selected field)
-  const moves = (characterDB.moves || []).map((m: any) => ({ ...m, selected: true }));
+  const moves: SelectedOption[] = (characterDB.moves || []).map((m) => ({ ...m, selected: true }));
 
   // Convert roguish feats to UI format - handle both array and object formats
-  const roguishFeats = characterDB.roguishFeats
+  const roguishFeats: RoguishFeats = characterDB.roguishFeats
     ? (Array.isArray(characterDB.roguishFeats)
-        ? { remaining: 0, feats: characterDB.roguishFeats.map((f: any) => ({ ...f, selected: true })) }
+        ? { remaining: 0, feats: characterDB.roguishFeats.map((f) => ({ ...f, selected: true })) }
         : characterDB.roguishFeats)
     : { remaining: 0, feats: [] };
 
   // Convert weapon skills to UI format - handle both array and object formats
-  const weaponSkills = characterDB.weaponSkills
+  const weaponSkills: WeaponSkills = characterDB.weaponSkills
     ? (Array.isArray(characterDB.weaponSkills)
-        ? { remaining: 0, skills: characterDB.weaponSkills.map((s: any) => ({ ...s, selected: true })) }
+        ? { remaining: 0, skills: characterDB.weaponSkills.map((s) => ({ ...s, selected: true })) }
         : characterDB.weaponSkills)
     : { remaining: 0, skills: [] };
 
   // Convert reputations - handle both array and object formats
-  let reputation = { factions: {} };
+  let reputation: Reputation = { factions: {} };
   if (characterDB.reputations && Array.isArray(characterDB.reputations)) {
     reputation = {
       factions: characterDB.reputations.reduce(
-        (acc: any, rep: any) => {
+        (acc: Record<string, { prestige: number; notoriety: number }>, rep: FactionReputationDB) => {
           acc[rep.name] = {
             prestige: rep.prestige,
             notoriety: rep.notoriety,
           };
           return acc;
         },
-        {} as Record<string, { prestige: number; notoriety: number }>
+        {}
       ),
     };
   } else if (characterDB.reputation) {
@@ -136,7 +176,7 @@ export function fromCharacterDB(characterDB: any): Character {
   }
 
   // Keep equipment as string (no longer using Equipment object)
-  let equipment: any = characterDB.equipment || '';
+  let equipment: string | Equipment = characterDB.equipment || '';
 
   // If it's a JSON string of the old Equipment object format, extract it or keep as-is
   if (typeof equipment === 'string' && equipment.trim().startsWith('{')) {

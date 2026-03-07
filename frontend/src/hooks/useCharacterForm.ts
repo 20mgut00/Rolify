@@ -3,11 +3,12 @@ import { useForm, useWatch } from 'react-hook-form';
 import type { FieldPath, FieldPathValue } from 'react-hook-form';
 import { useSearchParams } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useTranslation } from 'react-i18next';
 import toast from 'react-hot-toast';
 import { characterAPI, classTemplateAPI } from '../services/api';
 import { useAuthStore, useCharacterStore, useUIStore } from '../store';
 import { getClassDefaultAvatar } from '../utils/avatarUrl';
-import type { CharacterDB } from '../types';
+import type { Character, CharacterDB } from '../types';
 
 export interface CharacterFormData {
   name: string;
@@ -30,6 +31,7 @@ export interface CharacterFormData {
 export function useCharacterForm(onSuccess: (characterId: string) => void) {
   const queryClient = useQueryClient();
   const [searchParams] = useSearchParams();
+  const { t } = useTranslation();
   const { isAuthenticated, user } = useAuthStore();
   const { addSessionCharacter } = useCharacterStore();
   const { selectedSystem } = useUIStore();
@@ -184,9 +186,9 @@ export function useCharacterForm(onSuccess: (characterId: string) => void) {
       };
 
       if (isEditing && editId) {
-        return characterAPI.update(editId, apiData as any);
+        return characterAPI.update(editId, apiData as Partial<Character>);
       } else {
-        return characterAPI.create(apiData as any);
+        return characterAPI.create(apiData as Partial<Character>);
       }
     },
     onSuccess: (data) => {
@@ -194,7 +196,7 @@ export function useCharacterForm(onSuccess: (characterId: string) => void) {
         addSessionCharacter(data);
       }
       queryClient.invalidateQueries({ queryKey: ['myCharacters'] });
-      toast.success(isEditing ? 'Character updated!' : 'Character created!');
+      toast.success(isEditing ? t('characterForm.characterUpdated') : t('characterForm.characterCreated'));
       if (data.id) {
         onSuccess(data.id);
       }
@@ -207,7 +209,7 @@ export function useCharacterForm(onSuccess: (characterId: string) => void) {
 
   const onSubmit = async (data: CharacterFormData) => {
     if (!selectedClass) {
-      toast.error('Please select a class');
+      toast.error(t('characterForm.selectClassRequired'));
       return;
     }
 
@@ -215,7 +217,7 @@ export function useCharacterForm(onSuccess: (characterId: string) => void) {
     const errors: Record<string, string> = {};
 
     if (!data.name.trim()) {
-      errors.name = 'Your character needs a name';
+      errors.name = t('characterForm.nameRequired');
     }
 
     // Check stat improvement: at least one stat must differ from template defaults
@@ -225,13 +227,13 @@ export function useCharacterForm(onSuccess: (characterId: string) => void) {
       return base && s.value !== base.value;
     });
     if (!hasStatBoost && templateStats.length > 0) {
-      errors.stats = 'Select a stat to improve (+1)';
+      errors.stats = t('characterForm.statBoostRequired');
     }
 
     // Moves
     const requiredMoves = selectedClass.maxMoves ?? 3;
     if (data.moves.length < requiredMoves) {
-      errors.moves = `Select ${requiredMoves} moves (${data.moves.length} selected)`;
+      errors.moves = t('characterForm.movesRequired', { count: requiredMoves, selected: data.moves.length });
     }
 
     // Roguish feats
@@ -240,7 +242,11 @@ export function useCharacterForm(onSuccess: (characterId: string) => void) {
       const preSelectedCount = selectedClass.roguishFeats?.feats.filter((f) => f.selected).length ?? 0;
       const requiredFeats = preSelectedCount + featsRemaining;
       if (data.roguishFeats.length < requiredFeats) {
-        errors.roguishFeats = `Select ${featsRemaining} more roguish feat${featsRemaining > 1 ? 's' : ''} (${Math.max(0, data.roguishFeats.length - preSelectedCount)} of ${featsRemaining} selected)`;
+        errors.roguishFeats = t('characterForm.roguishFeatsRequired', {
+          count: featsRemaining,
+          selected: Math.max(0, data.roguishFeats.length - preSelectedCount),
+          total: featsRemaining,
+        });
       }
     }
 
@@ -248,19 +254,22 @@ export function useCharacterForm(onSuccess: (characterId: string) => void) {
     const skillsRemaining = selectedClass.weaponSkills?.remaining ?? 0;
     if (skillsRemaining > 0) {
       if (data.weaponSkills.length < skillsRemaining) {
-        errors.weaponSkills = `Select ${skillsRemaining} weapon skill${skillsRemaining > 1 ? 's' : ''} (${data.weaponSkills.length} selected)`;
+        errors.weaponSkills = t('characterForm.weaponSkillsRequired', {
+          count: skillsRemaining,
+          selected: data.weaponSkills.length,
+        });
       }
     }
 
     // Drives
     const requiredDrives = selectedClass.maxDrives ?? 2;
     if (data.drives.length < requiredDrives) {
-      errors.drives = `Select ${requiredDrives} drives (${data.drives.length} selected)`;
+      errors.drives = t('characterForm.drivesRequired', { count: requiredDrives, selected: data.drives.length });
     }
 
     if (Object.keys(errors).length > 0) {
       setValidationErrors(errors);
-      toast.error('Please fill in all required fields');
+      toast.error(t('characterForm.requiredFieldsMissing'));
       return;
     }
 

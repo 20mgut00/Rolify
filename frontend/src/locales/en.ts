@@ -116,6 +116,12 @@ const en = {
     passwordResetSuccessDesc: 'Your password has been changed. You can now login with your new password.',
     passwordResetToast: 'Password reset successfully!',
     enterNewPasswordBelow: 'Enter your new password below.',
+
+    completingLogin: 'Completing login...',
+    loggedInWithGoogle: 'Welcome! Logged in with Google',
+    loginFailed: 'Login failed: {{error}}',
+    loginError: 'Failed to complete login',
+    missingTokens: 'Missing authentication tokens',
   },
 
   settings: {
@@ -204,6 +210,17 @@ const en = {
     editCharacter: 'Edit Character',
     characterSheet: 'Root Character Sheet',
     chooseYourRole: 'Choose Your Role',
+
+    characterUpdated: 'Character updated!',
+    characterCreated: 'Character created!',
+    selectClassRequired: 'Please select a class',
+    nameRequired: 'Your character needs a name',
+    statBoostRequired: 'Select a stat to improve (+1)',
+    movesRequired: 'Select {{count}} moves ({{selected}} selected)',
+    roguishFeatsRequired: 'Select {{count}} more roguish feat(s) ({{selected}} of {{total}} selected)',
+    weaponSkillsRequired: 'Select {{count}} weapon skill(s) ({{selected}} selected)',
+    drivesRequired: 'Select {{count}} drives ({{selected}} selected)',
+    requiredFieldsMissing: 'Please fill in all required fields',
   },
 
   characterBasicInfo: {

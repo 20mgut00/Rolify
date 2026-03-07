@@ -28,6 +28,10 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String picture = oAuth2User.getAttribute("picture");
         String googleId = oAuth2User.getAttribute("sub");
 
+        if (email == null || email.isBlank()) {
+            throw new OAuth2AuthenticationException("Email not provided by OAuth2 provider");
+        }
+
         log.info("Processing OAuth2 login for email: {}", email);
 
         // Find or create user

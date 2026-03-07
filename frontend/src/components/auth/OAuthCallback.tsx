@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Loader2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { useAuthStore } from '../../store';
 import toast from 'react-hot-toast';
 
@@ -8,6 +9,7 @@ export default function OAuthCallback() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { setAuth } = useAuthStore();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const handleCallback = async () => {
@@ -16,7 +18,7 @@ export default function OAuthCallback() {
       const error = searchParams.get('error');
 
       if (error) {
-        toast.error(`Login failed: ${error}`);
+        toast.error(t('auth.loginFailed', { error }));
         navigate('/');
         return;
       }
@@ -37,28 +39,27 @@ export default function OAuthCallback() {
           const user = await response.json();
 
           setAuth(token, refreshToken, user);
-          toast.success('Welcome! Logged in with Google');
+          toast.success(t('auth.loggedInWithGoogle'));
           navigate('/');
-        } catch (error) {
-          console.error('OAuth callback error:', error);
-          toast.error('Failed to complete login');
+        } catch {
+          toast.error(t('auth.loginError'));
           navigate('/');
         }
       } else {
-        toast.error('Missing authentication tokens');
+        toast.error(t('auth.missingTokens'));
         navigate('/');
       }
     };
 
     handleCallback();
-  }, [searchParams, navigate, setAuth]);
+  }, [searchParams, navigate, setAuth, t]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-primary-light">
       <div className="text-center">
         <Loader2 size={60} className="text-accent-gold animate-spin mx-auto mb-4" />
         <h2 className="font-cinzel text-2xl font-semibold text-primary-dark">
-          Completing login...
+          {t('auth.completingLogin')}
         </h2>
       </div>
     </div>

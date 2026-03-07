@@ -2,6 +2,7 @@ package com.rpgcharacter.controller;
 
 import com.rpgcharacter.dto.CharacterDTO;
 import com.rpgcharacter.dto.GenerateCharacterDTO;
+import com.rpgcharacter.exception.ResourceNotFoundException;
 import com.rpgcharacter.model.ClassTemplate;
 import com.rpgcharacter.repository.ClassTemplateRepository;
 import com.rpgcharacter.service.CharacterService;
@@ -90,7 +91,7 @@ public class CharacterController {
     ) {
         ClassTemplate template = classTemplateRepository
                 .findBySystemAndClassName(request.getSystem(), request.getClassName())
-                .orElseThrow(() -> new RuntimeException("Class template not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Class template not found"));
 
         Map<String, Object> generatedData = geminiService.generateCharacter(template, request.getPrompt(), request.getLanguage());
         return ResponseEntity.ok(generatedData);

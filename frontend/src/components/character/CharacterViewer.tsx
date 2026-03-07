@@ -17,7 +17,7 @@ export default function CharacterViewer() {
   const navigate = useNavigate();
   const { user } = useAuthStore();
   const { t, i18n } = useTranslation();
-  const tg = (key: string, fallback: string) => { const r = (t as (k: string) => string)(key); return r === key ? fallback : r; };
+  const tg = (key: string, fallback: string): string => t(key, { defaultValue: fallback });
   const [showExportMenu, setShowExportMenu] = useState(false);
 
   const { data: character, isLoading } = useQuery({

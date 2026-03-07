@@ -1,7 +1,6 @@
 package com.rpgcharacter.service;
 
 import com.rpgcharacter.dto.CharacterDTO;
-import com.rpgcharacter.exception.BusinessException;
 import com.rpgcharacter.exception.ResourceNotFoundException;
 import com.rpgcharacter.exception.UnauthorizedException;
 import com.rpgcharacter.model.Character;
@@ -9,6 +8,7 @@ import com.rpgcharacter.model.ClassTemplate;
 import com.rpgcharacter.repository.CharacterRepository;
 import com.rpgcharacter.repository.ClassTemplateRepository;
 import com.rpgcharacter.repository.UserRepository;
+import com.rpgcharacter.validator.CharacterValidator;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -32,6 +32,7 @@ public class CharacterService {
     private final ClassTemplateRepository classTemplateRepository;
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
+    private final CharacterValidator characterValidator;
     
     @Transactional
     public CharacterDTO.Response createCharacter(CharacterDTO.CreateRequest request, String userEmail) {
@@ -41,7 +42,7 @@ public class CharacterService {
                 .orElseThrow(() -> new ResourceNotFoundException("Class template not found"));
 
         // Validate character data against template
-        validateCharacter(request, template);
+        characterValidator.validateCharacter(request, template);
 
         Character character = modelMapper.map(request, Character.class);
 
@@ -230,38 +231,6 @@ public class CharacterService {
                         user -> user.getId(),
                         user -> user.getName() == null || user.getName().isBlank() ? "Unknown adventurer" : user.getName()
                 ));
-    }
-    
-    private void validateCharacter(CharacterDTO.CreateRequest request, ClassTemplate template) {
-        // Validate drives count
-        if (request.getDrives() != null) {
-            long selectedDrives = request.getDrives().stream()
-                    .filter(CharacterDTO.SelectedOptionDTO::getSelected)
-                    .count();
-            if (template.getMaxDrives() != null && selectedDrives > template.getMaxDrives()) {
-                throw new BusinessException("Too many drives selected. Max: " + template.getMaxDrives());
-            }
-        }
-        
-        // Validate moves count
-        if (request.getMoves() != null) {
-            long selectedMoves = request.getMoves().stream()
-                    .filter(CharacterDTO.SelectedOptionDTO::getSelected)
-                    .count();
-            if (template.getMaxMoves() != null && selectedMoves > template.getMaxMoves()) {
-                throw new BusinessException("Too many moves selected. Max: " + template.getMaxMoves());
-            }
-        }
-        
-        // Validate nature count
-        if (request.getNature() != null) {
-            long selectedNature = request.getNature().stream()
-                    .filter(CharacterDTO.SelectedOptionDTO::getSelected)
-                    .count();
-            if (template.getMaxNature() != null && selectedNature > template.getMaxNature()) {
-                throw new BusinessException("Too many nature options selected. Max: " + template.getMaxNature());
-            }
-        }
     }
     
     // Helper mapping methods

@@ -116,6 +116,12 @@ const es = {
     passwordResetSuccessDesc: 'Tu contrase\u00f1a ha sido cambiada. Ya puedes iniciar sesi\u00f3n con tu nueva contrase\u00f1a.',
     passwordResetToast: '\u00a1Contrase\u00f1a restablecida exitosamente!',
     enterNewPasswordBelow: 'Ingresa tu nueva contrase\u00f1a a continuaci\u00f3n.',
+
+    completingLogin: 'Completando sesion...',
+    loggedInWithGoogle: 'Bienvenido! Sesion iniciada con Google',
+    loginFailed: 'Error al iniciar sesion: {{error}}',
+    loginError: 'No se pudo completar el inicio de sesion',
+    missingTokens: 'Faltan los tokens de autenticacion',
   },
 
   settings: {
@@ -204,6 +210,17 @@ const es = {
     editCharacter: 'Editar Personaje',
     characterSheet: 'Hoja de Personaje de Root',
     chooseYourRole: 'Elige Tu Rol',
+
+    characterUpdated: 'Personaje actualizado!',
+    characterCreated: 'Personaje creado!',
+    selectClassRequired: 'Por favor selecciona una clase',
+    nameRequired: 'Tu personaje necesita un nombre',
+    statBoostRequired: 'Selecciona un atributo para mejorar (+1)',
+    movesRequired: 'Selecciona {{count}} acciones ({{selected}} seleccionadas)',
+    roguishFeatsRequired: 'Selecciona {{count}} hazana(s) mas ({{selected}} de {{total}} seleccionadas)',
+    weaponSkillsRequired: 'Selecciona {{count}} habilidad(es) de arma ({{selected}} seleccionadas)',
+    drivesRequired: 'Selecciona {{count}} motivaciones ({{selected}} seleccionadas)',
+    requiredFieldsMissing: 'Por favor completa todos los campos obligatorios',
   },
 
   characterBasicInfo: {

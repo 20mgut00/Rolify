@@ -77,8 +77,6 @@ export default function CharacterForm() {
 
       toast.success(t('characterForm.characterGenerated'));
     } catch (error) {
-      console.error('Error generating character:', error);
-
       const errorMessage = axios.isAxiosError(error)
         ? error.response?.data?.message || t('characterForm.generateFailed')
         : t('characterForm.generateFailed');
