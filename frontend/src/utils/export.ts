@@ -1,245 +1,294 @@
 import jsPDF from 'jspdf';
 import html2canvas from 'html2canvas';
 import type { Character, SelectedOption, WeaponSkills, RoguishFeats, Reputation } from '../types';
+import { getAvatarUrl } from './avatarUrl';
 
-/**
- * Export character to PDF
- */
+/** Fetch any image URL and return a base64 data-URI for safe embedding in html2canvas. */
+async function toBase64(url: string): Promise<string | null> {
+  try {
+    const res = await fetch(url, { mode: 'cors' });
+    if (!res.ok) return null;
+    const blob = await res.blob();
+    return new Promise(resolve => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror   = () => resolve(null);
+      reader.readAsDataURL(blob);
+    });
+  } catch {
+    return null;
+  }
+}
+
+/** Split a single canvas across PDF pages, never cutting mid-section. */
+function sliceCanvasToPdf(
+  canvas: HTMLCanvasElement,
+  sectionBounds: Array<{ top: number; bottom: number }>,
+  pdf: jsPDF,
+  { margin, cw, contentH, scale }: { margin: number; cw: number; contentH: number; scale: number },
+): void {
+  const pxPerMm      = canvas.width / cw;
+  const pageHeightPx = contentH * pxPerMm;
+
+  let canvasY   = 0;
+  let firstPage = true;
+
+  while (canvasY < canvas.height) {
+    const idealCutPx = canvasY + pageHeightPx;
+
+    let cutPx: number;
+    if (idealCutPx >= canvas.height) {
+      cutPx = canvas.height;
+    } else {
+      cutPx = idealCutPx;
+      for (const b of sectionBounds) {
+        const sTop = b.top    * scale;
+        const sBot = b.bottom * scale;
+        if (sTop < idealCutPx && sBot > idealCutPx) {
+          cutPx = sTop > canvasY ? sTop : idealCutPx;
+          break;
+        }
+      }
+    }
+
+    const sliceH = cutPx - canvasY;
+    if (sliceH <= 0) break;
+
+    const slice = document.createElement('canvas');
+    slice.width  = canvas.width;
+    slice.height = sliceH;
+    slice.getContext('2d')!.drawImage(canvas, 0, canvasY, canvas.width, sliceH, 0, 0, canvas.width, sliceH);
+
+    if (!firstPage) pdf.addPage();
+    pdf.addImage(slice.toDataURL('image/png'), 'PNG', margin, margin, cw, sliceH / pxPerMm);
+    firstPage = false;
+    canvasY = cutPx;
+  }
+}
+
+/** Trigger a browser download for a jsPDF document. */
+function downloadPdf(pdf: jsPDF, filename: string): void {
+  const blob = pdf.output('blob');
+  const url  = URL.createObjectURL(blob);
+  const a    = document.createElement('a');
+  a.href     = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
 export async function exportCharacterToPDF(character: Character): Promise<void> {
-  // Create a temporary container for the character sheet
-  const container = document.createElement('div');
-  container.style.position = 'absolute';
-  container.style.left = '-9999px';
-  container.style.width = '210mm'; // A4 width
-  container.style.background = 'white';
-  container.style.padding = '20mm';
-  container.style.fontFamily = 'Arial, sans-serif';
-  
-  const selectedNature = character.nature.filter(n => n.selected);
-  const selectedDrives = character.drives.filter(d => d.selected);
-  const selectedMoves = character.moves.filter(m => m.selected);
-  const selectedSkills = character.weaponSkills.skills.filter(s => s.selected);
-  const selectedFeats = character.roguishFeats.feats.filter(f => f.selected);
-  const hasConnections = character.connections && character.connections.length > 0;
-  const hasReputation = character.reputation?.factions && Object.keys(character.reputation.factions).length > 0;
-  const equipmentText = character.equipment
+  const pdf        = new jsPDF('p', 'mm', 'a4');
+  const PAGE_H     = 297;
+  const MARGIN     = 15;
+  const CW         = 180;                    // content width mm
+  const CONTENT_H  = PAGE_H - 2 * MARGIN;   // 267 mm per page
+  const SCALE      = 2;
+
+  // ── Style fragments ────────────────────────────────────────────────────────
+  const T  = `color:#D9A441;font-size:17px;font-weight:bold;margin:0 0 10px;padding-bottom:5px;border-bottom:2px solid #D9A441;`;
+  const C  = `padding:10px 12px;background:#f8f6f0;border-radius:6px;margin-bottom:8px;`;
+  const LC = `padding:10px 12px;background:#f8f6f0;border-left:4px solid #D9A441;border-radius:0 6px 6px 0;margin-bottom:8px;`;
+
+  // ── Derived data ──────────────────────────────────────────────────────────
+  const selNature  = character.nature.filter(n => n.selected);
+  const selDrives  = character.drives.filter(d => d.selected);
+  const selMoves   = character.moves.filter(m => m.selected);
+  const selSkills  = character.weaponSkills.skills.filter(s => s.selected);
+  const selFeats   = character.roguishFeats.feats.filter(f => f.selected);
+  const hasFactions = !!(character.reputation?.factions && Object.keys(character.reputation.factions).length > 0);
+  const equipment  = character.equipment
     ? (typeof character.equipment === 'string' ? character.equipment : JSON.stringify(character.equipment, null, 2))
     : '';
+  const createdDate = new Date(character.createdAt || '').toLocaleDateString();
 
-  // Build HTML content
-  container.innerHTML = `
-    <div style="color: #0F2B3A; font-size: 14px; line-height: 1.5;">
-      <!-- Header -->
-      <div style="text-align: center; margin-bottom: 30px; border-bottom: 3px solid #D9A441; padding-bottom: 20px;">
-        <h1 style="margin: 0; font-size: 36px; color: #0F2B3A; font-family: serif;">${character.name}</h1>
-        <p style="margin: 8px 0; font-size: 18px; color: #D9A441; font-weight: 600;">${character.className} &bull; ${character.system}</p>
-        <p style="margin: 5px 0; font-size: 15px; color: #555;">${character.species} &bull; ${character.demeanor}</p>
+  // Pre-fetch avatar as base64 so html2canvas embeds it without CORS issues
+  const avatarBase64 = character.avatarImage
+    ? await toBase64(getAvatarUrl(character.avatarImage))
+    : null;
+
+  // ── Build the full off-screen character sheet in a single container ────────
+  // Each logical section is a direct child div — we record their offsetTops
+  // so we can split the final canvas at section boundaries (never mid-section).
+  const container = document.createElement('div');
+  container.style.cssText = [
+    'position:fixed', 'left:-9999px', 'top:0', 'z-index:-1',
+    `width:${CW}mm`, 'background:#fff',
+    'font-family:Arial,sans-serif', 'font-size:13px',
+    'line-height:1.5', 'color:#0F2B3A', 'box-sizing:border-box',
+  ].join(';');
+  document.body.appendChild(container);
+
+  const sectionEls: HTMLElement[] = [];
+  const addSection = (html: string): void => {
+    const div = document.createElement('div');
+    div.style.marginBottom = '10px';
+    div.innerHTML = html;
+    container.appendChild(div);
+    sectionEls.push(div);
+  };
+
+  // 1. Header
+  addSection(`
+    <div style="border-bottom:3px solid #D9A441;padding-bottom:16px;display:flex;align-items:center;gap:16px;">
+      ${avatarBase64 ? `<img src="${avatarBase64}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid #D9A441;flex-shrink:0;" />` : ''}
+      <div style="flex:1;text-align:${avatarBase64 ? 'left' : 'center'};">
+        <h1 style="margin:0 0 4px;font-size:26px;color:#0F2B3A;font-family:Georgia,serif;">${character.name}</h1>
+        <div style="font-size:14px;color:#D9A441;font-weight:700;margin-bottom:3px;">${character.className} &bull; ${character.system}</div>
+        <div style="font-size:12px;color:#555;">${character.species} &bull; ${character.demeanor}</div>
+        <div style="font-size:11px;color:#888;margin-top:6px;">${createdDate}</div>
       </div>
+    </div>
+  `);
 
-      <!-- Details -->
-      ${character.details ? `
-        <div style="margin-bottom: 25px;">
-          <h2 style="color: #D9A441; font-size: 20px; margin-bottom: 10px; border-bottom: 2px solid #D9A441; padding-bottom: 5px;">Details</h2>
-          <div style="padding: 12px; background: #f8f6f0; border-radius: 6px; white-space: pre-wrap;">
-            ${character.details}
-          </div>
-        </div>
-      ` : ''}
-
-      <!-- Stats -->
-      ${character.stats.length > 0 ? `
-        <div style="margin-bottom: 25px;">
-          <h2 style="color: #D9A441; font-size: 20px; margin-bottom: 10px; border-bottom: 2px solid #D9A441; padding-bottom: 5px;">Stats</h2>
-          <div style="display: grid; grid-template-columns: repeat(${Math.min(character.stats.length, 5)}, 1fr); gap: 10px;">
-            ${character.stats.map(stat => `
-              <div style="text-align: center; padding: 12px 8px; background: #f8f6f0; border-radius: 6px; border: 1px solid #e8e4da;">
-                <div style="font-weight: bold; text-transform: uppercase; font-size: 11px; color: #555; letter-spacing: 0.5px;">${stat.name}</div>
-                <div style="font-size: 28px; font-weight: bold; color: ${stat.value >= 0 ? '#D9A441' : '#888'}; margin-top: 4px;">
-                  ${stat.value >= 0 ? '+' : ''}${stat.value}
-                </div>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-      ` : ''}
-
-      <!-- Background -->
-      ${character.background.length > 0 ? `
-        <div style="margin-bottom: 25px;">
-          <h2 style="color: #D9A441; font-size: 20px; margin-bottom: 10px; border-bottom: 2px solid #D9A441; padding-bottom: 5px;">Background</h2>
-          ${character.background.map(bg => `
-            <div style="margin-bottom: 10px; padding: 10px 12px; background: #f8f6f0; border-radius: 6px;">
-              <strong style="color: #0F2B3A;">${bg.question}</strong>
-              <div style="margin-top: 4px; color: #444;">${bg.answer}</div>
+  // 2. Stats
+  if (character.stats.length > 0) {
+    addSection(`
+      <div>
+        <div style="${T}">Stats</div>
+        <div style="display:flex;gap:8px;">
+          ${character.stats.map(s => `
+            <div style="flex:1;text-align:center;padding:10px 6px;background:#f8f6f0;border-radius:6px;border:1px solid #e8e4da;">
+              <div style="font-weight:700;text-transform:uppercase;font-size:10px;color:#666;letter-spacing:0.5px;">${s.name}</div>
+              <div style="font-size:22px;font-weight:700;color:${s.value >= 0 ? '#D9A441' : '#888'};">${s.value >= 0 ? '+' : ''}${s.value}</div>
             </div>
           `).join('')}
         </div>
-      ` : ''}
-
-      <!-- Connections -->
-      ${hasConnections ? `
-        <div style="margin-bottom: 25px;">
-          <h2 style="color: #D9A441; font-size: 20px; margin-bottom: 10px; border-bottom: 2px solid #D9A441; padding-bottom: 5px;">Connections</h2>
-          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
-            ${character.connections.map(conn => `
-              <div style="padding: 10px 12px; background: #f8f6f0; border-radius: 6px; border-left: 4px solid #D9A441;">
-                <strong style="color: #0F2B3A;">${conn.characterName || conn.type || ''}</strong>
-                <div style="font-size: 13px; color: #444; margin-top: 4px;">${conn.description}</div>
-                ${conn.story ? `<div style="font-size: 12px; color: #666; margin-top: 4px; font-style: italic;">${conn.story}</div>` : ''}
-              </div>
-            `).join('')}
-          </div>
-        </div>
-      ` : ''}
-
-      <!-- Nature & Drives side by side -->
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px;">
-        <!-- Nature -->
-        <div>
-          <h2 style="color: #D9A441; font-size: 20px; margin-bottom: 10px; border-bottom: 2px solid #D9A441; padding-bottom: 5px;">Nature</h2>
-          ${selectedNature.length > 0 ? selectedNature.map(n => `
-            <div style="margin-bottom: 8px; padding: 10px 12px; background: #f8f6f0; border-left: 4px solid #D9A441; border-radius: 0 6px 6px 0;">
-              <strong style="color: #0F2B3A;">${n.name}</strong>
-              <div style="font-size: 13px; color: #444; margin-top: 4px;">${n.description}</div>
-            </div>
-          `).join('') : '<p style="color: #888;">None selected</p>'}
-        </div>
-        <!-- Drives -->
-        <div>
-          <h2 style="color: #D9A441; font-size: 20px; margin-bottom: 10px; border-bottom: 2px solid #D9A441; padding-bottom: 5px;">Drives</h2>
-          ${selectedDrives.length > 0 ? selectedDrives.map(d => `
-            <div style="margin-bottom: 8px; padding: 10px 12px; background: #f8f6f0; border-left: 4px solid #D9A441; border-radius: 0 6px 6px 0;">
-              <strong style="color: #0F2B3A;">${d.name}</strong>
-              <div style="font-size: 13px; color: #444; margin-top: 4px;">${d.description}</div>
-            </div>
-          `).join('') : '<p style="color: #888;">None selected</p>'}
-        </div>
       </div>
+    `);
+  }
 
-      <!-- Moves -->
-      ${selectedMoves.length > 0 ? `
-        <div style="margin-bottom: 25px;">
-          <h2 style="color: #D9A441; font-size: 20px; margin-bottom: 10px; border-bottom: 2px solid #D9A441; padding-bottom: 5px;">Moves</h2>
-          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;">
-            ${selectedMoves.map(m => `
-              <div style="padding: 10px 12px; background: #f8f6f0; border-radius: 6px; border: 1px solid #e8e4da;">
-                <strong style="color: #0F2B3A;">${m.name}</strong>
-                <div style="font-size: 13px; color: #444; margin-top: 4px;">${m.description}</div>
-              </div>
-            `).join('')}
-          </div>
-        </div>
-      ` : ''}
+  // 3. Background
+  if (character.background.length > 0) {
+    const bgCard = (q: string, a: string) => `<div style="${C}"><strong>${q}</strong><div style="margin-top:4px;color:#444;">${a}</div></div>`;
+    addSection(`<div><div style="${T}">Background</div>${character.background.map(b => bgCard(b.question, b.answer)).join('')}</div>`);
+  }
 
-      <!-- Weapon Skills & Roguish Feats side by side -->
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 25px;">
-        <!-- Weapon Skills -->
-        <div>
-          <h2 style="color: #D9A441; font-size: 20px; margin-bottom: 10px; border-bottom: 2px solid #D9A441; padding-bottom: 5px;">Weapon Skills</h2>
-          <div style="display: flex; flex-wrap: wrap; gap: 8px;">
-            ${selectedSkills.length > 0 ? selectedSkills.map(s => `
-              <div style="padding: 6px 14px; background: rgba(217, 164, 65, 0.2); border-radius: 6px; font-weight: 600; font-size: 13px;">
-                ${s.name}
-              </div>
-            `).join('') : '<p style="color: #888;">None selected</p>'}
-          </div>
-        </div>
-        <!-- Roguish Feats -->
-        <div>
-          <h2 style="color: #D9A441; font-size: 20px; margin-bottom: 10px; border-bottom: 2px solid #D9A441; padding-bottom: 5px;">Roguish Feats</h2>
-          <div style="display: flex; flex-wrap: wrap; gap: 8px;">
-            ${selectedFeats.length > 0 ? selectedFeats.map(f => `
-              <div style="padding: 6px 14px; background: #e8e4da; border-radius: 6px; font-weight: 600; font-size: 13px;">
-                ${f.name}
-              </div>
-            `).join('') : '<p style="color: #888;">None selected</p>'}
-          </div>
-        </div>
-      </div>
+  // 4. Connections
+  if (character.connections && character.connections.length > 0) {
+    const connCard = (c: typeof character.connections[number]) => `
+      <div style="${LC}">
+        <strong>${c.characterName || c.type || ''}</strong>
+        <div style="font-size:12px;color:#444;margin-top:4px;">${c.description || ''}</div>
+        ${c.story ? `<div style="font-size:11px;color:#666;margin-top:3px;font-style:italic;">${c.story}</div>` : ''}
+      </div>`;
+    addSection(`<div><div style="${T}">Connections</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">${character.connections.map(connCard).join('')}</div></div>`);
+  }
 
-      <!-- Reputation -->
-      ${hasReputation ? `
-        <div style="margin-bottom: 25px;">
-          <h2 style="color: #D9A441; font-size: 20px; margin-bottom: 10px; border-bottom: 2px solid #D9A441; padding-bottom: 5px;">Reputation</h2>
-          <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;">
-            ${Object.entries(character.reputation.factions).map(([factionName, rep]) => `
-              <div style="padding: 12px; background: #f8f6f0; border-radius: 6px; border: 1px solid #e8e4da; text-align: center;">
-                <div style="font-weight: bold; color: #0F2B3A; margin-bottom: 8px;">${factionName}</div>
-                <div style="display: flex; justify-content: space-around;">
-                  <div>
-                    <div style="font-size: 11px; color: #888; text-transform: uppercase;">Prestige</div>
-                    <div style="font-size: 22px; font-weight: bold; color: ${rep.prestige >= 0 ? '#16a34a' : '#dc2626'};">
-                      ${rep.prestige >= 0 ? '+' : ''}${rep.prestige}
-                    </div>
-                  </div>
-                  <div style="width: 1px; background: #ddd;"></div>
-                  <div>
-                    <div style="font-size: 11px; color: #888; text-transform: uppercase;">Notoriety</div>
-                    <div style="font-size: 22px; font-weight: bold; color: ${rep.notoriety >= 0 ? '#dc2626' : '#16a34a'};">
-                      ${rep.notoriety >= 0 ? '+' : ''}${rep.notoriety}
-                    </div>
-                  </div>
+  // 5. Reputation
+  if (hasFactions) {
+    addSection(`
+      <div>
+        <div style="${T}">Reputation</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+          ${Object.entries(character.reputation!.factions).map(([name, rep]) => `
+            <div style="${C}text-align:center;">
+              <div style="font-weight:700;margin-bottom:6px;">${name}</div>
+              <div style="display:flex;justify-content:space-around;">
+                <div>
+                  <div style="font-size:10px;color:#888;text-transform:uppercase;margin-bottom:2px;">Prestige</div>
+                  <div style="font-size:20px;font-weight:700;color:${rep.prestige >= 0 ? '#16a34a' : '#dc2626'};">${rep.prestige >= 0 ? '+' : ''}${rep.prestige}</div>
+                </div>
+                <div style="width:1px;background:#ddd;"></div>
+                <div>
+                  <div style="font-size:10px;color:#888;text-transform:uppercase;margin-bottom:2px;">Notoriety</div>
+                  <div style="font-size:20px;font-weight:700;color:${rep.notoriety > 0 ? '#dc2626' : '#16a34a'};">${rep.notoriety >= 0 ? '+' : ''}${rep.notoriety}</div>
                 </div>
               </div>
-            `).join('')}
-          </div>
+            </div>
+          `).join('')}
         </div>
-      ` : ''}
+      </div>
+    `);
+  }
 
-      <!-- Equipment -->
-      ${equipmentText ? `
-        <div style="margin-bottom: 25px;">
-          <h2 style="color: #D9A441; font-size: 20px; margin-bottom: 10px; border-bottom: 2px solid #D9A441; padding-bottom: 5px;">Equipment</h2>
-          <div style="white-space: pre-wrap; padding: 12px; background: #f8f6f0; border-radius: 6px;">
-            ${equipmentText}
-          </div>
-        </div>
-      ` : ''}
-
-      <!-- Footer -->
-      <div style="margin-top: 40px; padding-top: 15px; border-top: 2px solid #D9A441; text-align: center; font-size: 12px; color: #888;">
-        <p style="margin: 4px 0;">Created: ${new Date(character.createdAt || '').toLocaleDateString()}</p>
-        <p style="margin: 4px 0;">ROLIFY &mdash; RPG Character Creator</p>
+  // 6. Nature & Drives
+  addSection(`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+      <div>
+        <div style="${T}">Nature</div>
+        ${selNature.length > 0
+          ? selNature.map(n => `<div style="${LC}"><strong>${n.name}</strong><div style="font-size:12px;color:#444;margin-top:3px;">${n.description}</div></div>`).join('')
+          : '<div style="color:#888;font-size:12px;">None selected</div>'}
+      </div>
+      <div>
+        <div style="${T}">Drives</div>
+        ${selDrives.length > 0
+          ? selDrives.map(d => `<div style="${LC}"><strong>${d.name}</strong><div style="font-size:12px;color:#444;margin-top:3px;">${d.description}</div></div>`).join('')
+          : '<div style="color:#888;font-size:12px;">None selected</div>'}
       </div>
     </div>
-  `;
+  `);
 
-  document.body.appendChild(container);
+  // 7. Moves
+  if (selMoves.length > 0) {
+    const moveCard = (m: SelectedOption) => `<div style="${C}border:1px solid #e8e4da;"><strong>${m.name}</strong><div style="font-size:12px;color:#444;margin-top:3px;">${m.description}</div></div>`;
+    const moveRow  = (sl: SelectedOption[]) => `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">${sl.map(moveCard).join('')}</div>`;
+    const rows = Array.from({ length: Math.ceil(selMoves.length / 2) }, (_, i) => moveRow(selMoves.slice(i * 2, i * 2 + 2)));
+    addSection(`<div><div style="${T}">Moves</div>${rows.join('')}</div>`);
+  }
 
+  // 8. Weapon Skills & Roguish Feats
+  addSection(`
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+      <div>
+        <div style="${T}">Weapon Skills</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+          ${selSkills.length > 0
+            ? selSkills.map(s => `<span style="padding:5px 12px;background:rgba(217,164,65,0.2);border-radius:6px;font-weight:600;font-size:12px;">${s.name}</span>`).join('')
+            : '<span style="color:#888;font-size:12px;">None selected</span>'}
+        </div>
+      </div>
+      <div>
+        <div style="${T}">Roguish Feats</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;">
+          ${selFeats.length > 0
+            ? selFeats.map(f => `<span style="padding:5px 12px;background:#e8e4da;border-radius:6px;font-weight:600;font-size:12px;">${f.name}</span>`).join('')
+            : '<span style="color:#888;font-size:12px;">None selected</span>'}
+        </div>
+      </div>
+    </div>
+  `);
+
+  // 9. Equipment
+  if (equipment) {
+    addSection(`<div><div style="${T}">Equipment</div><div style="${C}white-space:pre-wrap;">${equipment}</div></div>`);
+  }
+
+  // 10. Footer
+  addSection(`
+    <div style="text-align:center;padding-top:10px;border-top:2px solid #D9A441;font-size:11px;color:#888;">
+      ${createdDate} &mdash; ROLIFY &mdash; RPG Character Creator
+    </div>
+  `);
+
+  // Record where each section starts/ends in the container (before rendering)
+  const containerTop = container.getBoundingClientRect().top;
+  const sectionBounds = sectionEls.map(el => {
+    const r = el.getBoundingClientRect();
+    return { top: r.top - containerTop, bottom: r.bottom - containerTop };
+  });
+
+  // ── Single html2canvas call ────────────────────────────────────────────────
+  let canvas: HTMLCanvasElement;
   try {
-    // Convert to canvas
-    const canvas = await html2canvas(container, {
-      scale: 2,
+    canvas = await html2canvas(container, {
+      scale: SCALE,
       logging: false,
       backgroundColor: '#ffffff',
+      useCORS: true,
+      allowTaint: true,
     });
-
-    // Create PDF
-    const imgData = canvas.toDataURL('image/png');
-    const pdf = new jsPDF('p', 'mm', 'a4');
-    const imgWidth = 210; // A4 width in mm
-    const imgHeight = (canvas.height * imgWidth) / canvas.width;
-    
-    let heightLeft = imgHeight;
-    let position = 0;
-
-    // Add first page
-    pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-    heightLeft -= 297; // A4 height
-
-    // Add additional pages if needed
-    while (heightLeft > 0) {
-      position = heightLeft - imgHeight;
-      pdf.addPage();
-      pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
-      heightLeft -= 297;
-    }
-
-    // Download
-    pdf.save(`${character.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_character.pdf`);
   } finally {
     document.body.removeChild(container);
   }
+
+  sliceCanvasToPdf(canvas, sectionBounds, pdf, { margin: MARGIN, cw: CW, contentH: CONTENT_H, scale: SCALE });
+
+  const filename = `${character.name.replace(/[^a-z0-9]/gi, '_').toLowerCase()}_character.pdf`;
+  downloadPdf(pdf, filename);
 }
 
 /**
