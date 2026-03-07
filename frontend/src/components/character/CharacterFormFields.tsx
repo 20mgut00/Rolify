@@ -91,7 +91,7 @@ export default function CharacterFormFields({
 
       {/* Background - row-span-3 on desktop only */}
       <div className="md:row-span-3">
-        <Card label={t('characterFormFields.background')}>
+        <Card label={t('characterFormFields.background')} desc={t('characterFormFields.backgroundDesc')}>
           <BackgroundSelector
             key={isEditing ? `background-edit-${editId}` : `background-${selectedClass.className || selectedClassIndex}`}
             background={selectedClass.background}
@@ -119,7 +119,7 @@ export default function CharacterFormFields({
 
       {/* Connections */}
       <div>
-        <Card label={t('characterFormFields.connections')}>
+        <Card label={t('characterFormFields.connections')} desc={t('characterFormFields.connectionsDesc')}>
           <ConnectionsSelector
             key={isEditing ? `connections-edit-${editId}` : `connections-${selectedClass.className || selectedClassIndex}`}
             connections={selectedClass.connections}
@@ -131,7 +131,7 @@ export default function CharacterFormFields({
 
       {/* Stats */}
       <div>
-        <Card label={t('characterFormFields.stats')} desc={t('characterFormFields.statsDesc')} required error={validationErrors.stats}>
+        <Card label={t('characterFormFields.stats')} desc={t('characterFormFields.statsDesc')} helpText={t('characterFormFields.statsHelp')} required error={validationErrors.stats}>
           <AttributesSelector
             key={isEditing ? `stats-edit-${editId}` : `stats-${selectedClass.className || selectedClassIndex}`}
             stats={selectedClass.stats}
@@ -143,7 +143,7 @@ export default function CharacterFormFields({
 
       {/* Reputation - col-span-2 on desktop only */}
       <div className="md:col-span-2">
-        <Card label={t('characterFormFields.reputation')} desc={t('characterFormFields.reputationDesc')}>
+        <Card label={t('characterFormFields.reputation')} desc={t('characterFormFields.reputationDesc')} helpText={t('characterFormFields.reputationHelp')}>
           <ReputationSelector
             key={isEditing ? `reputation-edit-${editId}` : `reputation-${selectedClass.className || selectedClassIndex}`}
             backgroundAnswers={watchedFields.background}

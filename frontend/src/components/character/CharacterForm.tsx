@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 import CircularProgress from '@mui/material/CircularProgress';
 import { useAccessibilityStore } from '../../store';
 import { useCharacterForm } from '../../hooks/useCharacterForm';
+import { useChecklistSteps } from '../../hooks/useChecklistSteps';
 import { getClassDefaultAvatar, getAvatarUrl } from '../../utils/avatarUrl';
 import { characterAPI } from '../../services/api';
 import Card from '../common/Card';
@@ -14,6 +15,8 @@ import ClassSelector from '../root/ClassSelector';
 import CharacterFormHeader from './CharacterFormHeader';
 import CharacterBasicInfo from './CharacterBasicInfo';
 import CharacterFormFields from './CharacterFormFields';
+import WelcomeGuideModal from './WelcomeGuideModal';
+import CharacterChecklist from './CharacterChecklist';
 
 export default function CharacterForm() {
   const navigate = useNavigate();
@@ -39,6 +42,18 @@ export default function CharacterForm() {
     validationErrors,
     onSubmit,
   } = useCharacterForm((characterId) => navigate(`/character/${characterId}`));
+
+  // Show guide only once and only in create mode
+  const [showGuide, setShowGuide] = useState(
+    () => !isEditing && !localStorage.getItem('rootGuideShown')
+  );
+
+  const handleCloseGuide = () => {
+    localStorage.setItem('rootGuideShown', 'true');
+    setShowGuide(false);
+  };
+
+  const checklistSteps = useChecklistSteps(selectedClass, watchedFields);
 
   const handleGenerateCharacter = async () => {
     if (!isAuthenticated) {
@@ -220,6 +235,8 @@ export default function CharacterForm() {
           </div>
         </form>
 
+        <WelcomeGuideModal isOpen={showGuide} onClose={handleCloseGuide} />
+
         {/* AI Generation Loading Overlay */}
         {isGenerating && (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
@@ -236,6 +253,9 @@ export default function CharacterForm() {
           </div>
         )}
       </div>
+
+      {/* Floating checklist — rendered outside the white panel to avoid z-index conflicts */}
+      <CharacterChecklist steps={checklistSteps} />
     </main>
   );
 }

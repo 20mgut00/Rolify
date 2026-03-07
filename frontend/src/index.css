@@ -50,3 +50,7 @@
   font-size: 112.5%;
 }
 
+:root[data-theme='dark'] .bg-panel-solid {
+  background-color: #1e293b !important;
+}
+

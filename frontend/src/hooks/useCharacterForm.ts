@@ -78,6 +78,7 @@ export function useCharacterForm(onSuccess: (characterId: string) => void) {
 
   // Watch form fields
   const watchedFields = {
+    name: useWatch({ control, name: 'name' }),
     background: useWatch({ control, name: 'background' }),
     connections: useWatch({ control, name: 'connections' }),
     stats: useWatch({ control, name: 'stats' }),
