@@ -192,7 +192,8 @@ const es = {
     loginRequiredAIToast: 'Necesitas iniciar sesi\u00f3n para usar la generaci\u00f3n con IA',
     selectClassFirst: 'Por favor selecciona una clase primero',
     characterGenerated: '\u00a1Personaje generado exitosamente!',
-    generateFailed: 'Error al generar personaje. Int\u00e9ntalo de nuevo.',
+    generateFailed: 'Error al generar personaje. Inténtalo de nuevo.',
+    rateLimitExceeded: 'Has alcanzado el límite diario de generaciones con IA. Vuelve mañana.',
 
     visibility: 'Visibilidad',
     makePublic: 'Hacer este personaje p\u00fablico (visible en la galer\u00eda)',

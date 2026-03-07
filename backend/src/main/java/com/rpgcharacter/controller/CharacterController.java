@@ -7,6 +7,7 @@ import com.rpgcharacter.model.ClassTemplate;
 import com.rpgcharacter.repository.ClassTemplateRepository;
 import com.rpgcharacter.service.CharacterService;
 import com.rpgcharacter.service.GeminiService;
+import com.rpgcharacter.service.RateLimitService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -29,6 +30,7 @@ public class CharacterController {
     private final CharacterService characterService;
     private final GeminiService geminiService;
     private final ClassTemplateRepository classTemplateRepository;
+    private final RateLimitService rateLimitService;
     
     @PostMapping
     public ResponseEntity<CharacterDTO.Response> createCharacter(
@@ -87,8 +89,11 @@ public class CharacterController {
 
     @PostMapping("/generate")
     public ResponseEntity<Map<String, Object>> generateCharacter(
-            @Valid @RequestBody GenerateCharacterDTO.Request request
+            @Valid @RequestBody GenerateCharacterDTO.Request request,
+            @AuthenticationPrincipal UserDetails userDetails
     ) {
+        rateLimitService.checkAndIncrement(userDetails.getUsername());
+
         ClassTemplate template = classTemplateRepository
                 .findBySystemAndClassName(request.getSystem(), request.getClassName())
                 .orElseThrow(() -> new ResourceNotFoundException("Class template not found"));

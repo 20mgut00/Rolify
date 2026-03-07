@@ -193,6 +193,7 @@ const en = {
     selectClassFirst: 'Please select a class first',
     characterGenerated: 'Character generated successfully!',
     generateFailed: 'Failed to generate character. Please try again.',
+    rateLimitExceeded: 'You have reached the daily AI generation limit. Try again tomorrow.',
 
     visibility: 'Visibility',
     makePublic: 'Make this character public (visible in gallery)',

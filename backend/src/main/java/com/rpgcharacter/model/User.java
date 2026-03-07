@@ -10,6 +10,7 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Data
@@ -51,9 +52,15 @@ public class User {
     // Statistics
     @Builder.Default
     private Long totalCharacters = 0L;
-    
+
     @Builder.Default
     private Long publicCharacters = 0L;
+
+    // AI generation rate limiting
+    @Builder.Default
+    private Integer dailyAiGenerations = 0;
+
+    private LocalDate lastAiGenerationDate;
     
     public enum AuthProvider {
         LOCAL,

@@ -93,9 +93,10 @@ export default function CharacterForm() {
       toast.success(t('characterForm.characterGenerated'));
     } catch (error) {
       const errorMessage = axios.isAxiosError(error)
-        ? error.response?.data?.message || t('characterForm.generateFailed')
+        ? error.response?.status === 429
+          ? t('characterForm.rateLimitExceeded')
+          : error.response?.data?.message || t('characterForm.generateFailed')
         : t('characterForm.generateFailed');
-
       toast.error(errorMessage);
     } finally {
       setIsGenerating(false);
@@ -206,7 +207,7 @@ export default function CharacterForm() {
                       type="checkbox"
                       checked={isPublic}
                       onChange={(e) => setIsPublic(e.target.checked)}
-                      className="w-5 h-5 rounded border-primary-dark/30 text-accent-gold focus:ring-accent-gold"
+                      className="w-5 h-5 rounded border-primary-dark/30 text-accent-gold focus:ring-accent-gold cursor-pointer"
                     />
                     <span className="text-primary-dark font-medium">
                       {t('characterForm.makePublic')}
