@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import { characterAPI, classTemplateAPI } from '../../services/api';
 import { useAuthStore, useCharacterStore, useUIStore } from '../../store';
 import CharacterCard from './CharacterCard';
+import FilterSelect from '../common/FilterSelect';
 import { exportCharacterToPDF, exportCharacterToJSON, exportCharacterToCSV, importCharacterFromJSON, importCharacterFromCSV } from '../../utils/export';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 import type { Character, CharacterCard as CharacterCardType } from '../../types';
@@ -209,7 +210,7 @@ export default function CharacterLibrary() {
   };
 
   return (
-    <div className="min-h-screen bg-primary-light">
+    <div className="min-h-screen bg-primary-light overflow-x-hidden">
       <div className="container mx-auto px-4 py-6 sm:py-12">
       <div className="max-w-7xl mx-auto">
         {/* Header */}
@@ -222,8 +223,8 @@ export default function CharacterLibrary() {
               {filteredCharacters.length} {filteredCharacters.length !== 1 ? t('common.characters') : t('common.character')} {(classFilter || searchTerm) ? t('common.found') : t('common.inYourCollection')}
             </p>
           </div>
-          
-          <div className="flex flex-wrap gap-3">
+
+          <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
             {isAuthenticated && (
               <>
                 <input
@@ -237,7 +238,7 @@ export default function CharacterLibrary() {
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
                   disabled={importMutation.isPending}
-                  className="bg-primary-dark/10 text-primary-dark px-5 py-3 rounded-lg font-cinzel font-medium hover:bg-primary-dark/20 transition flex items-center gap-2 disabled:opacity-50"
+                  className="bg-primary-dark/10 text-primary-dark px-5 py-3 rounded-lg font-cinzel font-medium hover:bg-primary-dark/20 transition flex items-center justify-center gap-2 disabled:opacity-50 w-full sm:w-auto"
                 >
                   <Upload size={20} />
                   {importMutation.isPending ? t('common.importing') : t('common.import')}
@@ -247,7 +248,7 @@ export default function CharacterLibrary() {
             <button
               type="button"
               onClick={() => navigate('/create')}
-              className="bg-accent-gold text-primary-dark px-6 py-3 rounded-lg font-cinzel font-medium hover:bg-opacity-90 transition flex items-center gap-2 shadow-lg"
+              className="bg-accent-gold text-primary-dark px-6 py-3 rounded-lg font-cinzel font-medium hover:bg-opacity-90 transition flex items-center justify-center gap-2 shadow-lg w-full sm:w-auto"
             >
               <Plus size={20} />
               {t('characterLibrary.newCharacter')}
@@ -272,50 +273,42 @@ export default function CharacterLibrary() {
         )}
 
         {/* Filters */}
-        <div className="max-w-2xl mx-auto mb-8 space-y-4">
+        <div className="w-full mb-8 space-y-3 sm:space-y-4">
           {/* Search */}
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-primary-dark/50" size={20} />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-primary-dark/50 pointer-events-none" size={20} />
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder={t('characterLibrary.searchPlaceholder')}
-              className="w-full pl-10 pr-4 py-3 border border-primary-dark/20 rounded-lg focus:ring-2 focus:ring-accent-gold focus:border-transparent text-primary-dark bg-white dark-field"
+              className="w-full min-w-0 pl-10 pr-4 py-3 border border-primary-dark/20 rounded-lg focus:ring-2 focus:ring-accent-gold focus:border-transparent text-primary-dark bg-white dark-field"
             />
           </div>
 
-          {/* Class Filter */}
-          <div className="relative">
-            <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-primary-dark/50" size={20} />
-            <select
+          {/* Class filter + Sort side by side */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+            <FilterSelect
               value={classFilter}
-              onChange={(e) => setClassFilter(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-primary-dark/20 rounded-lg focus:ring-2 focus:ring-accent-gold focus:border-transparent text-primary-dark bg-white appearance-none cursor-pointer dark-field"
-            >
-              <option value="">{t('common.allClasses')}</option>
-              {templates?.map((template) => (
-                <option key={template.id} value={template.className}>
-                  {template.className}
-                </option>
-              ))}
-            </select>
-          </div>
-
-          {/* Sort */}
-          <div className="relative">
-            <ArrowUpDown className="absolute left-3 top-1/2 -translate-y-1/2 text-primary-dark/50" size={20} />
-            <select
+              onChange={setClassFilter}
+              icon={<Filter size={20} />}
+              options={[
+                { value: '', label: t('common.allClasses') },
+                ...(templates?.map((tpl) => ({ value: tpl.className, label: tpl.className })) ?? []),
+              ]}
+            />
+            <FilterSelect
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-              className="w-full pl-10 pr-4 py-3 border border-primary-dark/20 rounded-lg focus:ring-2 focus:ring-accent-gold focus:border-transparent text-primary-dark bg-white appearance-none cursor-pointer dark-field"
-            >
-              <option value="date-desc">{t('characterLibrary.sortDateNewest')}</option>
-              <option value="date-asc">{t('characterLibrary.sortDateOldest')}</option>
-              <option value="name-asc">{t('characterLibrary.sortNameAZ')}</option>
-              <option value="name-desc">{t('characterLibrary.sortNameZA')}</option>
-              <option value="class-asc">{t('characterLibrary.sortClassAZ')}</option>
-            </select>
+              onChange={(v) => setSortBy(v as typeof sortBy)}
+              icon={<ArrowUpDown size={20} />}
+              options={[
+                { value: 'date-desc', label: t('characterLibrary.sortDateNewest') },
+                { value: 'date-asc', label: t('characterLibrary.sortDateOldest') },
+                { value: 'name-asc', label: t('characterLibrary.sortNameAZ') },
+                { value: 'name-desc', label: t('characterLibrary.sortNameZA') },
+                { value: 'class-asc', label: t('characterLibrary.sortClassAZ') },
+              ]}
+            />
           </div>
         </div>
 

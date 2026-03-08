@@ -8,6 +8,7 @@ import { Filter, Search } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { characterAPI, classTemplateAPI } from '../../services/api';
 import CharacterCard from '../character/CharacterCard';
+import FilterSelect from '../common/FilterSelect';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 import { useUIStore, useAuthStore } from '../../store';
 
@@ -84,7 +85,7 @@ export default function PublicGallery() {
   );
 
   return (
-    <div className="min-h-screen bg-primary-light">
+    <div className="min-h-screen bg-primary-light overflow-x-hidden">
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-7xl mx-auto">
         <h1 className="font-cinzel text-4xl md:text-5xl font-bold text-center mb-4 text-primary-dark">
@@ -95,35 +96,29 @@ export default function PublicGallery() {
         </p>
 
         {/* Filters */}
-        <div className="max-w-2xl mx-auto mb-12 space-y-4">
+        <div className="w-full mb-12 space-y-3 sm:space-y-4">
           {/* Search */}
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-primary-dark/50" size={20} />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-primary-dark/50 pointer-events-none" size={20} />
             <input
               type="text"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               placeholder={t('gallery.searchPlaceholder')}
-              className="w-full pl-10 pr-4 py-3 border border-primary-dark/20 rounded-lg focus:ring-2 focus:ring-accent-gold focus:border-transparent text-primary-dark bg-white dark-field"
+              className="w-full min-w-0 pl-10 pr-4 py-3 border border-primary-dark/20 rounded-lg focus:ring-2 focus:ring-accent-gold focus:border-transparent text-primary-dark bg-white dark-field"
             />
           </div>
 
           {/* Class Filter */}
-          <div className="relative">
-            <Filter className="absolute left-3 top-1/2 -translate-y-1/2 text-primary-dark/50" size={20} />
-            <select
-              value={classFilter}
-              onChange={(e) => setClassFilter(e.target.value)}
-              className="w-full pl-10 pr-4 py-3 border border-primary-dark/20 rounded-lg focus:ring-2 focus:ring-accent-gold focus:border-transparent text-primary-dark bg-white appearance-none cursor-pointer dark-field"
-            >
-              <option value="">{t('common.allClasses')}</option>
-              {templates?.map((template) => (
-                <option key={template.id} value={template.className}>
-                  {template.className}
-                </option>
-              ))}
-            </select>
-          </div>
+          <FilterSelect
+            value={classFilter}
+            onChange={setClassFilter}
+            icon={<Filter size={20} />}
+            options={[
+              { value: '', label: t('common.allClasses') },
+              ...(templates?.map((tpl) => ({ value: tpl.className, label: tpl.className })) ?? []),
+            ]}
+          />
         </div>
 
         {/* Results Count */}

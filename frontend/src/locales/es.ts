@@ -54,11 +54,17 @@ const es = {
     viewCharacter: 'Ver Personaje',
 
     easyCreation: 'Creaci\u00f3n F\u00e1cil',
-    easyCreationDesc: 'Formularios intuitivos paso a paso con validaci\u00f3n en tiempo real te gu\u00edan en la creaci\u00f3n de personajes. \u00a1No necesitas conocer las reglas!',
+    easyCreationBullet1: 'Formularios guiados paso a paso',
+    easyCreationBullet2: 'Validaci\u00f3n autom\u00e1tica en tiempo real',
+    easyCreationBullet3: 'Generaci\u00f3n de personaje con IA',
     shareDiscover: 'Comparte y Descubre',
-    shareDiscoverDesc: 'Haz p\u00fablicos tus personajes y explora las incre\u00edbles creaciones de la comunidad. \u00a1Insp\u00edrate con otros!',
+    shareDiscoverBullet1: 'Galer\u00eda p\u00fablica de la comunidad',
+    shareDiscoverBullet2: 'Sistema de likes y popularidad',
+    shareDiscoverBullet3: 'Comparte con un enlace directo',
     exportAnywhere: 'Exporta a Cualquier Lugar',
-    exportAnywhereDesc: 'Descarga tus personajes como PDF para imprimir, o JSON/CSV para importar en otras herramientas.',
+    exportAnywhereBullet1: 'PDF imprimible con dise\u00f1o completo',
+    exportAnywhereBullet2: 'JSON y CSV para otras herramientas',
+    exportAnywhereBullet3: 'Tus personajes, sin l\u00edmites',
 
     readyToBegin: '\u00bfListo para Comenzar tu Aventura?',
     readyToBeginDesc: '\u00danete a miles de jugadores creando personajes memorables para sus campa\u00f1as. \u00a1Reg\u00edstrate ahora para guardar tus personajes y acceder a todas las funciones!',
@@ -73,6 +79,12 @@ const es = {
     step3Title: 'Juega y Comparte',
     step3Desc: '\u00a1Exporta tu hoja de personaje o comp\u00e1rtela con la comunidad. Actual\u00edzala a medida que tu personaje crece!',
     pageTitle: 'RPG Character Creator - Crea Tu Aventura',
+    publicCharacters: '{{count}} personajes p\u00fablicos',
+    communityStats: 'compartidos por la comunidad',
+    dragToExplore: 'Arrastra para explorar',
+    noCharactersYet: 'Todav\u00eda no hay personajes p\u00fablicos',
+    beFirst: '\u00a1S\u00e9 el primero en compartir el tuyo!',
+    exploreGallery: 'Explorar Galer\u00eda',
   },
 
   auth: {

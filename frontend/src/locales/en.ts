@@ -54,11 +54,17 @@ const en = {
     viewCharacter: 'View Character',
 
     easyCreation: 'Easy Creation',
-    easyCreationDesc: 'Intuitive step-by-step forms with real-time validation guide you through character creation. No rules knowledge required!',
+    easyCreationBullet1: 'Guided step-by-step forms',
+    easyCreationBullet2: 'Automatic real-time validation',
+    easyCreationBullet3: 'AI-powered character generation',
     shareDiscover: 'Share & Discover',
-    shareDiscoverDesc: 'Make your characters public and explore amazing creations from the community. Get inspired by others!',
+    shareDiscoverBullet1: 'Public community gallery',
+    shareDiscoverBullet2: 'Likes and popularity system',
+    shareDiscoverBullet3: 'Share with a direct link',
     exportAnywhere: 'Export Anywhere',
-    exportAnywhereDesc: 'Download your characters as beautiful PDFs for printing, or JSON/CSV for importing into other tools.',
+    exportAnywhereBullet1: 'Printable PDF with full layout',
+    exportAnywhereBullet2: 'JSON and CSV for other tools',
+    exportAnywhereBullet3: 'Your characters, no limits',
 
     readyToBegin: 'Ready to Begin Your Adventure?',
     readyToBeginDesc: 'Join thousands of players creating memorable characters for their campaigns. Sign up now to save your characters and access all features!',
@@ -73,6 +79,12 @@ const en = {
     step3Title: 'Play & Share',
     step3Desc: 'Export your character sheet or share it with the community. Update it as your character grows!',
     pageTitle: 'RPG Character Creator - Create Your Adventure',
+    publicCharacters: '{{count}} public characters',
+    communityStats: 'shared by the community',
+    dragToExplore: 'Drag to explore',
+    noCharactersYet: 'No public characters yet',
+    beFirst: 'Be the first to share yours!',
+    exploreGallery: 'Explore Gallery',
   },
 
   auth: {
