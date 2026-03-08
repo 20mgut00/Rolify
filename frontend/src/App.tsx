@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect } from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import { ThemeProvider, CssBaseline, CircularProgress, Box } from '@mui/material';
@@ -53,7 +53,7 @@ function RouteLoader() {
   );
 }
 
-function App() {
+function AppLayout() {
   const { darkMode, reducedMotion, largeText, language } = useAccessibilityStore();
   const { i18n } = useTranslation();
 
@@ -72,33 +72,44 @@ function App() {
   }, [language, i18n]);
 
   return (
+    <div className="h-dvh flex flex-col bg-primary-light [&_button]:cursor-pointer [&_button:disabled]:cursor-not-allowed [&_button:disabled]:opacity-60 [&_button.bg-accent-gold]:transition-all [&_button.bg-accent-gold]:duration-200 [&_button.bg-accent-gold]:transform-gpu [&_button.bg-accent-gold:hover:not(:disabled)]:scale-[1.02] [&_button.bg-accent-gold:hover:not(:disabled)]:-translate-y-px [&_button.bg-accent-gold:hover:not(:disabled)]:brightness-105 [&_a.bg-accent-gold]:transition-all [&_a.bg-accent-gold]:duration-200 [&_a.bg-accent-gold]:transform-gpu [&_a.bg-accent-gold:hover]:scale-[1.02] [&_a.bg-accent-gold:hover]:-translate-y-px [&_a.bg-accent-gold:hover]:brightness-105">
+      <Header />
+
+      <div className="flex-1 overflow-y-auto min-h-0">
+        <Suspense fallback={<RouteLoader />}>
+          <Outlet />
+        </Suspense>
+      </div>
+
+      <Toaster position="top-right" />
+    </div>
+  );
+}
+
+const router = createBrowserRouter([
+  {
+    element: <AppLayout />,
+    children: [
+      { path: '/', element: <Hero /> },
+      { path: '/create', element: <CharacterForm /> },
+      { path: '/library', element: <CharacterLibrary /> },
+      { path: '/character/:id', element: <CharacterViewer /> },
+      { path: '/gallery', element: <PublicGallery /> },
+      { path: '/settings', element: <Settings /> },
+      { path: '/statistics', element: <Statistics /> },
+      { path: '/verify-email', element: <VerifyEmail /> },
+      { path: '/reset-password', element: <ResetPassword /> },
+      { path: '/oauth/callback', element: <OAuthCallback /> },
+    ],
+  },
+]);
+
+function App() {
+  return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <QueryClientProvider client={queryClient}>
-        <BrowserRouter>
-          <div className="h-dvh flex flex-col bg-primary-light [&_button]:cursor-pointer [&_button:disabled]:cursor-not-allowed [&_button:disabled]:opacity-60 [&_button.bg-accent-gold]:transition-all [&_button.bg-accent-gold]:duration-200 [&_button.bg-accent-gold]:transform-gpu [&_button.bg-accent-gold:hover:not(:disabled)]:scale-[1.02] [&_button.bg-accent-gold:hover:not(:disabled)]:-translate-y-px [&_button.bg-accent-gold:hover:not(:disabled)]:brightness-105 [&_a.bg-accent-gold]:transition-all [&_a.bg-accent-gold]:duration-200 [&_a.bg-accent-gold]:transform-gpu [&_a.bg-accent-gold:hover]:scale-[1.02] [&_a.bg-accent-gold:hover]:-translate-y-px [&_a.bg-accent-gold:hover]:brightness-105">
-            <Header />
-
-            <div className="flex-1 overflow-y-auto min-h-0">
-              <Suspense fallback={<RouteLoader />}>
-                <Routes>
-                  <Route path="/" element={<Hero />} />
-                  <Route path="/create" element={<CharacterForm />} />
-                  <Route path="/library" element={<CharacterLibrary />} />
-                  <Route path="/character/:id" element={<CharacterViewer />} />
-                  <Route path="/gallery" element={<PublicGallery />} />
-                  <Route path="/settings" element={<Settings />} />
-                  <Route path="/statistics" element={<Statistics />} />
-                  <Route path="/verify-email" element={<VerifyEmail />} />
-                  <Route path="/reset-password" element={<ResetPassword />} />
-                  <Route path="/oauth/callback" element={<OAuthCallback />} />
-                </Routes>
-              </Suspense>
-            </div>
-
-            <Toaster position="top-right" />
-          </div>
-        </BrowserRouter>
+        <RouterProvider router={router} />
       </QueryClientProvider>
     </ThemeProvider>
   );

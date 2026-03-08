@@ -1,13 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { useInfiniteQuery, useQuery } from '@tanstack/react-query';
+import { useInfiniteQuery, useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useInView } from 'react-intersection-observer';
 import { Filter, Search } from 'lucide-react';
+import toast from 'react-hot-toast';
 import { characterAPI, classTemplateAPI } from '../../services/api';
 import CharacterCard from '../character/CharacterCard';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
-import { useUIStore } from '../../store';
+import { useUIStore, useAuthStore } from '../../store';
 
 export default function PublicGallery() {
   const { t } = useTranslation();
@@ -15,7 +16,9 @@ export default function PublicGallery() {
   useDocumentTitle(`${t('gallery.title')} - RPG Character Creator`);
 
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const { selectedSystem } = useUIStore();
+  const { isAuthenticated } = useAuthStore();
   const [classFilter, setClassFilter] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState('');
   const { ref, inView } = useInView();
@@ -39,6 +42,24 @@ export default function PublicGallery() {
       lastPage.last ? undefined : lastPage.number + 1,
     initialPageParam: 0,
   });
+
+  const likeMutation = useMutation({
+    mutationFn: characterAPI.like,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['publicCharacters', selectedSystem, classFilter] });
+    },
+    onError: () => {
+      toast.error(t('errors.somethingWentWrong'));
+    },
+  });
+
+  const handleLike = (id: string) => {
+    if (!isAuthenticated) {
+      toast.error(t('gallery.loginToLike'));
+      return;
+    }
+    likeMutation.mutate(id);
+  };
 
   // Reset class filter when system changes
   useEffect(() => {
@@ -134,6 +155,7 @@ export default function PublicGallery() {
                 key={character.id}
                 character={character}
                 onView={(id) => navigate(`/character/${id}`)}
+                onLike={handleLike}
                 showCreatorName
               />
             ))}

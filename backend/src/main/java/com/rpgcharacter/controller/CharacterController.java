@@ -81,10 +81,20 @@ public class CharacterController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "12") int size,
             @RequestParam(required = false) String system,
-            @RequestParam(required = false) String className
+            @RequestParam(required = false) String className,
+            @AuthenticationPrincipal UserDetails userDetails
     ) {
+        String email = userDetails != null ? userDetails.getUsername() : null;
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        return ResponseEntity.ok(characterService.getPublicCharacters(pageable, system, className));
+        return ResponseEntity.ok(characterService.getPublicCharacters(pageable, system, className, email));
+    }
+
+    @PostMapping("/{id}/like")
+    public ResponseEntity<CharacterDTO.CardResponse> toggleLike(
+            @PathVariable String id,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        return ResponseEntity.ok(characterService.toggleLike(id, userDetails.getUsername()));
     }
 
     @PostMapping("/generate")

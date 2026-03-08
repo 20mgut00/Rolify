@@ -222,6 +222,10 @@ const es = {
     weaponSkillsRequired: 'Selecciona {{count}} habilidad(es) de arma ({{selected}} seleccionadas)',
     drivesRequired: 'Selecciona {{count}} motivaciones ({{selected}} seleccionadas)',
     requiredFieldsMissing: 'Por favor completa todos los campos obligatorios',
+    unsavedChanges: 'Cambios sin guardar',
+    unsavedChangesDesc: 'Tienes cambios sin guardar. Si sales ahora, perderas el progreso.',
+    leaveAnyway: 'Salir de todos modos',
+    stayOnPage: 'Quedarse',
   },
 
   characterBasicInfo: {
@@ -290,6 +294,13 @@ const es = {
     unsupportedFormat: 'Formato de archivo no compatible. Usa .json o .csv',
     invalidFile: 'Archivo inv\u00e1lido: faltan campos requeridos (name, system, className)',
     parseFailed: 'Error al analizar el archivo. Aseg\u00farate de que fue exportado desde ROLIFY.',
+    favorite: 'Favorito',
+    unfavorite: 'Quitar favorito',
+    sortDateNewest: 'Mas reciente',
+    sortDateOldest: 'Mas antiguo',
+    sortNameAZ: 'Nombre (A-Z)',
+    sortNameZA: 'Nombre (Z-A)',
+    sortClassAZ: 'Clase (A-Z)',
   },
 
   characterViewer: {
@@ -334,6 +345,10 @@ const es = {
     adjustFilters: 'Intenta ajustar los filtros para encontrar m\u00e1s personajes',
     beTheFirst: '\u00a1S\u00e9 el primero en compartir tu personaje con la comunidad!',
     createFirstCharacter: 'Crea Tu Primer Personaje',
+    like: 'Me gusta',
+    liked: 'Te gusta',
+    likes: '{{count}} me gusta',
+    loginToLike: 'Inicia sesion para dar me gusta',
   },
 
   validation: {

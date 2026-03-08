@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Eye, Edit, Trash2, Download, Globe, Lock } from 'lucide-react';
+import { Eye, Edit, Trash2, Download, Globe, Lock, Star, Heart } from 'lucide-react';
 import type { CharacterCard as CharacterCardType } from '../../types';
 import { getAvatarUrl } from '../../utils/avatarUrl';
 import ConfirmModal from '../common/ConfirmModal';
@@ -11,6 +11,9 @@ interface CharacterCardProps {
   onEdit?: (id: string) => void;
   onDelete?: (id: string) => void;
   onExport?: (id: string, format: 'pdf' | 'json' | 'csv') => void;
+  onFavorite?: (id: string) => void;
+  onLike?: (id: string) => void;
+  isFavorite?: boolean;
   showCreatorName?: boolean;
 }
 
@@ -20,6 +23,9 @@ export default function CharacterCard({
   onEdit,
   onDelete,
   onExport,
+  onFavorite,
+  onLike,
+  isFavorite = false,
   showCreatorName = false,
 }: CharacterCardProps) {
   const { t, i18n } = useTranslation();
@@ -44,6 +50,20 @@ export default function CharacterCard({
           </div>
         )}
         
+        {/* Favorite Star */}
+        {onFavorite && (
+          <button
+            onClick={(e) => { e.stopPropagation(); onFavorite(character.id); }}
+            className="absolute top-3 left-3 w-8 h-8 flex items-center justify-center rounded-full bg-black/30 hover:bg-black/50 transition"
+            title={isFavorite ? t('characterLibrary.unfavorite') : t('characterLibrary.favorite')}
+          >
+            <Star
+              size={16}
+              className={isFavorite ? 'text-accent-gold fill-accent-gold' : 'text-white'}
+            />
+          </button>
+        )}
+
         {/* Public/Private Badge */}
         <div className="absolute top-3 right-3">
           {character.isPublic ? (
@@ -92,6 +112,26 @@ export default function CharacterCard({
           <Eye size={16} />
           {t('characterCard.viewCharacter')}
         </button>
+
+        {onLike && (
+          <button
+            onClick={() => onLike(character.id)}
+            className={`w-auto px-2.5 h-10 flex items-center gap-1.5 rounded-lg cursor-pointer transition shadow-md hover:shadow-lg text-sm font-medium ${
+              character.likedByCurrentUser
+                ? 'bg-red-100 text-red-600 dark:bg-red-950/35 dark:text-red-300 hover:bg-red-200'
+                : 'bg-primary-dark/10 text-primary-dark hover:bg-primary-dark/20'
+            }`}
+            title={character.likedByCurrentUser ? t('gallery.liked') : t('gallery.like')}
+          >
+            <Heart
+              size={16}
+              className={character.likedByCurrentUser ? 'fill-current' : ''}
+            />
+            {(character.likeCount ?? 0) > 0 && (
+              <span>{character.likeCount}</span>
+            )}
+          </button>
+        )}
         
         {onEdit && (
           <button

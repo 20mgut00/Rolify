@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Search, Plus, Filter, Upload } from 'lucide-react';
+import { Search, Plus, Filter, Upload, ArrowUpDown } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
 import { characterAPI, classTemplateAPI } from '../../services/api';
@@ -10,6 +10,8 @@ import CharacterCard from './CharacterCard';
 import { exportCharacterToPDF, exportCharacterToJSON, exportCharacterToCSV, importCharacterFromJSON, importCharacterFromCSV } from '../../utils/export';
 import { useDocumentTitle } from '../../hooks/useDocumentTitle';
 import type { Character, CharacterCard as CharacterCardType } from '../../types';
+
+type SortBy = 'date-desc' | 'date-asc' | 'name-asc' | 'name-desc' | 'class-asc';
 
 export default function CharacterLibrary() {
   const { t } = useTranslation();
@@ -20,10 +22,11 @@ export default function CharacterLibrary() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const { isAuthenticated } = useAuthStore();
-  const { sessionCharacters, removeSessionCharacter } = useCharacterStore();
+  const { sessionCharacters, removeSessionCharacter, favoriteIds, toggleFavorite } = useCharacterStore();
   const { selectedSystem } = useUIStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [classFilter, setClassFilter] = useState<string>('');
+  const [sortBy, setSortBy] = useState<SortBy>('date-desc');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   // Fetch user characters if authenticated
@@ -74,22 +77,33 @@ export default function CharacterLibrary() {
         }));
 
   // Filter characters by system, class, and search term
-  const filteredCharacters = characters.filter((char) => {
-    // Filter by selected system
+  const filtered = characters.filter((char) => {
     if (char.system !== selectedSystem) return false;
-
-    // Filter by class if selected
     if (classFilter && char.className !== classFilter) return false;
-
-    // Filter by search term
     if (searchTerm && !(
       char.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       char.className.toLowerCase().includes(searchTerm.toLowerCase()) ||
       char.species.toLowerCase().includes(searchTerm.toLowerCase())
     )) return false;
-
     return true;
   });
+
+  // Sort helper
+  const sortFn = (a: CharacterCardType, b: CharacterCardType) => {
+    switch (sortBy) {
+      case 'date-asc': return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+      case 'name-asc': return a.name.localeCompare(b.name);
+      case 'name-desc': return b.name.localeCompare(a.name);
+      case 'class-asc': return a.className.localeCompare(b.className);
+      default: return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(); // date-desc
+    }
+  };
+
+  // Favorites first, then sort within each group
+  const filteredCharacters = [
+    ...filtered.filter((c) => favoriteIds.includes(c.id)).sort(sortFn),
+    ...filtered.filter((c) => !favoriteIds.includes(c.id)).sort(sortFn),
+  ];
 
   const handleDelete = (id: string) => {
     if (isAuthenticated) {
@@ -259,6 +273,22 @@ export default function CharacterLibrary() {
               ))}
             </select>
           </div>
+
+          {/* Sort */}
+          <div className="relative">
+            <ArrowUpDown className="absolute left-3 top-1/2 -translate-y-1/2 text-primary-dark/50" size={20} />
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
+              className="w-full pl-10 pr-4 py-3 border border-primary-dark/20 rounded-lg focus:ring-2 focus:ring-accent-gold focus:border-transparent text-primary-dark bg-white appearance-none cursor-pointer dark-field"
+            >
+              <option value="date-desc">{t('characterLibrary.sortDateNewest')}</option>
+              <option value="date-asc">{t('characterLibrary.sortDateOldest')}</option>
+              <option value="name-asc">{t('characterLibrary.sortNameAZ')}</option>
+              <option value="name-desc">{t('characterLibrary.sortNameZA')}</option>
+              <option value="class-asc">{t('characterLibrary.sortClassAZ')}</option>
+            </select>
+          </div>
         </div>
 
         {/* Loading State */}
@@ -288,6 +318,8 @@ export default function CharacterLibrary() {
                 onEdit={(id) => navigate(`/create?edit=${id}`)}
                 onDelete={handleDelete}
                 onExport={handleExport}
+                onFavorite={toggleFavorite}
+                isFavorite={favoriteIds.includes(character.id)}
               />
             ))}
           </div>

@@ -56,7 +56,7 @@ export function useCharacterForm(onSuccess: (characterId: string) => void) {
     enabled: isEditing,
   });
 
-  const { register, setValue, handleSubmit, control, reset } = useForm<CharacterFormData>({
+  const { register, setValue, handleSubmit, control, reset, formState } = useForm<CharacterFormData>({
     defaultValues: {
       name: '',
       species: '',
@@ -198,6 +198,8 @@ export function useCharacterForm(onSuccess: (characterId: string) => void) {
       }
       queryClient.invalidateQueries({ queryKey: ['myCharacters'] });
       toast.success(isEditing ? t('characterForm.characterUpdated') : t('characterForm.characterCreated'));
+      // Clear dirty state before navigating so useBlocker doesn't trigger
+      reset();
       if (data.id) {
         onSuccess(data.id);
       }
@@ -295,21 +297,29 @@ export function useCharacterForm(onSuccess: (characterId: string) => void) {
     saveMutation.mutate({ ...data, reputations, avatarImage });
   };
 
-  // Initialize form when class changes (new character)
+  // Initialize form when class changes; reset() sets defaultValues baseline so isDirty stays false until the user edits
   useEffect(() => {
     if (selectedClass && !isEditing) {
       const firstNature = selectedClass.nature?.[0];
-      setValue('nature', firstNature ? { name: firstNature.name, description: firstNature.description } : { name: '', description: '' });
-      setValue('drives', []);
-      setValue('moves', []);
-      setValue('roguishFeats', preSelectedFeats);
-      setValue('weaponSkills', preSelectedSkills);
-      setValue('stats', selectedClass.stats || []);
-      setValue('background', selectedClass.background?.map(q => ({ question: q.name, answer: '' })) || []);
-      // Clear custom avatar - class default will be used on submit if empty
-      setValue('avatarImage', '');
+      reset({
+        name: '',
+        species: '',
+        details: '',
+        demeanor: '',
+        avatarImage: '',
+        nature: firstNature ? { name: firstNature.name, description: firstNature.description } : { name: '', description: '' },
+        drives: [],
+        moves: [],
+        roguishFeats: preSelectedFeats,
+        weaponSkills: preSelectedSkills,
+        stats: selectedClass.stats || [],
+        background: selectedClass.background?.map(q => ({ question: q.name, answer: '' })) || [],
+        connections: [],
+        reputations: [],
+        equipment: '',
+      });
     }
-  }, [selectedClass, preSelectedFeats, preSelectedSkills, setValue, isEditing]);
+  }, [selectedClass, preSelectedFeats, preSelectedSkills, reset, isEditing]);
 
   // Load existing character data (editing mode)
   useEffect(() => {
@@ -381,6 +391,7 @@ export function useCharacterForm(onSuccess: (characterId: string) => void) {
     editId,
     isAuthenticated,
     isSaving: saveMutation.isPending,
+    isDirty: formState.isDirty,
     validationErrors,
 
     // Actions

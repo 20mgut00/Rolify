@@ -62,7 +62,13 @@ public class Character {
     @Builder.Default
     @Indexed
     private Boolean isPublic = false;
-    
+
+    @Builder.Default
+    private int likeCount = 0;
+
+    @Builder.Default
+    private List<String> likedByUserIds = new java.util.ArrayList<>();
+
     @CreatedDate
     private LocalDateTime createdAt;
     

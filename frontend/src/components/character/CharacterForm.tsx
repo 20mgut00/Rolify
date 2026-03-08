@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useBlocker } from 'react-router-dom';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import axios from 'axios';
@@ -17,6 +17,7 @@ import CharacterBasicInfo from './CharacterBasicInfo';
 import CharacterFormFields from './CharacterFormFields';
 import WelcomeGuideModal from './WelcomeGuideModal';
 import CharacterChecklist from './CharacterChecklist';
+import ConfirmModal from '../common/ConfirmModal';
 
 export default function CharacterForm() {
   const navigate = useNavigate();
@@ -39,9 +40,12 @@ export default function CharacterForm() {
     editId,
     isAuthenticated,
     isSaving,
+    isDirty,
     validationErrors,
     onSubmit,
   } = useCharacterForm((characterId) => navigate(`/character/${characterId}`));
+
+  const blocker = useBlocker(isDirty);
 
   // Show guide only once and only in create mode
   const [showGuide, setShowGuide] = useState(
@@ -237,6 +241,17 @@ export default function CharacterForm() {
         </form>
 
         <WelcomeGuideModal isOpen={showGuide} onClose={handleCloseGuide} />
+
+        <ConfirmModal
+          isOpen={blocker.state === 'blocked'}
+          onClose={() => blocker.reset?.()}
+          onConfirm={() => blocker.proceed?.()}
+          title={t('characterForm.unsavedChanges')}
+          message={t('characterForm.unsavedChangesDesc')}
+          confirmText={t('characterForm.leaveAnyway')}
+          cancelText={t('characterForm.stayOnPage')}
+          variant="danger"
+        />
 
         {/* AI Generation Loading Overlay */}
         {isGenerating && (

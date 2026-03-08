@@ -155,10 +155,39 @@ public class CharacterService {
                 List<Character> characters = characterRepository.findByUserId(user.getId());
                 Map<String, String> creatorNamesById = resolveCreatorNames(characters);
                 return characters.stream()
-                    .map(character -> mapToCardResponse(character, creatorNamesById))
+                    .map(character -> mapToCardResponse(character, creatorNamesById, user.getId()))
                     .collect(Collectors.toList());
             })
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    }
+
+    @Transactional
+    public CharacterDTO.CardResponse toggleLike(String characterId, String userEmail) {
+        Character character = characterRepository.findById(characterId)
+                .orElseThrow(() -> new ResourceNotFoundException("Character not found"));
+
+        if (!Boolean.TRUE.equals(character.getIsPublic())) {
+            throw new UnauthorizedException("Can only like public characters");
+        }
+
+        com.rpgcharacter.model.User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        List<String> likedByUserIds = character.getLikedByUserIds();
+        if (likedByUserIds == null) likedByUserIds = new java.util.ArrayList<>();
+
+        if (likedByUserIds.contains(user.getId())) {
+            likedByUserIds.remove(user.getId());
+            character.setLikeCount(Math.max(0, character.getLikeCount() - 1));
+        } else {
+            likedByUserIds.add(user.getId());
+            character.setLikeCount(character.getLikeCount() + 1);
+        }
+        character.setLikedByUserIds(likedByUserIds);
+        character = characterRepository.save(character);
+
+        Map<String, String> creatorNamesById = resolveCreatorNames(java.util.List.of(character));
+        return mapToCardResponse(character, creatorNamesById, user.getId());
     }
     
     public CharacterDTO.Response getCharacter(String id, String userEmail) {
@@ -185,9 +214,9 @@ public class CharacterService {
         return modelMapper.map(character, CharacterDTO.Response.class);
     }
     
-    public Page<CharacterDTO.CardResponse> getPublicCharacters(Pageable pageable, String system, String className) {
+    public Page<CharacterDTO.CardResponse> getPublicCharacters(Pageable pageable, String system, String className, String currentUserEmail) {
         Page<Character> characters;
-        
+
         if (system != null && className != null) {
             characters = characterRepository.findByIsPublicTrueAndSystemAndClassName(system, className, pageable);
         } else if (system != null) {
@@ -197,20 +226,35 @@ public class CharacterService {
         } else {
             characters = characterRepository.findByIsPublicTrue(pageable);
         }
-        
+
+        String currentUserId = null;
+        if (currentUserEmail != null) {
+            currentUserId = userRepository.findByEmail(currentUserEmail)
+                    .map(u -> u.getId())
+                    .orElse(null);
+        }
+
+        final String finalCurrentUserId = currentUserId;
         Map<String, String> creatorNamesById = resolveCreatorNames(characters.getContent());
-        return characters.map(character -> mapToCardResponse(character, creatorNamesById));
+        return characters.map(character -> mapToCardResponse(character, creatorNamesById, finalCurrentUserId));
     }
 
-    private CharacterDTO.CardResponse mapToCardResponse(Character character, Map<String, String> creatorNamesById) {
+    private CharacterDTO.CardResponse mapToCardResponse(Character character, Map<String, String> creatorNamesById, String currentUserId) {
         CharacterDTO.CardResponse cardResponse = modelMapper.map(character, CharacterDTO.CardResponse.class);
 
         String creatorName = "Anonymous";
         if (character.getUserId() != null && !character.getUserId().isBlank()) {
             creatorName = creatorNamesById.getOrDefault(character.getUserId(), "Unknown adventurer");
         }
-
         cardResponse.setCreatorName(creatorName);
+        cardResponse.setLikeCount(character.getLikeCount());
+
+        List<String> likedByUserIds = character.getLikedByUserIds();
+        boolean likedByCurrentUser = currentUserId != null
+                && likedByUserIds != null
+                && likedByUserIds.contains(currentUserId);
+        cardResponse.setLikedByCurrentUser(likedByCurrentUser);
+
         return cardResponse;
     }
 

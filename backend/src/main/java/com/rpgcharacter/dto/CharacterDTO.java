@@ -108,6 +108,8 @@ public class CharacterDTO {
         private String avatarImage;
         private Boolean isPublic;
         private LocalDateTime createdAt;
+        private int likeCount;
+        private boolean likedByCurrentUser;
     }
     
     @Data

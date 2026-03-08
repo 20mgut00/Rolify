@@ -180,6 +180,8 @@ export interface CharacterCard {
   avatarImage?: string;
   isPublic: boolean;
   createdAt: string;
+  likeCount?: number;
+  likedByCurrentUser?: boolean;
 }
 
 // Class Template Types

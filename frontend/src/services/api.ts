@@ -228,6 +228,11 @@ export const characterAPI = {
     });
     return response.data;
   },
+
+  like: async (id: string): Promise<CharacterCard> => {
+    const response = await api.post(`/characters/${id}/like`);
+    return response.data;
+  },
 };
 
 // Avatar API

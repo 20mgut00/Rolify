@@ -222,6 +222,10 @@ const en = {
     weaponSkillsRequired: 'Select {{count}} weapon skill(s) ({{selected}} selected)',
     drivesRequired: 'Select {{count}} drives ({{selected}} selected)',
     requiredFieldsMissing: 'Please fill in all required fields',
+    unsavedChanges: 'Unsaved Changes',
+    unsavedChangesDesc: 'You have unsaved changes. If you leave now, your progress will be lost.',
+    leaveAnyway: 'Leave anyway',
+    stayOnPage: 'Stay on page',
   },
 
   characterBasicInfo: {
@@ -290,6 +294,13 @@ const en = {
     unsupportedFormat: 'Unsupported file format. Use .json or .csv',
     invalidFile: 'Invalid file: missing required fields (name, system, className)',
     parseFailed: 'Failed to parse file. Make sure it was exported from ROLIFY.',
+    favorite: 'Favorite',
+    unfavorite: 'Unfavorite',
+    sortDateNewest: 'Newest first',
+    sortDateOldest: 'Oldest first',
+    sortNameAZ: 'Name (A-Z)',
+    sortNameZA: 'Name (Z-A)',
+    sortClassAZ: 'Class (A-Z)',
   },
 
   characterViewer: {
@@ -334,6 +345,10 @@ const en = {
     adjustFilters: 'Try adjusting your filters to find more characters',
     beTheFirst: 'Be the first to share your character with the community!',
     createFirstCharacter: 'Create Your First Character',
+    like: 'Like',
+    liked: 'Liked',
+    likes: '{{count}} likes',
+    loginToLike: 'Log in to like characters',
   },
 
   validation: {
