@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useDebounce } from '../../hooks/useDebounce';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { useInfiniteQuery, useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -21,6 +22,7 @@ export default function PublicGallery() {
   const { isAuthenticated } = useAuthStore();
   const [classFilter, setClassFilter] = useState<string>('');
   const [searchTerm, setSearchTerm] = useState('');
+  const debouncedSearch = useDebounce(searchTerm);
   const { ref, inView } = useInView();
 
   const { data: templates } = useQuery({
@@ -77,8 +79,8 @@ export default function PublicGallery() {
   
   // Filter by search term (client-side)
   const characters = allCharacters.filter((char) =>
-    char.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    char.species.toLowerCase().includes(searchTerm.toLowerCase())
+    char.name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+    char.species.toLowerCase().includes(debouncedSearch.toLowerCase())
   );
 
   return (

@@ -1,5 +1,5 @@
-import { lazy, Suspense, useEffect } from 'react';
-import { createBrowserRouter, RouterProvider, Outlet } from 'react-router-dom';
+import { lazy, Suspense, useEffect, useRef } from 'react';
+import { createBrowserRouter, RouterProvider, Outlet, useLocation } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { Toaster } from 'react-hot-toast';
 import { ThemeProvider, CssBaseline, CircularProgress, Box } from '@mui/material';
@@ -56,6 +56,12 @@ function RouteLoader() {
 function AppLayout() {
   const { darkMode, reducedMotion, largeText, language } = useAccessibilityStore();
   const { i18n } = useTranslation();
+  const { pathname } = useLocation();
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    scrollRef.current?.scrollTo(0, 0);
+  }, [pathname]);
 
   useEffect(() => {
     const root = document.documentElement;
@@ -75,7 +81,7 @@ function AppLayout() {
     <div className="h-dvh flex flex-col bg-primary-light [&_button]:cursor-pointer [&_button:disabled]:cursor-not-allowed [&_button:disabled]:opacity-60 [&_button.bg-accent-gold]:transition-all [&_button.bg-accent-gold]:duration-200 [&_button.bg-accent-gold]:transform-gpu [&_button.bg-accent-gold:hover:not(:disabled)]:scale-[1.02] [&_button.bg-accent-gold:hover:not(:disabled)]:-translate-y-px [&_button.bg-accent-gold:hover:not(:disabled)]:brightness-105 [&_a.bg-accent-gold]:transition-all [&_a.bg-accent-gold]:duration-200 [&_a.bg-accent-gold]:transform-gpu [&_a.bg-accent-gold:hover]:scale-[1.02] [&_a.bg-accent-gold:hover]:-translate-y-px [&_a.bg-accent-gold:hover]:brightness-105">
       <Header />
 
-      <div className="flex-1 overflow-y-auto min-h-0">
+      <div ref={scrollRef} className="flex-1 overflow-y-auto min-h-0">
         <Suspense fallback={<RouteLoader />}>
           <Outlet />
         </Suspense>

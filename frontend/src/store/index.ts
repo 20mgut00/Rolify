@@ -52,10 +52,12 @@ export const useAuthStore = create<AuthState>()(
 interface CharacterState {
   currentCharacter: Character | null;
   sessionCharacters: Character[];
+  favoriteIds: string[];
   setCurrentCharacter: (character: Character | null) => void;
   addSessionCharacter: (character: Character) => void;
   removeSessionCharacter: (id: string) => void;
   clearSessionCharacters: () => void;
+  toggleFavorite: (id: string) => void;
 }
 
 export const useCharacterStore = create<CharacterState>()(
@@ -63,20 +65,28 @@ export const useCharacterStore = create<CharacterState>()(
     (set) => ({
       currentCharacter: null,
       sessionCharacters: [],
-      
+      favoriteIds: [],
+
       setCurrentCharacter: (character) => set({ currentCharacter: character }),
-      
+
       addSessionCharacter: (character) =>
         set((state) => ({
           sessionCharacters: [...state.sessionCharacters, character],
         })),
-      
+
       removeSessionCharacter: (id) =>
         set((state) => ({
           sessionCharacters: state.sessionCharacters.filter((c) => c.id !== id),
         })),
-      
+
       clearSessionCharacters: () => set({ sessionCharacters: [] }),
+
+      toggleFavorite: (id) =>
+        set((state) => ({
+          favoriteIds: state.favoriteIds.includes(id)
+            ? state.favoriteIds.filter((fid) => fid !== id)
+            : [...state.favoriteIds, id],
+        })),
     }),
     {
       name: 'character-storage',

@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Eye, Edit, Trash2, Download, Globe, Lock, Star, Heart } from 'lucide-react';
+import { Eye, Edit, Trash2, Download, Globe, Lock, Star, Heart, Copy, Link2 } from 'lucide-react';
 import type { CharacterCard as CharacterCardType } from '../../types';
 import { getAvatarUrl } from '../../utils/avatarUrl';
 import ConfirmModal from '../common/ConfirmModal';
@@ -13,6 +13,9 @@ interface CharacterCardProps {
   onExport?: (id: string, format: 'pdf' | 'json' | 'csv') => void;
   onFavorite?: (id: string) => void;
   onLike?: (id: string) => void;
+  onDuplicate?: (id: string) => void;
+  onTogglePublic?: (id: string, isPublic: boolean) => void;
+  onShare?: (id: string) => void;
   isFavorite?: boolean;
   showCreatorName?: boolean;
 }
@@ -25,6 +28,9 @@ export default function CharacterCard({
   onExport,
   onFavorite,
   onLike,
+  onDuplicate,
+  onTogglePublic,
+  onShare,
   isFavorite = false,
   showCreatorName = false,
 }: CharacterCardProps) {
@@ -66,7 +72,18 @@ export default function CharacterCard({
 
         {/* Public/Private Badge */}
         <div className="absolute top-3 right-3">
-          {character.isPublic ? (
+          {onTogglePublic ? (
+            <button
+              onClick={(e) => { e.stopPropagation(); onTogglePublic(character.id, !character.isPublic); }}
+              className={`text-xs px-3 py-1 rounded-full font-medium flex items-center gap-1 shadow-lg transition hover:opacity-75 ${
+                character.isPublic ? 'bg-accent-gold text-primary-dark' : 'bg-primary-dark text-primary-light'
+              }`}
+              title={character.isPublic ? t('characterCard.makePrivate') : t('characterCard.makePublic')}
+            >
+              {character.isPublic ? <Globe size={12} /> : <Lock size={12} />}
+              {character.isPublic ? t('common.public') : t('common.private')}
+            </button>
+          ) : character.isPublic ? (
             <div className="bg-accent-gold text-primary-dark text-xs px-3 py-1 rounded-full font-medium flex items-center gap-1 shadow-lg">
               <Globe size={12} />
               {t('common.public')}
@@ -107,10 +124,10 @@ export default function CharacterCard({
       <div className="px-4 pb-4 flex gap-2">
         <button
           onClick={() => onView(character.id)}
-          className="flex-1 flex items-center justify-center gap-1 bg-accent-gold text-primary-dark py-2.5 rounded-lg cursor-pointer transition-all duration-200 transform-gpu hover:bg-opacity-90 hover:scale-[1.02] hover:-translate-y-px hover:brightness-105 text-sm font-medium shadow-md hover:shadow-lg"
+          className="w-10 h-10 flex items-center justify-center bg-accent-gold text-primary-dark rounded-lg cursor-pointer transition-all duration-200 transform-gpu hover:bg-opacity-90 hover:scale-[1.02] hover:-translate-y-px hover:brightness-105 shadow-md hover:shadow-lg"
+          title={t('characterCard.viewCharacter')}
         >
-          <Eye size={16} />
-          {t('characterCard.viewCharacter')}
+          <Eye size={18} />
         </button>
 
         {onLike && (
@@ -133,6 +150,26 @@ export default function CharacterCard({
           </button>
         )}
         
+        {onShare && character.isPublic && (
+          <button
+            onClick={() => onShare(character.id)}
+            className="w-10 h-10 flex items-center justify-center bg-primary-dark/10 text-primary-dark rounded-lg cursor-pointer hover:bg-primary-dark/20 transition shadow-md hover:shadow-lg"
+            title={t('characterCard.shareCharacter')}
+          >
+            <Link2 size={16} />
+          </button>
+        )}
+
+        {onDuplicate && (
+          <button
+            onClick={() => onDuplicate(character.id)}
+            className="w-10 h-10 flex items-center justify-center bg-primary-dark/10 text-primary-dark rounded-lg cursor-pointer hover:bg-primary-dark/20 transition shadow-md hover:shadow-lg"
+            title={t('characterCard.duplicateCharacter')}
+          >
+            <Copy size={16} />
+          </button>
+        )}
+
         {onEdit && (
           <button
             onClick={() => onEdit(character.id)}

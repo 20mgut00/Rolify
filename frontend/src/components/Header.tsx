@@ -11,6 +11,7 @@ import {
   MenuItem,
   Box,
   Avatar,
+  Badge,
   Divider,
   Select,
   FormControl,
@@ -39,6 +40,8 @@ import {
   Close,
 } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
+import { useQuery } from '@tanstack/react-query';
+import { characterAPI } from '../services/api';
 import { useAccessibilityStore, useAuthStore, useUIStore } from '../store';
 import LoginModal from './auth/LoginModal';
 
@@ -50,6 +53,13 @@ export default function Header() {
   const { darkMode, setDarkMode, language, setLanguage } = useAccessibilityStore();
   const { user, isAuthenticated, logout } = useAuthStore();
   const { selectedSystem, setSelectedSystem } = useUIStore();
+  const { data: myCharacters } = useQuery({
+    queryKey: ['myCharacters'],
+    queryFn: characterAPI.getMyCharacters,
+    enabled: isAuthenticated,
+    staleTime: 60_000,
+  });
+  const charCount = isAuthenticated ? (myCharacters?.length ?? 0) : 0;
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [showLoginModal, setShowLoginModal] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -138,7 +148,11 @@ export default function Header() {
         </ListItemButton>
 
         <ListItemButton component={RouterLink} to="/library" onClick={handleDrawerClose} sx={{ py: 1.5 }}>
-          <ListItemIcon><LibraryBooks color="primary" /></ListItemIcon>
+          <ListItemIcon>
+            <Badge badgeContent={charCount || null} color="warning" max={99} sx={{ '& .MuiBadge-badge': { fontFamily: 'sans-serif', lineHeight: 1 } }}>
+              <LibraryBooks color="primary" />
+            </Badge>
+          </ListItemIcon>
           <ListItemText primary={t('header.library')} />
         </ListItemButton>
 
@@ -256,9 +270,11 @@ export default function Header() {
                 {t('header.newCharacter')}
               </Button>
 
-              <Button component={RouterLink} to="/library" variant="outlined" startIcon={<LibraryBooks />} sx={{ mr: 1, px: 2 }}>
-                {t('header.library')}
-              </Button>
+              <Badge badgeContent={charCount || null} color="warning" max={99} sx={{ mr: 1, '& .MuiBadge-badge': { fontFamily: 'sans-serif', lineHeight: 1 } }}>
+                <Button component={RouterLink} to="/library" variant="outlined" startIcon={<LibraryBooks />} sx={{ px: 2 }}>
+                  {t('header.library')}
+                </Button>
+              </Badge>
 
               <Button component={RouterLink} to="/gallery" variant="outlined" startIcon={<Public />} sx={{ mr: 2, px: 2 }}>
                 {t('header.gallery')}

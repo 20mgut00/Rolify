@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useDebounce } from '../../hooks/useDebounce';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Search, Plus, Filter, Upload, ArrowUpDown } from 'lucide-react';
@@ -25,6 +26,7 @@ export default function CharacterLibrary() {
   const { sessionCharacters, removeSessionCharacter, favoriteIds, toggleFavorite } = useCharacterStore();
   const { selectedSystem } = useUIStore();
   const [searchTerm, setSearchTerm] = useState('');
+  const debouncedSearch = useDebounce(searchTerm);
   const [classFilter, setClassFilter] = useState<string>('');
   const [sortBy, setSortBy] = useState<SortBy>('date-desc');
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -60,6 +62,27 @@ export default function CharacterLibrary() {
     },
   });
 
+  const duplicateMutation = useMutation({
+    mutationFn: async (id: string) => {
+      const original = await characterAPI.getById(id);
+      return characterAPI.create({ ...original, name: `${original.name} (copy)`, isPublic: false });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['myCharacters'] });
+      toast.success(t('characterLibrary.duplicateSuccess'));
+    },
+    onError: () => toast.error(t('characterLibrary.duplicateFailed')),
+  });
+
+  const togglePublicMutation = useMutation({
+    mutationFn: async ({ id, isPublic }: { id: string; isPublic: boolean }) => {
+      const full = await characterAPI.getById(id);
+      return characterAPI.update(id, { ...full, isPublic });
+    },
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ['myCharacters'] }),
+    onError: () => toast.error(t('errors.somethingWentWrong')),
+  });
+
   // Get characters based on auth status
   const characters: CharacterCardType[] = isAuthenticated
     ? (userCharacters || [])
@@ -80,10 +103,10 @@ export default function CharacterLibrary() {
   const filtered = characters.filter((char) => {
     if (char.system !== selectedSystem) return false;
     if (classFilter && char.className !== classFilter) return false;
-    if (searchTerm && !(
-      char.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      char.className.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      char.species.toLowerCase().includes(searchTerm.toLowerCase())
+    if (debouncedSearch && !(
+      char.name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+      char.className.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
+      char.species.toLowerCase().includes(debouncedSearch.toLowerCase())
     )) return false;
     return true;
   });
@@ -178,6 +201,11 @@ export default function CharacterLibrary() {
       // Reset file input so the same file can be imported again
       if (fileInputRef.current) fileInputRef.current.value = '';
     }
+  };
+
+  const handleShare = (id: string) => {
+    navigator.clipboard.writeText(`${window.location.origin}/character/${id}`);
+    toast.success(t('characterCard.linkCopied'));
   };
 
   return (
@@ -320,6 +348,9 @@ export default function CharacterLibrary() {
                 onExport={handleExport}
                 onFavorite={toggleFavorite}
                 isFavorite={favoriteIds.includes(character.id)}
+                onDuplicate={isAuthenticated ? (id) => duplicateMutation.mutate(id) : undefined}
+                onTogglePublic={isAuthenticated ? (id, isPublic) => togglePublicMutation.mutate({ id, isPublic }) : undefined}
+                onShare={handleShare}
               />
             ))}
           </div>

@@ -30,8 +30,8 @@ const es = {
 
   header: {
     newCharacter: 'Nuevo Personaje',
-    library: 'Biblioteca',
-    gallery: 'Galer\u00eda',
+    library: 'Mi Biblioteca',
+    gallery: 'Galeria Publica',
     statistics: 'Estad\u00edsticas',
     settings: 'Ajustes',
     logout: 'Cerrar Sesi\u00f3n',
@@ -301,6 +301,8 @@ const es = {
     sortNameAZ: 'Nombre (A-Z)',
     sortNameZA: 'Nombre (Z-A)',
     sortClassAZ: 'Clase (A-Z)',
+    duplicateSuccess: 'Personaje duplicado!',
+    duplicateFailed: 'Error al duplicar personaje',
   },
 
   characterViewer: {
@@ -333,6 +335,11 @@ const es = {
     exportCharacter: 'Exportar personaje',
     deleteCharacter: 'Eliminar Personaje',
     deleteConfirm: '\u00bfEst\u00e1s seguro de que quieres eliminar "{{name}}"? Esta acci\u00f3n no se puede deshacer.',
+    duplicateCharacter: 'Duplicar',
+    makePublic: 'Hacer publico',
+    makePrivate: 'Hacer privado',
+    shareCharacter: 'Copiar enlace',
+    linkCopied: 'Enlace copiado!',
   },
 
   gallery: {

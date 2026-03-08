@@ -30,8 +30,8 @@ const en = {
 
   header: {
     newCharacter: 'New Character',
-    library: 'Library',
-    gallery: 'Gallery',
+    library: 'My Library',
+    gallery: 'Public Gallery',
     statistics: 'Statistics',
     settings: 'Settings',
     logout: 'Logout',
@@ -301,6 +301,8 @@ const en = {
     sortNameAZ: 'Name (A-Z)',
     sortNameZA: 'Name (Z-A)',
     sortClassAZ: 'Class (A-Z)',
+    duplicateSuccess: 'Character duplicated!',
+    duplicateFailed: 'Failed to duplicate character',
   },
 
   characterViewer: {
@@ -333,6 +335,11 @@ const en = {
     exportCharacter: 'Export character',
     deleteCharacter: 'Delete Character',
     deleteConfirm: 'Are you sure you want to delete "{{name}}"? This action cannot be undone.',
+    duplicateCharacter: 'Duplicate',
+    makePublic: 'Make public',
+    makePrivate: 'Make private',
+    shareCharacter: 'Copy link',
+    linkCopied: 'Link copied!',
   },
 
   gallery: {
