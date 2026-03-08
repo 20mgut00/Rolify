@@ -45,7 +45,7 @@ export default function CharacterForm() {
     onSubmit,
   } = useCharacterForm((characterId) => navigate(`/character/${characterId}`));
 
-  const blocker = useBlocker(isDirty);
+  const blocker = useBlocker(isDirty && isAuthenticated);
 
   // Show guide only once and only in create mode
   const [showGuide, setShowGuide] = useState(

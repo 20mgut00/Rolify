@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import LoginModal from '../auth/LoginModal';
 import { useDebounce } from '../../hooks/useDebounce';
 import { useNavigate } from 'react-router-dom';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -28,6 +29,7 @@ export default function CharacterLibrary() {
   const { selectedSystem } = useUIStore();
   const [searchTerm, setSearchTerm] = useState('');
   const debouncedSearch = useDebounce(searchTerm);
+  const [showLoginModal, setShowLoginModal] = useState(false);
   const [classFilter, setClassFilter] = useState<string>('');
   const [sortBy, setSortBy] = useState<SortBy>('date-desc');
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -263,7 +265,7 @@ export default function CharacterLibrary() {
               <strong>{t('common.note')}:</strong> {t('characterLibrary.authWarning')}
               <button
                 type="button"
-                onClick={() => navigate('/')}
+                onClick={() => setShowLoginModal(true)}
                 className="ml-2 text-accent-gold hover:underline font-medium"
               >
                 {t('characterLibrary.signInToSave')}
@@ -399,5 +401,6 @@ export default function CharacterLibrary() {
       </div>
       </div>
     </div>
+    <LoginModal open={showLoginModal} onClose={() => setShowLoginModal(false)} />
   );
 }

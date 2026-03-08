@@ -37,10 +37,10 @@ export default function ClassSelector({
       <h1 className="text-xl font-semibold mb-1 text-primary-dark">
         {t('characterForm.chooseYourRole')}
       </h1>
-      <div className="w-full flex items-center">
+      <div className="w-full flex items-center justify-center gap-2 sm:gap-6">
         <ArrowBigLeft
-          size={96}
-          className="text-primary-dark ml-8 cursor-pointer hover:text-accent-gold"
+          size={48}
+          className="text-primary-dark shrink-0 cursor-pointer hover:text-accent-gold"
           onClick={() => {
             handlePrevRole();
           }}
@@ -49,18 +49,18 @@ export default function ClassSelector({
           <img
             src={roles[currentRoleIndex].image}
             alt="Role Icon"
-            className="w-96 h-96 mx-auto object-contain"
+            className="w-44 h-44 sm:w-80 sm:h-80 object-contain"
           />
         ) : (
-          <div className="w-96 h-96 mx-auto flex items-center justify-center bg-primary-dark/5 rounded-lg">
-            <span className="font-cinzel text-9xl text-primary-dark/20">
+          <div className="w-44 h-44 sm:w-80 sm:h-80 flex items-center justify-center bg-primary-dark/5 rounded-lg">
+            <span className="font-cinzel text-7xl sm:text-9xl text-primary-dark/20">
               {currentRole[0]}
             </span>
           </div>
         )}
         <ArrowBigRight
-          size={96}
-          className="text-primary-dark mr-8 cursor-pointer hover:text-accent-gold"
+          size={48}
+          className="text-primary-dark shrink-0 cursor-pointer hover:text-accent-gold"
           onClick={() => {
             handleNextRole();
           }}

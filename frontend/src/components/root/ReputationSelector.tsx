@@ -153,6 +153,7 @@ export default function ReputationSelector({
             { id: Date.now(), name: "", notorietyMarks: 0, prestigeMarks: 0 },
           ])
         }
+        disabled={factions.some((f) => !f.name.trim())}
         verticalPadding="py-1"
         horizontalPadding="px-2"
       />
@@ -225,8 +226,8 @@ export default function ReputationSelector({
             {/* Counters row */}
             <div className="flex gap-8">
               {/* Infamia */}
-              <div className="flex flex-col items-center gap-1.5">
-                <span className="text-xs font-semibold uppercase tracking-wider text-red-400">
+              <div className="flex flex-col items-center gap-1.5 bg-red-900/10 rounded-lg p-2">
+                <span className="text-xs font-bold uppercase tracking-wider text-red-500">
                   {t('characterViewer.notoriety')}
                 </span>
                 <div className="flex items-center gap-2">
@@ -238,14 +239,14 @@ export default function ReputationSelector({
                       })
                     }
                     disabled={disabled || faction.notorietyMarks <= 0}
-                    className="w-7 h-7 flex items-center justify-center rounded border border-red-500/50 text-red-400
+                    className="w-7 h-7 flex items-center justify-center rounded border border-red-500 text-red-500
                                hover:bg-red-900/30 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                   >
                     <Minus size={12} />
                   </button>
                   <span
                     className={`w-8 text-center text-lg font-bold font-merriweather ${
-                      faction.notorietyMarks > 0 ? "text-red-400" : "text-primary-dark/40"
+                      faction.notorietyMarks > 0 ? "text-red-500" : "text-primary-dark/40"
                     }`}
                   >
                     {faction.notorietyMarks}
@@ -258,23 +259,23 @@ export default function ReputationSelector({
                       })
                     }
                     disabled={disabled || faction.notorietyMarks >= NOTORIETY_MAX}
-                    className="w-7 h-7 flex items-center justify-center rounded border border-red-500/50 text-red-400
+                    className="w-7 h-7 flex items-center justify-center rounded border border-red-500 text-red-500
                                hover:bg-red-900/30 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                   >
                     <Plus size={12} />
                   </button>
                 </div>
-                <span className="text-xs text-red-400/70">
+                <span className="text-xs text-red-500/80 font-medium">
                   {notorietyLevel === 0 ? t('reputationSelector.noNotoriety') : `${t('reputationSelector.level')} ${notorietyLevel}`}
                 </span>
               </div>
 
               {/* Divider */}
-              <div className="w-px bg-accent-gold/20 self-stretch" />
+              <div className="w-px bg-accent-gold/30 self-stretch" />
 
               {/* Prestigio */}
-              <div className="flex flex-col items-center gap-1.5">
-                <span className="text-xs font-semibold uppercase tracking-wider text-accent-gold">
+              <div className="flex flex-col items-center gap-1.5 bg-accent-gold/10 rounded-lg p-2">
+                <span className="text-xs font-bold uppercase tracking-wider text-accent-gold">
                   {t('characterViewer.prestige')}
                 </span>
                 <div className="flex items-center gap-2">
@@ -286,8 +287,8 @@ export default function ReputationSelector({
                       })
                     }
                     disabled={disabled || faction.prestigeMarks <= 0}
-                    className="w-7 h-7 flex items-center justify-center rounded border border-accent-gold/50 text-accent-gold
-                               hover:bg-accent-gold/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                    className="w-7 h-7 flex items-center justify-center rounded border border-accent-gold text-accent-gold
+                               hover:bg-accent-gold/20 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                   >
                     <Minus size={12} />
                   </button>
@@ -306,13 +307,13 @@ export default function ReputationSelector({
                       })
                     }
                     disabled={disabled || faction.prestigeMarks >= PRESTIGE_MAX}
-                    className="w-7 h-7 flex items-center justify-center rounded border border-accent-gold/50 text-accent-gold
-                               hover:bg-accent-gold/10 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                    className="w-7 h-7 flex items-center justify-center rounded border border-accent-gold text-accent-gold
+                               hover:bg-accent-gold/20 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
                   >
                     <Plus size={12} />
                   </button>
                 </div>
-                <span className="text-xs text-accent-gold/70">
+                <span className="text-xs text-accent-gold/90 font-medium">
                   {prestigeLevel === 0 ? t('reputationSelector.noPrestige') : `${t('reputationSelector.level')} +${prestigeLevel}`}
                 </span>
               </div>

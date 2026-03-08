@@ -27,8 +27,10 @@ import {
   Google,
 } from '@mui/icons-material';
 import toast from 'react-hot-toast';
-import { authAPI } from '../../services/api';
-import { useAuthStore } from '../../store';
+import { useQueryClient } from '@tanstack/react-query';
+import { authAPI, characterAPI } from '../../services/api';
+import { useAuthStore, useCharacterStore } from '../../store';
+import type { Character } from '../../types';
 
 type LoginFormData = { email: string; password: string };
 type RegisterFormData = { name: string; email: string; password: string };
@@ -45,6 +47,19 @@ export default function LoginModal({ onClose, open }: LoginModalProps) {
   const [isLoading, setIsLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const { setAuth } = useAuthStore();
+  const { sessionCharacters, clearSessionCharacters } = useCharacterStore();
+  const queryClient = useQueryClient();
+
+  const migrateSessionCharacters = async () => {
+    if (sessionCharacters.length === 0) return;
+    await Promise.allSettled(
+      sessionCharacters.map(({ id: _id, ...char }) =>
+        characterAPI.create(char as Partial<Character>)
+      )
+    );
+    clearSessionCharacters();
+    queryClient.invalidateQueries({ queryKey: ['myCharacters'] });
+  };
 
   const loginSchema = useMemo(() => z.object({
     email: z.string().email(t('validation.emailInvalid')),
@@ -100,6 +115,7 @@ export default function LoginModal({ onClose, open }: LoginModalProps) {
     try {
       const response = await authAPI.login(data);
       setAuth(response.token, response.refreshToken, response.user);
+      await migrateSessionCharacters();
       toast.success(t('auth.welcomeBackToast'));
       onClose();
     } catch (error) {
@@ -114,6 +130,7 @@ export default function LoginModal({ onClose, open }: LoginModalProps) {
     try {
       const response = await authAPI.register(data);
       setAuth(response.token, response.refreshToken, response.user);
+      await migrateSessionCharacters();
       toast.success(t('auth.registrationSuccess'));
       onClose();
     } catch (error) {
