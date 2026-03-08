@@ -193,6 +193,7 @@ export interface BackgroundQuestion {
 export interface Option {
   name: string;
   description: string;
+  mandatory?: boolean;
 }
 
 export interface ClassTemplate {

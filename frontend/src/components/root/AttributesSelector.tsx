@@ -13,60 +13,49 @@ interface AttributesSelectorProps {
   initialValues?: Attribute[];
 }
 
+const STAT_ORDER = ['charm', 'cunning', 'finesse', 'luck', 'might'] as const;
+
 export default function AttributesSelector({
   stats = [],
   onAttributesSelect,
   initialValues,
 }: AttributesSelectorProps) {
   const { t } = useTranslation();
-  // Calculate which stat was selected based on initialValues
-  const getInitialSelectedStat = () => {
-    if (!initialValues || !stats.length) return null;
 
-    // Find the stat that has a higher value in initialValues than in stats
-    for (const initialStat of initialValues) {
-      const baseStat = stats.find(s => s.name.toLowerCase() === initialStat.name.toLowerCase());
-      if (baseStat && initialStat.value > baseStat.value) {
-        return baseStat.name;
-      }
+  const getSelectedStat = () => {
+    if (!initialValues?.length || !stats.length) return null;
+    for (const init of initialValues) {
+      const base = stats.find(s => s.name.toLowerCase() === init.name.toLowerCase());
+      if (base && init.value > base.value) return base.name.toLowerCase();
     }
     return null;
   };
 
-  const [selectedStat, setSelectedStat] = useState<string | null>(getInitialSelectedStat());
+  const [selectedStat, setSelectedStat] = useState<string | null>(getSelectedStat);
 
-  // Update selected stat when initialValues change (for editing mode)
+  // Sync when switching class or loading an existing character
   useEffect(() => {
-    if (initialValues) {
-      setSelectedStat(getInitialSelectedStat());
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    setSelectedStat(getSelectedStat());
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initialValues, stats]);
 
   const handleChange = (statName: string) => {
-    const stat = stats.find((s) => s.name === statName);
+    const stat = stats.find(s => s.name.toLowerCase() === statName);
     if (!stat || stat.value + 1 > 2) return;
-
-    const newSelectedStat = selectedStat === statName ? null : statName;
-    setSelectedStat(newSelectedStat);
-
-    const attributesData: Attribute[] = stats.map((s) => ({
+    const next = selectedStat === statName ? null : statName;
+    setSelectedStat(next);
+    onAttributesSelect?.(stats.map(s => ({
       name: s.name.charAt(0).toUpperCase() + s.name.slice(1),
-      value: s.value + (newSelectedStat === s.name ? 1 : 0),
-    }));
-    onAttributesSelect?.(attributesData);
+      value: s.value + (s.name.toLowerCase() === next ? 1 : 0),
+    })));
   };
 
-  const renderAttribute = (statName: string) => {
-    const stat = stats.find((s) => s.name === statName);
+  const renderStat = (statName: string) => {
+    const stat = stats.find(s => s.name.toLowerCase() === statName);
     if (!stat) return null;
-
     const total = stat.value + (selectedStat === statName ? 1 : 0);
     const isDisabled = stat.value + 1 > 2;
-    const sign = total > 0 ? "+" : "";
-    const tg = (key: string, fallback: string) => { const r = (t as (k: string) => string)(key); return r === key ? fallback : r; };
-    const label = tg(`gameData.stats.${stat.name}`, stat.name.charAt(0).toUpperCase() + stat.name.slice(1));
-
+    const label = t(`gameData.stats.${statName}` as never, { defaultValue: stat.name });
     return (
       <div className="flex items-center gap-4 p-3 border-2 border-accent-gold rounded-lg bg-primary-light">
         <Radio
@@ -77,8 +66,7 @@ export default function AttributesSelector({
         />
         <span className="text-lg text-primary-dark flex-1">{label}</span>
         <span className="text-2xl font-bold text-primary-dark px-4">
-          {sign}
-          {total}
+          {total > 0 ? '+' : ''}{total}
         </span>
       </div>
     );
@@ -86,23 +74,17 @@ export default function AttributesSelector({
 
   return (
     <div className="text-start">
-
-      {/* Mobile: vertical list */}
+      {/* Mobile: lista vertical */}
       <div className="md:hidden space-y-2">
-        {['charm', 'cunning', 'finesse', 'luck', 'might'].map((stat) => (
-          <div key={stat}>{renderAttribute(stat)}</div>
-        ))}
+        {STAT_ORDER.map(stat => <div key={stat}>{renderStat(stat)}</div>)}
       </div>
-
-      {/* Desktop: diamond layout */}
+      {/* Desktop: disposición en diamante */}
       <div className="hidden md:grid grid-cols-4 gap-4">
-        <div className="col-span-2">{renderAttribute("charm")}</div>
-        <div className="col-span-2">{renderAttribute("cunning")}</div>
-        <div className="col-span-2 col-start-2">
-          {renderAttribute("finesse")}
-        </div>
-        <div className="col-span-2">{renderAttribute("luck")}</div>
-        <div className="col-span-2">{renderAttribute("might")}</div>
+        <div className="col-span-2">{renderStat("charm")}</div>
+        <div className="col-span-2">{renderStat("cunning")}</div>
+        <div className="col-span-2 col-start-2">{renderStat("finesse")}</div>
+        <div className="col-span-2">{renderStat("luck")}</div>
+        <div className="col-span-2">{renderStat("might")}</div>
       </div>
     </div>
   );

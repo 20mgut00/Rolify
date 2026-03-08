@@ -309,7 +309,7 @@ export function useCharacterForm(onSuccess: (characterId: string) => void) {
         avatarImage: '',
         nature: firstNature ? { name: firstNature.name, description: firstNature.description } : { name: '', description: '' },
         drives: [],
-        moves: [],
+        moves: selectedClass.moves?.filter(m => m.mandatory).map(m => ({ name: m.name, description: m.description })) || [],
         roguishFeats: preSelectedFeats,
         weaponSkills: preSelectedSkills,
         stats: selectedClass.stats || [],

@@ -160,6 +160,7 @@ export default function CharacterFormFields({
             moves={selectedClass.moves}
             value={watchedFields.moves}
             onMovesSelect={onMovesChange}
+            maxMoves={selectedClass.maxMoves ?? 3}
           />
         </Card>
       </div>
