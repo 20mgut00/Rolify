@@ -7,10 +7,6 @@ import org.springframework.stereotype.Component;
 import java.util.List;
 import java.util.stream.Collectors;
 
-/**
- * Mapper for converting between Character DTOs and entities.
- * Centralizes all character mapping logic for better maintainability.
- */
 @Component
 public class CharacterMapper {
 
@@ -65,27 +61,6 @@ public class CharacterMapper {
 
         return new Character.RoguishFeatsData(dto.getRemaining(), feats);
     }
-
-    // Equipment is now a simple String field, no mapping needed
-    // Kept for backward compatibility if needed, but currently unused
-    /*
-    public Character.EquipmentData mapEquipment(CharacterDTO.EquipmentDTO dto) {
-        if (dto == null) return null;
-
-        List<Character.EquipmentData.Item> items = dto.getItems() != null ?
-                dto.getItems().stream()
-                        .map(i -> new Character.EquipmentData.Item(i.getName(), i.getValue(), i.getWear()))
-                        .collect(Collectors.toList()) : null;
-
-        return new Character.EquipmentData(
-                dto.getStartingValue(),
-                dto.getCarrying(),
-                dto.getBurdened(),
-                dto.getMax(),
-                items
-        );
-    }
-    */
 
     public Character.ReputationData mapReputation(CharacterDTO.ReputationDTO dto) {
         if (dto == null || dto.getFactions() == null) return null;

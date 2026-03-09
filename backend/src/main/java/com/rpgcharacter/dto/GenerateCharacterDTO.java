@@ -26,17 +26,4 @@ public class GenerateCharacterDTO {
         private String language; // Language code (e.g. "es", "en") for AI response
     }
 
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class Response {
-        private String name;
-        private String species;
-        private String demeanor;
-        private String details;
-        private String equipment;
-        // The service will also return selected options for drives, nature, moves, etc.
-        // These will match the structure expected by the frontend
-    }
 }

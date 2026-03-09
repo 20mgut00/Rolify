@@ -17,31 +17,3 @@ export function useDocumentTitle(title: string): void {
     };
   }, [title]);
 }
-
-/**
- * React 19 compatible meta tag hook
- * Sets a meta tag in the document head
- */
-export function useDocumentMeta(name: string, content: string): void {
-  useEffect(() => {
-    let meta = document.querySelector(`meta[name="${name}"]`) as HTMLMetaElement;
-    const isNew = !meta;
-
-    if (isNew) {
-      meta = document.createElement('meta');
-      meta.name = name;
-      document.head.appendChild(meta);
-    }
-
-    const previousContent = meta.content;
-    meta.content = content;
-
-    return () => {
-      if (isNew) {
-        meta.remove();
-      } else {
-        meta.content = previousContent;
-      }
-    };
-  }, [name, content]);
-}

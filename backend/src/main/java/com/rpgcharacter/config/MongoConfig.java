@@ -45,7 +45,6 @@ public class MongoConfig extends AbstractMongoClientConfiguration {
     }
 
     private String maskPassword(String uri) {
-        // Oculta la contraseña en los logs para seguridad
         return uri.replaceAll("://([^:]+):([^@]+)@", "://$1:****@");
     }
 }

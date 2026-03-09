@@ -3,6 +3,7 @@ package com.rpgcharacter.service;
 import com.rpgcharacter.dto.CharacterDTO;
 import com.rpgcharacter.exception.ResourceNotFoundException;
 import com.rpgcharacter.exception.UnauthorizedException;
+import com.rpgcharacter.mapper.CharacterMapper;
 import com.rpgcharacter.model.Character;
 import com.rpgcharacter.model.ClassTemplate;
 import com.rpgcharacter.repository.CharacterRepository;
@@ -33,26 +34,22 @@ public class CharacterService {
     private final UserRepository userRepository;
     private final ModelMapper modelMapper;
     private final CharacterValidator characterValidator;
+    private final CharacterMapper characterMapper;
     
     @Transactional
     public CharacterDTO.Response createCharacter(CharacterDTO.CreateRequest request, String userEmail) {
-        // Validate class template exists
         ClassTemplate template = classTemplateRepository
                 .findBySystemAndClassName(request.getSystem(), request.getClassName())
                 .orElseThrow(() -> new ResourceNotFoundException("Class template not found"));
 
-        // Validate character data against template
         characterValidator.validateCharacter(request, template);
 
         Character character = modelMapper.map(request, Character.class);
 
-        // Set user if logged in
         if (userEmail != null) {
             final Character finalCharacter = character;
             userRepository.findByEmail(userEmail).ifPresent(user -> {
                 finalCharacter.setUserId(user.getId());
-
-                // Update user statistics
                 user.setTotalCharacters(user.getTotalCharacters() + 1);
                 if (Boolean.TRUE.equals(request.getIsPublic())) {
                     user.setPublicCharacters(user.getPublicCharacters() + 1);
@@ -71,7 +68,6 @@ public class CharacterService {
         Character character = characterRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Character not found"));
 
-        // Verify ownership
         if (userEmail != null) {
             final Character finalCharacter = character;
             userRepository.findByEmail(userEmail).ifPresent(user -> {
@@ -84,29 +80,25 @@ public class CharacterService {
                 throw new UnauthorizedException("Must be logged in to update this character");
             }
         }
-        
-        // Update fields
+
         if (request.getName() != null) character.setName(request.getName());
         if (request.getSpecies() != null) character.setSpecies(request.getSpecies());
         if (request.getDemeanor() != null) character.setDemeanor(request.getDemeanor());
         if (request.getDetails() != null) character.setDetails(request.getDetails());
         if (request.getAvatarImage() != null) character.setAvatarImage(request.getAvatarImage());
-        if (request.getStats() != null) character.setStats(mapStats(request.getStats()));
-        if (request.getBackground() != null) character.setBackground(mapBackground(request.getBackground()));
-        if (request.getDrives() != null) character.setDrives(mapSelectedOptions(request.getDrives()));
-        if (request.getNature() != null) character.setNature(mapSelectedOptions(request.getNature()));
-        if (request.getMoves() != null) character.setMoves(mapSelectedOptions(request.getMoves()));
-        if (request.getConnections() != null) character.setConnections(mapConnections(request.getConnections()));
-        if (request.getWeaponSkills() != null) character.setWeaponSkills(mapWeaponSkills(request.getWeaponSkills()));
-        if (request.getRoguishFeats() != null) character.setRoguishFeats(mapRoguishFeats(request.getRoguishFeats()));
+        if (request.getStats() != null) character.setStats(characterMapper.mapStats(request.getStats()));
+        if (request.getBackground() != null) character.setBackground(characterMapper.mapBackground(request.getBackground()));
+        if (request.getDrives() != null) character.setDrives(characterMapper.mapSelectedOptions(request.getDrives()));
+        if (request.getNature() != null) character.setNature(characterMapper.mapSelectedOptions(request.getNature()));
+        if (request.getMoves() != null) character.setMoves(characterMapper.mapSelectedOptions(request.getMoves()));
+        if (request.getConnections() != null) character.setConnections(characterMapper.mapConnections(request.getConnections()));
+        if (request.getWeaponSkills() != null) character.setWeaponSkills(characterMapper.mapWeaponSkills(request.getWeaponSkills()));
+        if (request.getRoguishFeats() != null) character.setRoguishFeats(characterMapper.mapRoguishFeats(request.getRoguishFeats()));
         if (request.getEquipment() != null) character.setEquipment(request.getEquipment());
-        if (request.getReputation() != null) character.setReputation(mapReputation(request.getReputation()));
-        
-        // Update public status
+        if (request.getReputation() != null) character.setReputation(characterMapper.mapReputation(request.getReputation()));
+
         if (request.getIsPublic() != null && !request.getIsPublic().equals(character.getIsPublic())) {
             character.setIsPublic(request.getIsPublic());
-            
-            // Update user statistics
             if (character.getUserId() != null && !character.getUserId().isBlank()) {
                 userRepository.findById(character.getUserId()).ifPresent(user -> {
                     if (Boolean.TRUE.equals(request.getIsPublic())) {
@@ -128,14 +120,11 @@ public class CharacterService {
         Character character = characterRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Character not found"));
 
-        // Verify ownership
         if (userEmail != null) {
             userRepository.findByEmail(userEmail).ifPresent(user -> {
                 if (!user.getId().equals(character.getUserId())) {
                     throw new UnauthorizedException("Unauthorized to delete this character");
                 }
-                
-                // Update user statistics
                 user.setTotalCharacters(Math.max(0, user.getTotalCharacters() - 1));
                 if (Boolean.TRUE.equals(character.getIsPublic())) {
                     user.setPublicCharacters(Math.max(0, user.getPublicCharacters() - 1));
@@ -194,7 +183,6 @@ public class CharacterService {
         Character character = characterRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Character not found"));
 
-        // Check if user can access this character
         if (!Boolean.TRUE.equals(character.getIsPublic())) {
             if (character.getUserId() == null || character.getUserId().isBlank()) {
                 return modelMapper.map(character, CharacterDTO.Response.class);
@@ -277,57 +265,4 @@ public class CharacterService {
                 ));
     }
     
-    // Helper mapping methods
-    private List<Character.Stat> mapStats(List<CharacterDTO.StatDTO> stats) {
-        return stats.stream()
-                .map(s -> new Character.Stat(s.getName(), s.getValue()))
-                .collect(Collectors.toList());
-    }
-    
-    private List<Character.BackgroundAnswer> mapBackground(List<CharacterDTO.BackgroundAnswerDTO> background) {
-        return background.stream()
-                .map(b -> new Character.BackgroundAnswer(b.getQuestion(), b.getAnswer()))
-                .collect(Collectors.toList());
-    }
-    
-    private List<Character.SelectedOption> mapSelectedOptions(List<CharacterDTO.SelectedOptionDTO> options) {
-        return options.stream()
-                .map(o -> new Character.SelectedOption(o.getName(), o.getDescription(), o.getSelected()))
-                .collect(Collectors.toList());
-    }
-    
-    private List<Character.Connection> mapConnections(List<CharacterDTO.ConnectionDTO> connections) {
-        return connections.stream()
-                .map(c -> new Character.Connection(c.getType(), c.getCharacterName(), c.getDescription(), c.getStory()))
-                .collect(Collectors.toList());
-    }
-    
-    private Character.WeaponSkillsData mapWeaponSkills(CharacterDTO.WeaponSkillsDTO dto) {
-        List<Character.WeaponSkillsData.Skill> skills = dto.getSkills().stream()
-                .map(s -> new Character.WeaponSkillsData.Skill(s.getName(), s.getDescription(), s.getSelected()))
-                .collect(Collectors.toList());
-        return new Character.WeaponSkillsData(dto.getRemaining(), skills);
-    }
-    
-    private Character.RoguishFeatsData mapRoguishFeats(CharacterDTO.RoguishFeatsDTO dto) {
-        List<Character.RoguishFeatsData.Feat> feats = dto.getFeats().stream()
-                .map(f -> new Character.RoguishFeatsData.Feat(f.getName(), f.getDescription(), f.getSelected()))
-                .collect(Collectors.toList());
-        return new Character.RoguishFeatsData(dto.getRemaining(), feats);
-    }
-    
-    // Equipment is now a simple String field, no mapping needed
-    
-    private Character.ReputationData mapReputation(CharacterDTO.ReputationDTO dto) {
-        return new Character.ReputationData(
-                dto.getFactions().entrySet().stream()
-                        .collect(Collectors.toMap(
-                                e -> e.getKey(),
-                                e -> new Character.ReputationData.FactionReputation(
-                                        e.getValue().getPrestige(),
-                                        e.getValue().getNotoriety()
-                                )
-                        ))
-        );
-    }
 }

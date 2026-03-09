@@ -184,26 +184,6 @@ public class CharacterDTO {
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class EquipmentDTO {
-        private Integer startingValue;
-        private Integer carrying;
-        private Integer burdened;
-        private Integer max;
-        private List<ItemDTO> items;
-    }
-    
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class ItemDTO {
-        private String name;
-        private Integer value;
-        private Integer wear;
-    }
-    
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
     public static class ReputationDTO {
         private java.util.Map<String, FactionReputationDTO> factions;
     }

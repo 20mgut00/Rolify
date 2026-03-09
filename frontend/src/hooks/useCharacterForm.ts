@@ -8,7 +8,7 @@ import toast from 'react-hot-toast';
 import { characterAPI, classTemplateAPI } from '../services/api';
 import { useAuthStore, useCharacterStore, useUIStore } from '../store';
 import { getClassDefaultAvatar } from '../utils/avatarUrl';
-import type { Character, CharacterDB } from '../types';
+import type { Character } from '../types';
 
 export interface CharacterFormData {
   name: string;
@@ -32,7 +32,7 @@ export function useCharacterForm(onSuccess: (characterId: string) => void) {
   const queryClient = useQueryClient();
   const [searchParams] = useSearchParams();
   const { t } = useTranslation();
-  const { isAuthenticated, user } = useAuthStore();
+  const { isAuthenticated } = useAuthStore();
   const { addSessionCharacter } = useCharacterStore();
   const { selectedSystem } = useUIStore();
 
@@ -43,13 +43,11 @@ export function useCharacterForm(onSuccess: (characterId: string) => void) {
   const editId = searchParams.get('edit');
   const isEditing = !!editId;
 
-  // Load templates
   const { data: templates } = useQuery({
     queryKey: ['classTemplates', selectedSystem],
     queryFn: () => classTemplateAPI.getBySystem(selectedSystem),
   });
 
-  // Load character if editing
   const { data: existingCharacter } = useQuery({
     queryKey: ['character', editId],
     queryFn: () => characterAPI.getById(editId!),
@@ -76,7 +74,6 @@ export function useCharacterForm(onSuccess: (characterId: string) => void) {
     },
   });
 
-  // Watch form fields
   const watchedFields = {
     name: useWatch({ control, name: 'name' }),
     background: useWatch({ control, name: 'background' }),
@@ -91,7 +88,6 @@ export function useCharacterForm(onSuccess: (characterId: string) => void) {
     avatarImage: useWatch({ control, name: 'avatarImage' }),
   };
 
-  // Generic field setter
   const setField = useCallback(
     <K extends FieldPath<CharacterFormData>>(key: K) =>
       (val: FieldPathValue<CharacterFormData, K>) =>
@@ -99,13 +95,11 @@ export function useCharacterForm(onSuccess: (characterId: string) => void) {
     [setValue]
   );
 
-  // Get selected class
   const selectedClass = useMemo(
     () => templates?.[selectedClassIndex] ?? templates?.[0],
     [templates, selectedClassIndex]
   );
 
-  // Pre-selected feats and skills
   const preSelectedFeats = useMemo(
     () =>
       selectedClass?.roguishFeats?.feats
@@ -114,76 +108,47 @@ export function useCharacterForm(onSuccess: (characterId: string) => void) {
     [selectedClass?.roguishFeats?.feats]
   );
 
-  // Note: For weapon skills, 'selected: true' means "selectable", not "pre-selected"
-  // So we don't pre-select any skills when creating a new character
+  // In the template, 'selected: true' on weapon skills means the skill is available to pick,
+  // not that it should be pre-selected. New characters start with none chosen.
   const preSelectedSkills = useMemo(() => [], []);
 
-  // Create/Update mutation
   const saveMutation = useMutation({
     mutationFn: async (data: CharacterFormData) => {
       if (!selectedClass) throw new Error('No class selected');
 
-      // Convert form data to CharacterDB format
-      const characterDB: Omit<CharacterDB, '_id' | 'createdAt' | 'updatedAt'> = {
-        idUsuario: user?.id,
+      const apiData = {
+        name: data.name,
         system: selectedClass.system,
         className: selectedClass.className,
-        name: data.name,
         species: data.species,
-        details: data.details,
         demeanor: data.demeanor,
+        details: data.details,
         avatarImage: data.avatarImage,
-        nature: data.nature,
-        drives: data.drives,
+        stats: data.stats,
         background: data.background,
         connections: data.connections.map(c => ({
           characterName: c.name || '',
           description: c.answer || '',
         })),
-        stats: data.stats,
-        reputations: data.reputations,
-        moves: data.moves,
-        roguishFeats: data.roguishFeats,
-        weaponSkills: data.weaponSkills,
-        equipment: data.equipment,
         isPublic,
-        _class: 'com.project.rolify.domain.Character',
-      };
-
-      // Create the API payload directly (no need to convert to UI format first)
-      const apiData = {
-        name: characterDB.name,
-        system: characterDB.system,
-        className: characterDB.className,
-        species: characterDB.species,
-        demeanor: characterDB.demeanor,
-        details: characterDB.details,
-        avatarImage: characterDB.avatarImage,
-        stats: characterDB.stats,
-        background: characterDB.background,
-        connections: characterDB.connections,
-        isPublic: characterDB.isPublic,
-        nature: [{ ...characterDB.nature, selected: true }],
-        drives: characterDB.drives.map(d => ({ ...d, selected: true })),
-        moves: characterDB.moves.map(m => ({ ...m, selected: true })),
+        nature: [{ ...data.nature, selected: true }],
+        drives: data.drives.map(d => ({ ...d, selected: true })),
+        moves: data.moves.map(m => ({ ...m, selected: true })),
         roguishFeats: {
           remaining: 0,
-          feats: characterDB.roguishFeats.map(f => ({ ...f, selected: true }))
+          feats: data.roguishFeats.map(f => ({ ...f, selected: true })),
         },
         weaponSkills: {
           remaining: 0,
-          skills: characterDB.weaponSkills.map(s => ({ ...s, selected: true }))
+          skills: data.weaponSkills.map(s => ({ ...s, selected: true })),
         },
-        equipment: characterDB.equipment,  // Backend now accepts string directly
+        equipment: data.equipment,
         reputation: {
-          factions: characterDB.reputations.reduce((acc, rep) => {
-            acc[rep.name] = {
-              prestige: rep.prestige,
-              notoriety: rep.notoriety,
-            };
+          factions: data.reputations.reduce((acc, rep) => {
+            acc[rep.name] = { prestige: rep.prestige, notoriety: rep.notoriety };
             return acc;
-          }, {} as Record<string, { prestige: number; notoriety: number }>)
-        }
+          }, {} as Record<string, { prestige: number; notoriety: number }>),
+        },
       };
 
       if (isEditing && editId) {
@@ -198,8 +163,7 @@ export function useCharacterForm(onSuccess: (characterId: string) => void) {
       }
       queryClient.invalidateQueries({ queryKey: ['myCharacters'] });
       toast.success(isEditing ? t('characterForm.characterUpdated') : t('characterForm.characterCreated'));
-      // Clear dirty state before navigating so useBlocker doesn't trigger
-      reset();
+      reset(); // clear dirty state before navigating so useBlocker doesn't trigger
       if (data.id) {
         onSuccess(data.id);
       }
@@ -216,14 +180,12 @@ export function useCharacterForm(onSuccess: (characterId: string) => void) {
       return;
     }
 
-    // --- Validation ---
     const errors: Record<string, string> = {};
 
     if (!data.name.trim()) {
       errors.name = t('characterForm.nameRequired');
     }
 
-    // Check stat improvement: at least one stat must differ from template defaults
     const templateStats = selectedClass.stats || [];
     const hasStatBoost = data.stats.some((s) => {
       const base = templateStats.find((t) => t.name.toLowerCase() === s.name.toLowerCase());
@@ -233,13 +195,11 @@ export function useCharacterForm(onSuccess: (characterId: string) => void) {
       errors.stats = t('characterForm.statBoostRequired');
     }
 
-    // Moves
     const requiredMoves = selectedClass.maxMoves ?? 3;
     if (data.moves.length < requiredMoves) {
       errors.moves = t('characterForm.movesRequired', { count: requiredMoves, selected: data.moves.length });
     }
 
-    // Roguish feats
     const featsRemaining = selectedClass.roguishFeats?.remaining ?? 0;
     if (featsRemaining > 0) {
       const preSelectedCount = selectedClass.roguishFeats?.feats.filter((f) => f.selected).length ?? 0;
@@ -253,7 +213,6 @@ export function useCharacterForm(onSuccess: (characterId: string) => void) {
       }
     }
 
-    // Weapon skills
     const skillsRemaining = selectedClass.weaponSkills?.remaining ?? 0;
     if (skillsRemaining > 0) {
       if (data.weaponSkills.length < skillsRemaining) {
@@ -264,7 +223,6 @@ export function useCharacterForm(onSuccess: (characterId: string) => void) {
       }
     }
 
-    // Drives
     const requiredDrives = selectedClass.maxDrives ?? 2;
     if (data.drives.length < requiredDrives) {
       errors.drives = t('characterForm.drivesRequired', { count: requiredDrives, selected: data.drives.length });
@@ -278,7 +236,8 @@ export function useCharacterForm(onSuccess: (characterId: string) => void) {
 
     setValidationErrors({});
 
-    // Create background factions if not manually added (bonus already applied via ReputationSelector)
+    // Auto-add reputation entries from background answers if the player hasn't added them manually.
+    // The ReputationSelector already handles the prestige/notoriety bonus, so we just ensure the faction exists.
     const reputations = [...data.reputations];
     const servedMost = data.background?.[3]?.answer?.trim().toLowerCase();
     const specialEnmity = data.background?.[4]?.answer?.trim().toLowerCase();
@@ -291,13 +250,12 @@ export function useCharacterForm(onSuccess: (characterId: string) => void) {
       reputations.push({ name: data.background[4].answer, notoriety: 1, prestige: 0 });
     }
 
-    // Use class default avatar if no custom image was uploaded
     const avatarImage = data.avatarImage || getClassDefaultAvatar(selectedClass.className);
 
     saveMutation.mutate({ ...data, reputations, avatarImage });
   };
 
-  // Initialize form when class changes; reset() sets defaultValues baseline so isDirty stays false until the user edits
+  // reset() sets defaultValues baseline so isDirty stays false until the user actually edits
   useEffect(() => {
     if (selectedClass && !isEditing) {
       const firstNature = selectedClass.nature?.[0];
@@ -321,7 +279,6 @@ export function useCharacterForm(onSuccess: (characterId: string) => void) {
     }
   }, [selectedClass, preSelectedFeats, preSelectedSkills, reset, isEditing]);
 
-  // Load existing character data (editing mode)
   useEffect(() => {
     if (existingCharacter && isEditing) {
       const selectedNature = existingCharacter.nature.find(n => n.selected);
