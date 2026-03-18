@@ -215,8 +215,8 @@ export default function ReputationSelector({
               </div>
             )}
 
-            <div className="flex gap-8">
-              <div className="flex flex-col items-center gap-1.5 bg-red-900/10 rounded-lg p-2">
+            <div className="flex flex-wrap gap-4 sm:gap-8 justify-center">
+              <div className="flex flex-col items-center gap-1.5 bg-red-900/10 rounded-lg p-2 min-w-0 flex-1">
                 <span className="text-xs font-bold uppercase tracking-wider text-red-500">
                   {t('characterViewer.notoriety')}
                 </span>
@@ -260,9 +260,9 @@ export default function ReputationSelector({
                 </span>
               </div>
 
-              <div className="w-px bg-accent-gold/30 self-stretch" />
+              <div className="hidden sm:block w-px bg-accent-gold/30 self-stretch" />
 
-              <div className="flex flex-col items-center gap-1.5 bg-accent-gold/10 rounded-lg p-2">
+              <div className="flex flex-col items-center gap-1.5 bg-accent-gold/10 rounded-lg p-2 min-w-0 flex-1">
                 <span className="text-xs font-bold uppercase tracking-wider text-accent-gold">
                   {t('characterViewer.prestige')}
                 </span>

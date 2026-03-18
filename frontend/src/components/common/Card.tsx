@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import Tooltip from '@mui/material/Tooltip';
+import ClickAwayListener from '@mui/material/ClickAwayListener';
 import { HelpCircle } from 'lucide-react';
 
 interface CardProps {
@@ -12,6 +14,8 @@ interface CardProps {
 }
 
 export default function Card({ label, desc, helpText, children, className, required, error }: CardProps) {
+  const [tooltipOpen, setTooltipOpen] = useState(false);
+
   return (
     <div className={className}>
       <label className="block text-start text-primary-dark font-semibold mb-2">
@@ -19,11 +23,26 @@ export default function Card({ label, desc, helpText, children, className, requi
           {label}
           {required && <span className="text-red-500">*</span>}
           {helpText && (
-            <Tooltip title={helpText} arrow placement="top">
-              <button type="button" className="text-primary-dark/40 hover:text-accent-gold transition cursor-help">
-                <HelpCircle size={14} />
-              </button>
-            </Tooltip>
+            <ClickAwayListener onClickAway={() => setTooltipOpen(false)}>
+              <Tooltip
+                title={helpText}
+                arrow
+                placement="top"
+                open={tooltipOpen}
+                onClose={() => setTooltipOpen(false)}
+                disableHoverListener
+                disableFocusListener
+                disableTouchListener
+              >
+                <button
+                  type="button"
+                  className="text-primary-dark/40 hover:text-accent-gold transition cursor-help"
+                  onClick={(e) => { e.preventDefault(); setTooltipOpen(!tooltipOpen); }}
+                >
+                  <HelpCircle size={14} />
+                </button>
+              </Tooltip>
+            </ClickAwayListener>
           )}
         </span>
         {desc && (
