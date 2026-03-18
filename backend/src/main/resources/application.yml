@@ -55,9 +55,14 @@ app:
     verification:
       expiration: 3600000 # 1 hour
 
+  rate-limit:
+    user-daily-limit: ${APP_RATE_LIMIT_USER_DAILY_LIMIT:5}
+    global-daily-limit: ${APP_RATE_LIMIT_GLOBAL_DAILY_LIMIT:50}
+
   gemini:
     api-key: ${GEMINI_API_KEY}
     model: gemini-2.5-flash
+    fallback-model: gemini-3.1-flash-lite-preview
     api-url: https://generativelanguage.googleapis.com/v1beta/models
 
 logging:

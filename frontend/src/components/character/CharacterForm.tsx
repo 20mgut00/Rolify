@@ -93,7 +93,8 @@ export default function CharacterForm() {
       if (generatedData.roguishFeats) setField('roguishFeats')(generatedData.roguishFeats);
       if (generatedData.weaponSkills) setField('weaponSkills')(generatedData.weaponSkills);
 
-      toast.success(t('characterForm.characterGenerated'));
+      const usedModel = generatedData.model || 'Gemini';
+      toast.success(`${t('characterForm.characterGenerated')} (${usedModel})`);
     } catch (error) {
       const errorMessage = axios.isAxiosError(error)
         ? error.response?.status === 429
@@ -287,6 +288,7 @@ export default function CharacterForm() {
                 {t('characterForm.aiCreatingDesc')}
               </p>
               <p className="text-sm text-purple-600">{t('characterForm.pleaseWait')}</p>
+              <p className="text-xs text-primary-dark/40 mt-3">Powered by Gemini AI</p>
             </div>
           </div>
         )}

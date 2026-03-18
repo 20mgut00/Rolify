@@ -22,6 +22,9 @@ public class GeminiService {
     @Value("${app.gemini.model}")
     private String model;
 
+    @Value("${app.gemini.fallback-model:}")
+    private String fallbackModel;
+
     @Value("${app.gemini.api-url}")
     private String apiUrl;
 
@@ -40,8 +43,22 @@ public class GeminiService {
             }
 
             String prompt = buildPrompt(classTemplate, additionalPrompt, language);
-            String response = callGeminiAPI(prompt);
-            return parseCharacterResponse(response, classTemplate);
+            String response;
+            String usedModel = model;
+            try {
+                response = callGeminiAPI(prompt, model);
+            } catch (Exception e) {
+                if (fallbackModel != null && !fallbackModel.isBlank() && isRateLimitError(e)) {
+                    log.warn("Primary model {} rate limited, falling back to {}", model, fallbackModel);
+                    response = callGeminiAPI(prompt, fallbackModel);
+                    usedModel = fallbackModel;
+                } else {
+                    throw e;
+                }
+            }
+            Map<String, Object> result = parseCharacterResponse(response, classTemplate);
+            result.put("model", usedModel);
+            return result;
         } catch (IllegalStateException e) {
             throw e;
         } catch (Exception e) {
@@ -54,6 +71,11 @@ public class GeminiService {
 
             throw new RuntimeException("Failed to generate character: " + e.getMessage());
         }
+    }
+
+    private boolean isRateLimitError(Exception e) {
+        String msg = e.getMessage();
+        return msg != null && (msg.contains("429") || msg.contains("RESOURCE_EXHAUSTED") || msg.contains("rate limit"));
     }
 
     private String buildPrompt(ClassTemplate classTemplate, String additionalPrompt, String language) {
@@ -167,8 +189,8 @@ public class GeminiService {
                 .collect(Collectors.joining(", "));
     }
 
-    private String callGeminiAPI(String prompt) throws Exception {
-        String url = apiUrl + "/" + model + ":generateContent";
+    private String callGeminiAPI(String prompt, String modelName) throws Exception {
+        String url = apiUrl + "/" + modelName + ":generateContent";
 
         Map<String, Object> requestBody = new HashMap<>();
         Map<String, Object> content = new HashMap<>();

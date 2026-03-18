@@ -60,6 +60,7 @@ export interface GeneratedCharacter {
   stats?: Array<{ name: string; value: number }>;
   roguishFeats?: Array<{ name: string; description: string }>;
   weaponSkills?: Array<{ name: string; description: string }>;
+  model?: string;
 }
 
 export interface CharacterDB {
