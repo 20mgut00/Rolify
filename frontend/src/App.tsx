@@ -8,7 +8,6 @@ import { theme } from './theme';
 import Header from './components/Header';
 import { useAccessibilityStore } from './store';
 
-// Lazy load route components for code splitting
 const Hero = lazy(() => import('./components/Hero'));
 const CharacterForm = lazy(() => import('./components/character/CharacterForm'));
 const CharacterLibrary = lazy(() => import('./components/character/CharacterLibrary'));
@@ -29,7 +28,6 @@ const queryClient = new QueryClient({
   },
 });
 
-// Loading fallback component for lazy routes
 function RouteLoader() {
   const { t } = useTranslation();
   return (

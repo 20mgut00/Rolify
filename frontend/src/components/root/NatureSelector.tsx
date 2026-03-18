@@ -20,6 +20,7 @@ export default function NatureSelector({
   onNatureSelect,
 }: NatureSelectorProps) {
   const { t } = useTranslation();
+  // Wrapper de traduccion: si la clave i18n no existe (devuelve la propia clave), usa el fallback
   const tg = (key: string, fallback: string) => { const r = (t as (k: string) => string)(key); return r === key ? fallback : r; };
   const selectedValue = value?.name || nature[0]?.name || "";
 

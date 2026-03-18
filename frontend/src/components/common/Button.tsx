@@ -27,10 +27,3 @@ export default function Button({
     </button>
   );
 }
-
-<button
-  onClick={() => {}}
-  className="px-8 py-4 cursor-pointer rounded-lg transition-all duration-200 transform-gpu hover:opacity-90 hover:scale-[1.02] hover:-translate-y-px hover:brightness-105 shadow-xl text-xl bg-accent-gold text-primary-dark disabled:cursor-not-allowed disabled:opacity-60 disabled:hover:scale-100 disabled:hover:translate-y-0 disabled:hover:brightness-100"
->
-  Start Creating Your Character Now
-</button>;

@@ -8,19 +8,9 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.Map;
 
-/**
- * Validator for character creation and updates against class templates.
- */
 @Component
 public class CharacterValidator {
 
-    /**
-     * Validates a character creation request against its class template.
-     *
-     * @param request  The character creation request
-     * @param template The class template to validate against
-     * @throws ValidationException if validation fails
-     */
     public void validateCharacter(CharacterDTO.CreateRequest request, ClassTemplate template) {
         Map<String, String> errors = new HashMap<>();
 

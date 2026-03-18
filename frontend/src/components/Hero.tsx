@@ -15,9 +15,6 @@ import { characterAPI } from '../services/api';
 import { useDocumentTitle } from '../hooks/useDocumentTitle';
 import { getAvatarUrl } from '../utils/avatarUrl';
 
-// ---------------------------------------------------------------------------
-// Animation variants
-// ---------------------------------------------------------------------------
 const fadeUp = {
   hidden: { opacity: 0, y: 24 },
   visible: (delay = 0) => ({
@@ -37,9 +34,6 @@ const cardVariant = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.5, ease: 'easeOut' } },
 };
 
-// ---------------------------------------------------------------------------
-// Skeleton card (shown while carousel loads)
-// ---------------------------------------------------------------------------
 function CarouselSkeleton() {
   return (
     <div className="relative min-h-64 sm:min-h-96 md:min-h-125 flex flex-nowrap gap-4 sm:gap-6 overflow-hidden px-4 sm:px-6 md:px-10 items-center">
@@ -61,16 +55,12 @@ function CarouselSkeleton() {
   );
 }
 
-// ---------------------------------------------------------------------------
-// Main component
-// ---------------------------------------------------------------------------
 export default function Hero() {
   const { t, i18n } = useTranslation();
   useDocumentTitle(t('hero.pageTitle'));
 
   const shouldReduceMotion = useReducedMotion();
 
-  // Carousel refs & state
   const containerRef = useRef<HTMLDivElement | null>(null);
   const isDraggingRef = useRef(false);
   const hasDraggedRef = useRef(false);
@@ -81,7 +71,6 @@ export default function Hero() {
   const dragThreshold = 6;
   const [hasInteracted, setHasInteracted] = useState(false);
 
-  // InView refs for sections
   const featuresRef = useRef<HTMLDivElement>(null);
   const stepsRef = useRef<HTMLDivElement>(null);
   const ctaRef = useRef<HTMLDivElement>(null);
@@ -97,9 +86,6 @@ export default function Hero() {
   const characters = publicCharacters?.content || [];
   const totalCharacters = publicCharacters?.totalElements ?? 0;
 
-  // ---------------------------------------------------------------------------
-  // Auto-scroll
-  // ---------------------------------------------------------------------------
   useEffect(() => {
     const container = containerRef.current;
     if (!container || characters.length === 0) return;
@@ -119,6 +105,7 @@ export default function Hero() {
         return;
       }
 
+      // Auto-scroll basado en delta de tiempo real (no frames) para velocidad constante
       accRef.current += (speedPerSecond * delta) / 1000;
 
       const half = container.scrollWidth / 2;
@@ -136,7 +123,6 @@ export default function Hero() {
     return () => cancelAnimationFrame(rafId);
   }, [characters]);
 
-  // Keep accumulator in sync on resize
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
@@ -164,9 +150,6 @@ export default function Hero() {
     };
   }, [characters]);
 
-  // ---------------------------------------------------------------------------
-  // Pointer handlers
-  // ---------------------------------------------------------------------------
   const handlePointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     const container = containerRef.current;
     if (!container) return;
@@ -176,6 +159,7 @@ export default function Hero() {
     startScrollLeftRef.current = container.scrollLeft;
   };
 
+  // Pointer capture + umbral de drag para distinguir clicks de arrastres en el carrusel
   const handlePointerMove = (e: React.PointerEvent<HTMLDivElement>) => {
     const container = containerRef.current;
     if (!container || !isDraggingRef.current) return;
@@ -189,7 +173,7 @@ export default function Hero() {
       container.style.cursor = 'grabbing';
       container.style.userSelect = 'none';
       setHasInteracted(true);
-      try { container.setPointerCapture(e.pointerId); } catch (_) { /* ignore */ }
+      try { container.setPointerCapture(e.pointerId); } catch (_) {}
     }
 
     e.preventDefault();
@@ -208,7 +192,7 @@ export default function Hero() {
     isDraggingRef.current = false;
     pausedRef.current = false;
     if (hasDraggedRef.current) {
-      try { container.releasePointerCapture(e.pointerId); } catch (_) { /* ignore */ }
+      try { container.releasePointerCapture(e.pointerId); } catch (_) {}
     }
     container.style.cursor = 'grab';
     container.style.userSelect = '';
@@ -222,7 +206,6 @@ export default function Hero() {
     }
   };
 
-  // Disable animations when user prefers reduced motion
   const motionProps = (delay = 0) =>
     shouldReduceMotion
       ? {}
@@ -231,9 +214,6 @@ export default function Hero() {
   return (
     <div className="container mx-auto px-4 py-12 sm:py-24">
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Hero Section                                                         */}
-      {/* ------------------------------------------------------------------ */}
       <div className="text-center mb-10 sm:mb-20">
         <motion.h1
           className="font-cinzel text-3xl sm:text-5xl md:text-6xl font-bold text-primary-dark mb-4 leading-tight"
@@ -249,7 +229,6 @@ export default function Hero() {
           {t('hero.subtitle')}
         </motion.p>
 
-        {/* Stats counter */}
         {totalCharacters > 0 && (
           <motion.div
             className="flex items-center justify-center gap-2 mb-8 text-accent-gold font-cinzel"
@@ -284,9 +263,6 @@ export default function Hero() {
         </motion.div>
       </div>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Carousel                                                             */}
-      {/* ------------------------------------------------------------------ */}
       <div className="mb-10 sm:mb-20">
         <motion.h2
           className="font-cinzel text-2xl sm:text-4xl font-bold text-center text-primary-dark mb-6 sm:mb-8"
@@ -301,10 +277,8 @@ export default function Hero() {
         <div className="relative bg-white rounded-lg shadow-lg overflow-hidden hero-shared-panel">
           <style>{`.hide-scrollbar::-webkit-scrollbar{display:none} .hide-scrollbar{-ms-overflow-style:none; scrollbar-width:none;}`}</style>
 
-          {/* Skeleton */}
           {isLoading && <CarouselSkeleton />}
 
-          {/* Empty state */}
           {!isLoading && characters.length === 0 && (
             <div className="flex flex-col items-center justify-center min-h-64 sm:min-h-96 gap-4 p-10 text-center">
               <div className="w-20 h-20 rounded-full bg-accent-gold/10 flex items-center justify-center">
@@ -325,10 +299,8 @@ export default function Hero() {
             </div>
           )}
 
-          {/* Carousel */}
           {!isLoading && characters.length > 0 && (
             <>
-              {/* Drag hint */}
               <div
                 className={`absolute top-2 left-1/2 -translate-x-1/2 z-10 flex items-center gap-1.5 text-primary-dark/40 text-xs font-cinzel select-none pointer-events-none transition-opacity duration-500 ${hasInteracted ? 'opacity-0' : 'opacity-100'}`}
               >
@@ -347,13 +319,13 @@ export default function Hero() {
                 onPointerCancel={handlePointerUp}
                 onClickCapture={handleClickCapture}
               >
+                {/* Duplica el array para crear scroll infinito: cuando llega al final, vuelve a la primera mitad */}
                 {[...characters, ...characters].map((char, index) => (
                   <div
                     key={`${char.id}-${index}`}
                     className="p-4 sm:p-6 md:p-10 flex items-center justify-center shrink-0 min-w-56 sm:min-w-80 md:min-w-96 border-r border-accent-gold/30"
                   >
                     <div className="flex flex-col md:flex-row items-center gap-4 sm:gap-8 w-full">
-                      {/* Avatar */}
                       <div className="shrink-0">
                         {char.avatarImage ? (
                           <img
@@ -370,7 +342,6 @@ export default function Hero() {
                         )}
                       </div>
 
-                      {/* Info */}
                       <div className="text-center md:text-left flex-1">
                         <h3 className="font-cinzel text-xl sm:text-3xl md:text-4xl font-bold text-primary-dark mb-1 sm:mb-2">
                           {char.name}
@@ -401,9 +372,6 @@ export default function Hero() {
         </div>
       </div>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* Features                                                             */}
-      {/* ------------------------------------------------------------------ */}
       <motion.div
         ref={featuresRef}
         className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 mb-10 sm:mb-20"
@@ -472,9 +440,6 @@ export default function Hero() {
         </motion.div>
       </motion.div>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* CTA Section — different actions from hero top to avoid duplication   */}
-      {/* ------------------------------------------------------------------ */}
       <motion.div
         ref={ctaRef}
         className="bg-linear-to-r from-accent-gold/10 to-accent-gold/5 rounded-lg p-6 sm:p-12 text-center mb-10 sm:mb-20 border border-accent-gold/20"
@@ -506,9 +471,6 @@ export default function Hero() {
         </div>
       </motion.div>
 
-      {/* ------------------------------------------------------------------ */}
-      {/* How It Works                                                         */}
-      {/* ------------------------------------------------------------------ */}
       <motion.div
         ref={stepsRef}
         className="mb-8"
@@ -523,10 +485,8 @@ export default function Hero() {
           {t('hero.howItWorks')}
         </motion.h2>
 
-        {/* Steps with connectors */}
         <div className="grid grid-cols-1 md:grid-cols-5 gap-0 items-start">
 
-          {/* Step 1 */}
           <motion.div variants={cardVariant} className="text-center md:col-span-1 flex flex-col items-center">
             <div className="w-12 h-12 bg-accent-gold rounded-full flex items-center justify-center mb-4 font-cinzel text-lg font-bold text-primary-dark shrink-0">
               1
@@ -535,16 +495,13 @@ export default function Hero() {
               {t('hero.step1Title')}
             </h3>
             <p className="text-primary-dark/70 text-sm">{t('hero.step1Desc')}</p>
-            {/* Mobile connector */}
             <div className="block md:hidden w-px h-8 border-l-2 border-dashed border-accent-gold/40 mt-4" />
           </motion.div>
 
-          {/* Connector 1→2 (desktop) */}
           <div className="hidden md:flex items-start justify-center pt-6 col-span-1">
             <div className="w-full border-t-2 border-dashed border-accent-gold/40 mt-0" />
           </div>
 
-          {/* Step 2 */}
           <motion.div variants={cardVariant} className="text-center md:col-span-1 flex flex-col items-center">
             <div className="w-12 h-12 bg-accent-gold rounded-full flex items-center justify-center mb-4 font-cinzel text-lg font-bold text-primary-dark shrink-0">
               2
@@ -553,16 +510,13 @@ export default function Hero() {
               {t('hero.step2Title')}
             </h3>
             <p className="text-primary-dark/70 text-sm">{t('hero.step2Desc')}</p>
-            {/* Mobile connector */}
             <div className="block md:hidden w-px h-8 border-l-2 border-dashed border-accent-gold/40 mt-4" />
           </motion.div>
 
-          {/* Connector 2→3 (desktop) */}
           <div className="hidden md:flex items-start justify-center pt-6 col-span-1">
             <div className="w-full border-t-2 border-dashed border-accent-gold/40 mt-0" />
           </div>
 
-          {/* Step 3 */}
           <motion.div variants={cardVariant} className="text-center md:col-span-1 flex flex-col items-center">
             <div className="w-12 h-12 bg-accent-gold rounded-full flex items-center justify-center mb-4 font-cinzel text-lg font-bold text-primary-dark shrink-0">
               3

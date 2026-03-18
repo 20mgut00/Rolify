@@ -31,7 +31,6 @@ export default function ConnectionsSelector({
       : connections.map(() => "")
   );
 
-  // Update answers when initialValues change (for editing mode)
   useEffect(() => {
     if (initialValues) {
       setAnswers(connections.map((_, idx) => initialValues[idx]?.answer || ""));

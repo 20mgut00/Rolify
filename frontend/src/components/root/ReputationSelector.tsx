@@ -4,13 +4,9 @@ import { CircleX, Minus, Plus } from "lucide-react";
 import Button from "../common/Button";
 import { useTranslation } from "react-i18next";
 
-// Infamia:  0–9 marks  → 3 marks per level → nivel 0, -1, -2, -3
-// Prestigio: 0–15 marks → 5 marks per level → nivel 0, +1, +2, +3
-
 const NOTORIETY_MAX = 9;
 const PRESTIGE_MAX = 15;
 
-// 0-2 → 0,  3-5 → -1,  6-8 → -2,  9 → -3
 const marksToNotoriety = (marks: number): number => {
   if (marks <= 2) return 0;
   if (marks <= 5) return -1;
@@ -18,7 +14,6 @@ const marksToNotoriety = (marks: number): number => {
   return -3;
 };
 
-// 0-4 → 0,  5-9 → +1,  10-14 → +2,  15 → +3
 const marksToPrestige = (marks: number): number => {
   if (marks <= 4) return 0;
   if (marks <= 9) return 1;
@@ -29,14 +24,14 @@ const marksToPrestige = (marks: number): number => {
 type FactionItem = {
   id: number;
   name: string;
-  notorietyMarks: number; // 0–9  (stored directly in DB)
-  prestigeMarks: number;  // 0–15 (stored directly in DB)
+  notorietyMarks: number;
+  prestigeMarks: number;
 };
 
 type ReputationEntry = {
   name: string;
-  notoriety: number; // 0 to -3
-  prestige: number;  // 0 to +3
+  notoriety: number;
+  prestige: number;
 };
 
 type ReputationSelectorProps = {
@@ -51,6 +46,7 @@ export default function ReputationSelector({
   initialValues,
 }: ReputationSelectorProps) {
   const { t } = useTranslation();
+  // Refs para evitar bucles infinitos: onChangeRef cachea el callback, isFirstRender evita emitir al montar
   const onChangeRef = useRef(onChange);
   const hasInitialized = useRef(false);
   const isFirstRender = useRef(true);
@@ -70,7 +66,6 @@ export default function ReputationSelector({
       : [{ id: 0, name: "", notorietyMarks: 0, prestigeMarks: 0 }]
   );
 
-  // Initialize from initialValues only once (editing mode)
   useEffect(() => {
     if (initialValues && initialValues.length > 0 && !hasInitialized.current) {
       hasInitialized.current = true;
@@ -85,13 +80,13 @@ export default function ReputationSelector({
     }
   }, [initialValues]);
 
-  // Emit changes upstream (skip first render to avoid loop on init)
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
       return;
     }
 
+    // Deduplica facciones por nombre (case-insensitive) para evitar entradas repetidas
     const seen = new Set<string>();
     const entries: ReputationEntry[] = factions
       .filter((f) => f.name.trim() !== "")
@@ -132,7 +127,6 @@ export default function ReputationSelector({
     const current = factions.find((f) => f.id === id);
     const updates: Partial<FactionItem> = { name: newName };
 
-    // Auto-apply background bonus marks when name matches (only if not already set)
     if (servedMost && norm === servedMost && !current?.prestigeMarks) {
       updates.prestigeMarks = 2;
     }
@@ -173,7 +167,6 @@ export default function ReputationSelector({
             key={faction.id}
             className="border border-accent-gold/30 rounded-lg p-4 bg-primary/10 space-y-3"
           >
-            {/* Header: name input + remove button */}
             <div className="flex items-end gap-2">
               <TextField
                 variant="standard"
@@ -207,7 +200,6 @@ export default function ReputationSelector({
               />
             </div>
 
-            {/* Background bonus badges */}
             {(isServedMost || isEnmity) && (
               <div className="flex gap-2 flex-wrap">
                 {isServedMost && (
@@ -223,9 +215,7 @@ export default function ReputationSelector({
               </div>
             )}
 
-            {/* Counters row */}
             <div className="flex gap-8">
-              {/* Infamia */}
               <div className="flex flex-col items-center gap-1.5 bg-red-900/10 rounded-lg p-2">
                 <span className="text-xs font-bold uppercase tracking-wider text-red-500">
                   {t('characterViewer.notoriety')}
@@ -270,10 +260,8 @@ export default function ReputationSelector({
                 </span>
               </div>
 
-              {/* Divider */}
               <div className="w-px bg-accent-gold/30 self-stretch" />
 
-              {/* Prestigio */}
               <div className="flex flex-col items-center gap-1.5 bg-accent-gold/10 rounded-lg p-2">
                 <span className="text-xs font-bold uppercase tracking-wider text-accent-gold">
                   {t('characterViewer.prestige')}

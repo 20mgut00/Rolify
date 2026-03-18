@@ -23,6 +23,7 @@ public class CustomUserDetailsService implements UserDetailsService {
         
         return new org.springframework.security.core.userdetails.User(
                 user.getEmail(),
+                // Usuarios OAuth no tienen password local; se usa string vacio para que Spring Security no falle
                 user.getPassword() != null ? user.getPassword() : "",
                 user.getEnabled(),
                 true,

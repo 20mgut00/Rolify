@@ -1,6 +1,7 @@
 package com.rpgcharacter.controller;
 
 import com.rpgcharacter.dto.AuthDTO;
+import com.rpgcharacter.exception.UnauthorizedException;
 import com.rpgcharacter.service.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,13 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
     
     private final AuthService authService;
+
+    private String requireAuth(UserDetails userDetails) {
+        if (userDetails == null) {
+            throw new UnauthorizedException("Authentication required");
+        }
+        return userDetails.getUsername();
+    }
     
     @PostMapping("/register")
     public ResponseEntity<AuthDTO.AuthResponse> register(@Valid @RequestBody AuthDTO.RegisterRequest request) {
@@ -49,7 +57,7 @@ public class AuthController {
             @Valid @RequestBody AuthDTO.ChangePasswordRequest request,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        authService.changePassword(userDetails.getUsername(), request);
+        authService.changePassword(requireAuth(userDetails), request);
         return ResponseEntity.ok("Password changed successfully");
     }
     
@@ -60,12 +68,12 @@ public class AuthController {
 
     @GetMapping("/me")
     public ResponseEntity<AuthDTO.UserDTO> getCurrentUser(@AuthenticationPrincipal UserDetails userDetails) {
-        return ResponseEntity.ok(authService.getUserInfo(userDetails.getUsername()));
+        return ResponseEntity.ok(authService.getUserInfo(requireAuth(userDetails)));
     }
 
     @DeleteMapping("/delete-account")
     public ResponseEntity<String> deleteAccount(@AuthenticationPrincipal UserDetails userDetails) {
-        authService.deleteAccount(userDetails.getUsername());
+        authService.deleteAccount(requireAuth(userDetails));
         return ResponseEntity.ok("Account deleted successfully");
     }
 }

@@ -33,11 +33,10 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
         log.info("OAuth2 login successful for email: {}", email);
 
-        // Generate JWT tokens
         String jwtToken = jwtUtil.generateToken(email);
         String refreshToken = jwtUtil.generateRefreshToken(email);
 
-        // Redirect to frontend with tokens
+        // Envia los tokens JWT como query params en la redireccion al frontend (OAuthCallback los extrae)
         String targetUrl = UriComponentsBuilder.fromUriString(frontendUrl + "/oauth/callback")
                 .queryParam("token", jwtToken)
                 .queryParam("refreshToken", refreshToken)

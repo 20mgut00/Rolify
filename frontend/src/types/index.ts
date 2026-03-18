@@ -1,4 +1,3 @@
-// Base Character Types
 export interface Stat {
   name: string;
   value: number;
@@ -16,7 +15,6 @@ export interface Connection {
   story?: string;
 }
 
-// MongoDB-specific types (backend format)
 export interface NatureDB {
   name: string;
   description: string;
@@ -44,11 +42,10 @@ export interface WeaponSkillDB {
 
 export interface FactionReputationDB {
   name: string;
-  notoriety: number; // raw marks: 0–9  (0-2=lvl0, 3-5=lvl-1, 6-8=lvl-2, 9=lvl-3)
-  prestige: number;  // raw marks: 0–15 (0-4=lvl0, 5-9=lvl+1, 10-14=lvl+2, 15=lvl+3)
+  notoriety: number;
+  prestige: number;
 }
 
-// Gemini AI Generated Character Response
 export interface GeneratedCharacter {
   name: string;
   species: string;
@@ -65,7 +62,6 @@ export interface GeneratedCharacter {
   weaponSkills?: Array<{ name: string; description: string }>;
 }
 
-// MongoDB Character Schema (backend storage format)
 export interface CharacterDB {
   _id?: string;
   idUsuario?: string;
@@ -92,7 +88,6 @@ export interface CharacterDB {
   _class?: string;
 }
 
-// UI Helper Types (for forms and selection)
 export interface SelectedOption {
   name: string;
   description: string;
@@ -144,7 +139,6 @@ export interface Reputation {
   factions: Record<string, FactionReputation>;
 }
 
-// Character for UI (frontend format - maintains backward compatibility)
 export interface Character {
   id?: string;
   userId?: string;
@@ -163,7 +157,7 @@ export interface Character {
   connections: Connection[];
   weaponSkills: WeaponSkills;
   roguishFeats: RoguishFeats;
-  equipment: Equipment | string; // Can be either string or Equipment object for backward compatibility
+  equipment: Equipment | string;
   reputation: Reputation;
   isPublic?: boolean;
   createdAt?: string;
@@ -184,7 +178,6 @@ export interface CharacterCard {
   likedByCurrentUser?: boolean;
 }
 
-// Class Template Types
 export interface BackgroundQuestion {
   name: string;
   answers: string[];
@@ -215,7 +208,6 @@ export interface ClassTemplate {
   maxNature?: number;
 }
 
-// Auth Types
 export interface User {
   id: string;
   email: string;
@@ -249,7 +241,6 @@ export interface ChangePasswordRequest {
   newPassword: string;
 }
 
-// API Response Types
 export interface PaginatedResponse<T> {
   content: T[];
   totalElements: number;

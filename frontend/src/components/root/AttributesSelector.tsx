@@ -33,7 +33,6 @@ export default function AttributesSelector({
 
   const [selectedStat, setSelectedStat] = useState<string | null>(getSelectedStat);
 
-  // Sync when switching class or loading an existing character
   useEffect(() => {
     setSelectedStat(getSelectedStat());
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -74,11 +73,9 @@ export default function AttributesSelector({
 
   return (
     <div className="text-start">
-      {/* Mobile: lista vertical */}
       <div className="md:hidden space-y-2">
         {STAT_ORDER.map(stat => <div key={stat}>{renderStat(stat)}</div>)}
       </div>
-      {/* Desktop: disposición en diamante */}
       <div className="hidden md:grid grid-cols-4 gap-4">
         <div className="col-span-2">{renderStat("charm")}</div>
         <div className="col-span-2">{renderStat("cunning")}</div>

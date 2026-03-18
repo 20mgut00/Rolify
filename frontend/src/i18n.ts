@@ -6,6 +6,7 @@ import es from './locales/es';
 const supportedLngs = ['en', 'es'];
 const browserLng = navigator.language.split('-')[0];
 const systemLng = supportedLngs.includes(browserLng) ? browserLng : 'en';
+// Lee el idioma guardado directamente de localStorage (no del store) porque i18n se inicializa antes que React
 const savedLng = JSON.parse(localStorage.getItem('accessibility-storage') || '{}')?.state?.language;
 
 i18n.use(initReactI18next).init({

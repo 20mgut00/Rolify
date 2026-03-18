@@ -2,9 +2,6 @@ package com.rpgcharacter.exception;
 
 import java.util.Map;
 
-/**
- * Exception thrown when input validation fails.
- */
 public class ValidationException extends BusinessException {
 
     private final Map<String, String> fieldErrors;

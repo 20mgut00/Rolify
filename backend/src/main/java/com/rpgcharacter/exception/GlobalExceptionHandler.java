@@ -19,6 +19,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 
+    // Devuelve 403 (FORBIDDEN) en vez de 401 porque 401 dispara el interceptor de refresco de JWT en el frontend
     @ExceptionHandler(UnauthorizedException.class)
     public ResponseEntity<Map<String, String>> handleUnauthorized(UnauthorizedException ex) {
         Map<String, String> error = new HashMap<>();

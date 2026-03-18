@@ -3,7 +3,6 @@ import html2canvas from 'html2canvas';
 import type { Character, SelectedOption, WeaponSkills, RoguishFeats, Reputation } from '../types';
 import { getAvatarUrl } from './avatarUrl';
 
-/** Fetch any image URL and return a base64 data-URI for safe embedding in html2canvas. */
 async function toBase64(url: string): Promise<string | null> {
   try {
     const res = await fetch(url, { mode: 'cors' });
@@ -20,7 +19,7 @@ async function toBase64(url: string): Promise<string | null> {
   }
 }
 
-/** Split a single canvas across PDF pages, never cutting mid-section. */
+// Divide el canvas en paginas PDF sin cortar secciones a la mitad, usando los bounds de cada seccion
 function sliceCanvasToPdf(
   canvas: HTMLCanvasElement,
   sectionBounds: Array<{ top: number; bottom: number }>,
@@ -66,7 +65,6 @@ function sliceCanvasToPdf(
   }
 }
 
-/** Trigger a browser download for a jsPDF document. */
 function downloadPdf(pdf: jsPDF, filename: string): void {
   const blob = pdf.output('blob');
   const url  = URL.createObjectURL(blob);
@@ -87,12 +85,10 @@ export async function exportCharacterToPDF(character: Character): Promise<void> 
   const CONTENT_H  = PAGE_H - 2 * MARGIN;   // 267 mm per page
   const SCALE      = 2;
 
-  // ── Style fragments ────────────────────────────────────────────────────────
   const T  = `color:#D9A441;font-size:17px;font-weight:bold;margin:0 0 10px;padding-bottom:5px;border-bottom:2px solid #D9A441;`;
   const C  = `padding:10px 12px;background:#f8f6f0;border-radius:6px;margin-bottom:8px;`;
   const LC = `padding:10px 12px;background:#f8f6f0;border-left:4px solid #D9A441;border-radius:0 6px 6px 0;margin-bottom:8px;`;
 
-  // ── Derived data ──────────────────────────────────────────────────────────
   const selNature  = character.nature.filter(n => n.selected);
   const selDrives  = character.drives.filter(d => d.selected);
   const selMoves   = character.moves.filter(m => m.selected);
@@ -104,14 +100,11 @@ export async function exportCharacterToPDF(character: Character): Promise<void> 
     : '';
   const createdDate = new Date(character.createdAt || '').toLocaleDateString();
 
-  // Pre-fetch avatar as base64 so html2canvas embeds it without CORS issues
+  // Pre-convierte el avatar a base64 para que html2canvas lo incruste sin problemas de CORS
   const avatarBase64 = character.avatarImage
     ? await toBase64(getAvatarUrl(character.avatarImage))
     : null;
 
-  // ── Build the full off-screen character sheet in a single container ────────
-  // Each logical section is a direct child div — we record their offsetTops
-  // so we can split the final canvas at section boundaries (never mid-section).
   const container = document.createElement('div');
   container.style.cssText = [
     'position:fixed', 'left:-9999px', 'top:0', 'z-index:-1',
@@ -130,7 +123,6 @@ export async function exportCharacterToPDF(character: Character): Promise<void> 
     sectionEls.push(div);
   };
 
-  // 1. Header
   addSection(`
     <div style="border-bottom:3px solid #D9A441;padding-bottom:16px;display:flex;align-items:center;gap:16px;">
       ${avatarBase64 ? `<img src="${avatarBase64}" style="width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid #D9A441;flex-shrink:0;" />` : ''}
@@ -143,7 +135,6 @@ export async function exportCharacterToPDF(character: Character): Promise<void> 
     </div>
   `);
 
-  // 2. Stats
   if (character.stats.length > 0) {
     addSection(`
       <div>
@@ -160,13 +151,11 @@ export async function exportCharacterToPDF(character: Character): Promise<void> 
     `);
   }
 
-  // 3. Background
   if (character.background.length > 0) {
     const bgCard = (q: string, a: string) => `<div style="${C}"><strong>${q}</strong><div style="margin-top:4px;color:#444;">${a}</div></div>`;
     addSection(`<div><div style="${T}">Background</div>${character.background.map(b => bgCard(b.question, b.answer)).join('')}</div>`);
   }
 
-  // 4. Connections
   if (character.connections && character.connections.length > 0) {
     const connCard = (c: typeof character.connections[number]) => `
       <div style="${LC}">
@@ -177,7 +166,6 @@ export async function exportCharacterToPDF(character: Character): Promise<void> 
     addSection(`<div><div style="${T}">Connections</div><div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">${character.connections.map(connCard).join('')}</div></div>`);
   }
 
-  // 5. Reputation
   if (hasFactions) {
     addSection(`
       <div>
@@ -204,7 +192,6 @@ export async function exportCharacterToPDF(character: Character): Promise<void> 
     `);
   }
 
-  // 6. Nature & Drives
   addSection(`
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
       <div>
@@ -222,7 +209,6 @@ export async function exportCharacterToPDF(character: Character): Promise<void> 
     </div>
   `);
 
-  // 7. Moves
   if (selMoves.length > 0) {
     const moveCard = (m: SelectedOption) => `<div style="${C}border:1px solid #e8e4da;"><strong>${m.name}</strong><div style="font-size:12px;color:#444;margin-top:3px;">${m.description}</div></div>`;
     const moveRow  = (sl: SelectedOption[]) => `<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">${sl.map(moveCard).join('')}</div>`;
@@ -230,7 +216,6 @@ export async function exportCharacterToPDF(character: Character): Promise<void> 
     addSection(`<div><div style="${T}">Moves</div>${rows.join('')}</div>`);
   }
 
-  // 8. Weapon Skills & Roguish Feats
   addSection(`
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
       <div>
@@ -252,26 +237,22 @@ export async function exportCharacterToPDF(character: Character): Promise<void> 
     </div>
   `);
 
-  // 9. Equipment
   if (equipment) {
     addSection(`<div><div style="${T}">Equipment</div><div style="${C}white-space:pre-wrap;">${equipment}</div></div>`);
   }
 
-  // 10. Footer
   addSection(`
     <div style="text-align:center;padding-top:10px;border-top:2px solid #D9A441;font-size:11px;color:#888;">
       ${createdDate} &mdash; ROLIFY &mdash; RPG Character Creator
     </div>
   `);
 
-  // Record where each section starts/ends in the container (before rendering)
   const containerTop = container.getBoundingClientRect().top;
   const sectionBounds = sectionEls.map(el => {
     const r = el.getBoundingClientRect();
     return { top: r.top - containerTop, bottom: r.bottom - containerTop };
   });
 
-  // ── Single html2canvas call ────────────────────────────────────────────────
   let canvas: HTMLCanvasElement;
   try {
     canvas = await html2canvas(container, {
@@ -291,9 +272,6 @@ export async function exportCharacterToPDF(character: Character): Promise<void> 
   downloadPdf(pdf, filename);
 }
 
-/**
- * Export character to JSON
- */
 export function exportCharacterToJSON(character: Character): void {
   const dataStr = JSON.stringify(character, null, 2);
   const blob = new Blob([dataStr], { type: 'application/json' });
@@ -307,9 +285,6 @@ export function exportCharacterToJSON(character: Character): void {
   URL.revokeObjectURL(url);
 }
 
-/**
- * Export character to CSV
- */
 export function exportCharacterToCSV(character: Character): void {
   const rows: string[][] = [
     ['Field', 'Value'],
@@ -374,9 +349,6 @@ export function exportCharacterToCSV(character: Character): void {
   URL.revokeObjectURL(url);
 }
 
-/**
- * Read a file selected by the user and return its text content
- */
 function readFileAsText(file: File): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -386,34 +358,23 @@ function readFileAsText(file: File): Promise<string> {
   });
 }
 
-/**
- * Import character from JSON file.
- * Strips id/userId/timestamps so the backend creates a new character for the current user.
- */
 export async function importCharacterFromJSON(file: File): Promise<Partial<Character>> {
   const text = await readFileAsText(file);
   const data = JSON.parse(text);
 
-  // Strip ownership/metadata fields so the API assigns the current user
   const { id, userId, createdAt, updatedAt, ...characterData } = data;
 
   return validateImportedCharacter(characterData);
 }
 
-/**
- * Import character from CSV file.
- * Parses the CSV format produced by exportCharacterToCSV.
- */
 export async function importCharacterFromCSV(file: File): Promise<Partial<Character>> {
   const text = await readFileAsText(file);
   const lines = text.split('\n').map(line => {
-    // Parse CSV with quoted fields
     const matches = line.match(/"([^"]*(?:""[^"]*)*)"/g);
     if (!matches) return ['', ''];
     return matches.map(m => m.slice(1, -1).replace(/""/g, '"'));
   });
 
-  // Skip header row
   const dataLines = lines.slice(1);
 
   let currentSection = '';
@@ -429,7 +390,6 @@ export async function importCharacterFromCSV(file: File): Promise<Partial<Charac
   const reputationFactions: Record<string, { prestige: number; notoriety: number }> = {};
 
   for (const [col1, col2] of dataLines) {
-    // Section headers
     if (['STATS', 'BACKGROUND', 'CONNECTIONS', 'NATURE', 'DRIVES', 'MOVES', 'WEAPON SKILLS', 'ROGUISH FEATS', 'REPUTATION', 'EQUIPMENT'].includes(col1)) {
       currentSection = col1;
       if (col1 === 'EQUIPMENT' && col2) {
@@ -438,12 +398,10 @@ export async function importCharacterFromCSV(file: File): Promise<Partial<Charac
       continue;
     }
 
-    // Empty separator row
     if (!col1 && !col2) {
       continue;
     }
 
-    // Top-level fields (before any section)
     if (!currentSection || currentSection === '') {
       const fieldMap: Record<string, string> = {
         'Name': 'name', 'Class': 'className', 'System': 'system',
@@ -516,9 +474,6 @@ export async function importCharacterFromCSV(file: File): Promise<Partial<Charac
   return imported;
 }
 
-/**
- * Validate and sanitize imported character data
- */
 function validateImportedCharacter(data: Record<string, unknown>): Partial<Character> {
   return {
     name: (data.name as string) || 'Imported Character',

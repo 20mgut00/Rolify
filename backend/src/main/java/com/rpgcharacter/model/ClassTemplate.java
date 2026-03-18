@@ -19,8 +19,8 @@ public class ClassTemplate {
     @Id
     private String id;
     
-    private String system; // "Root"
-    private String className; // "Adventurer", "Arbiter", etc.
+    private String system;
+    private String className;
     private String description;
     
     private List<BackgroundQuestion> background;
@@ -32,7 +32,6 @@ public class ClassTemplate {
     private List<StatTemplate> stats;
     private List<Option> moves;
     
-    // Configuration
     private Integer maxDrives;
     private Integer maxMoves;
     private Integer maxNature;

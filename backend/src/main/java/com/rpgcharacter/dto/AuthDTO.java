@@ -71,15 +71,6 @@ public class AuthDTO {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    public static class GoogleAuthRequest {
-        @NotBlank(message = "Token is required")
-        private String token;
-    }
-    
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
     public static class PasswordResetRequest {
         @NotBlank(message = "Email is required")
         @Email(message = "Email should be valid")

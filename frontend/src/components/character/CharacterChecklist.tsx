@@ -21,7 +21,6 @@ export default function CharacterChecklist({ steps }: CharacterChecklistProps) {
 
   return (
     <>
-      {/* Backdrop — mobile only, starts below the header */}
       {isOpen && (
         <div
           className="fixed inset-x-0 top-16.5 bottom-0 bg-black/40 z-1098 md:hidden"
@@ -29,7 +28,6 @@ export default function CharacterChecklist({ steps }: CharacterChecklistProps) {
         />
       )}
 
-      {/* Side panel — top-16.5 = 66px (MUI Toolbar minHeight 64px + py:1) */}
       <div
         className={`
           fixed top-16.5 right-0 h-[calc(100vh-66px)] w-full sm:w-72 z-1099
@@ -40,7 +38,6 @@ export default function CharacterChecklist({ steps }: CharacterChecklistProps) {
         `}
         aria-hidden={!isOpen}
       >
-        {/* Panel header */}
         <div className="flex items-center justify-between px-5 py-4 border-b border-accent-gold/20 shrink-0">
           <div className="flex items-center gap-2">
             <ClipboardList size={16} className="text-accent-gold" />
@@ -67,7 +64,6 @@ export default function CharacterChecklist({ steps }: CharacterChecklistProps) {
           </div>
         </div>
 
-        {/* Progress bar */}
         <div className="px-5 pt-3 shrink-0">
           <div className="w-full h-1.5 bg-primary-dark/10 rounded-full overflow-hidden">
             <div
@@ -77,7 +73,6 @@ export default function CharacterChecklist({ steps }: CharacterChecklistProps) {
           </div>
         </div>
 
-        {/* Steps list */}
         <ol className="flex-1 overflow-y-auto px-5 py-4 space-y-1">
           {steps.map((step, i) => (
             <li
@@ -104,7 +99,6 @@ export default function CharacterChecklist({ steps }: CharacterChecklistProps) {
         </ol>
       </div>
 
-      {/* FAB — only visible when panel is closed */}
       {!isOpen && (
         <button
           type="button"

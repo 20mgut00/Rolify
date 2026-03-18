@@ -30,7 +30,7 @@ public class AvatarController {
     private static final Set<String> ALLOWED_TYPES = Set.of(
             "image/jpeg", "image/png", "image/gif", "image/webp"
     );
-    private static final long MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+    private static final long MAX_FILE_SIZE = 5 * 1024 * 1024;
 
     @Value("${app.upload.avatar-path:./uploads/avatars}")
     private String avatarPath;
@@ -48,7 +48,6 @@ public class AvatarController {
     public ResponseEntity<Map<String, String>> uploadAvatar(
             @RequestParam("file") MultipartFile file) throws IOException {
 
-        // Validate file
         if (file.isEmpty()) {
             throw new ValidationException("File is empty", Map.of("file", "No file provided"));
         }
@@ -64,14 +63,12 @@ public class AvatarController {
                     Map.of("file", "Maximum file size is 5MB"));
         }
 
-        // Generate unique filename
         String extension = getExtension(file.getOriginalFilename());
         String filename = UUID.randomUUID() + extension;
 
-        // Save file
         Path targetPath = uploadDir.resolve(filename).normalize();
 
-        // Security check: prevent path traversal
+        // Verificacion anti-path traversal: asegura que el archivo resuelto este dentro del directorio de uploads
         if (!targetPath.startsWith(uploadDir)) {
             throw new ValidationException("Invalid file path",
                     Map.of("file", "Invalid filename"));
@@ -80,14 +77,12 @@ public class AvatarController {
         Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
         log.info("Avatar uploaded: {}", filename);
 
-        // Return the URL to access the file
         String avatarUrl = "/api/avatars/" + filename;
         return ResponseEntity.ok(Map.of("url", avatarUrl));
     }
 
     @GetMapping("/{filename}")
     public ResponseEntity<Resource> getAvatar(@PathVariable String filename) throws MalformedURLException {
-        // Security: sanitize filename
         String sanitized = Paths.get(filename).getFileName().toString();
         Path filePath = uploadDir.resolve(sanitized).normalize();
 
@@ -100,7 +95,6 @@ public class AvatarController {
             return ResponseEntity.notFound().build();
         }
 
-        // Detect content type
         String contentType;
         try {
             contentType = Files.probeContentType(filePath);

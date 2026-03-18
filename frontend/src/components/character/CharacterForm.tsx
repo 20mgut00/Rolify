@@ -39,6 +39,7 @@ export default function CharacterForm() {
     isEditing,
     editId,
     isAuthenticated,
+    isLoadingTemplates,
     isSaving,
     isDirty,
     validationErrors,
@@ -47,7 +48,6 @@ export default function CharacterForm() {
 
   const blocker = useBlocker(isDirty && isAuthenticated);
 
-  // Show guide only once and only in create mode
   const [showGuide, setShowGuide] = useState(
     () => !isEditing && !localStorage.getItem('rootGuideShown')
   );
@@ -79,7 +79,6 @@ export default function CharacterForm() {
         i18n.language
       );
 
-      // Update form fields with generated data
       if (generatedData.name) setField('name')(generatedData.name);
       if (generatedData.species) setField('species')(generatedData.species);
       if (generatedData.demeanor) setField('demeanor')(generatedData.demeanor);
@@ -107,11 +106,37 @@ export default function CharacterForm() {
     }
   };
 
-  if (!templates?.length) {
+  if (isLoadingTemplates) {
     return (
       <div className="min-h-screen bg-linear-to-b from-primary-light to-white flex items-center justify-center">
         <div className="text-center">
+          <CircularProgress size={32} sx={{ color: 'var(--color-accent-gold)', mb: 2 }} />
           <p className="text-primary-dark text-lg">{t('characterForm.loadingTemplates')}</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!templates?.length) {
+    return (
+      <div className="min-h-screen bg-linear-to-b from-primary-light to-white flex items-center justify-center">
+        <div className="text-center max-w-md mx-auto px-4">
+          <div className="w-16 h-16 bg-accent-gold/20 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Wand2 size={32} className="text-accent-gold" />
+          </div>
+          <h2 className="font-cinzel text-2xl font-bold text-primary-dark mb-2">
+            {t('characterForm.noTemplatesTitle')}
+          </h2>
+          <p className="text-primary-dark/70 mb-6">
+            {t('characterForm.noTemplatesDesc')}
+          </p>
+          <button
+            type="button"
+            onClick={() => navigate('/library')}
+            className="bg-accent-gold text-primary-dark px-6 py-3 rounded-lg font-cinzel font-medium hover:bg-opacity-90 transition"
+          >
+            {t('characterForm.backToLibrary')}
+          </button>
         </div>
       </div>
     );
@@ -202,7 +227,6 @@ export default function CharacterForm() {
               validationErrors={validationErrors}
             />
 
-            {/* Public Toggle - col-span-2 on desktop only */}
             {isAuthenticated && (
               <div className="md:col-span-2">
                 <Card label={t('characterForm.visibility')}>
@@ -221,7 +245,6 @@ export default function CharacterForm() {
               </div>
             )}
 
-            {/* Submit Button */}
             <div className="md:col-span-2">
               <button
                 type="submit"
@@ -253,7 +276,6 @@ export default function CharacterForm() {
           variant="danger"
         />
 
-        {/* AI Generation Loading Overlay */}
         {isGenerating && (
           <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50">
             <div className="bg-primary-light rounded-lg p-8 max-w-md mx-4 text-center shadow-2xl">
@@ -270,7 +292,6 @@ export default function CharacterForm() {
         )}
       </div>
 
-      {/* Floating checklist — rendered outside the white panel to avoid z-index conflicts */}
       <CharacterChecklist steps={checklistSteps} />
     </main>
   );

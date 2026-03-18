@@ -28,7 +28,6 @@ export default function VerifyEmail() {
         setMessage(t('auth.emailVerified'));
         toast.success(t('auth.emailVerifiedToast'));
 
-        // Redirect to home after 3 seconds
         setTimeout(() => {
           navigate('/');
         }, 3000);

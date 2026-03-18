@@ -28,13 +28,13 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String picture = oAuth2User.getAttribute("picture");
         String googleId = oAuth2User.getAttribute("sub");
 
+        // Algunos proveedores OAuth2 no envian email; lo verificamos antes de continuar
         if (email == null || email.isBlank()) {
             throw new OAuth2AuthenticationException("Email not provided by OAuth2 provider");
         }
 
         log.info("Processing OAuth2 login for email: {}", email);
 
-        // Find or create user
         User user = userRepository.findByEmail(email)
                 .map(existingUser -> updateExistingUser(existingUser, name, picture, googleId))
                 .orElseGet(() -> createNewUser(email, name, picture, googleId));
@@ -46,7 +46,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     }
 
     private User updateExistingUser(User user, String name, String picture, String googleId) {
-        // Update user info from Google if changed
         if (name != null && !name.equals(user.getName())) {
             user.setName(name);
         }
@@ -57,7 +56,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             user.setProviderId(googleId);
             user.setProvider(User.AuthProvider.GOOGLE);
         }
-        // Email from Google is always verified
         user.setEmailVerified(true);
         user.setUpdatedAt(LocalDateTime.now());
         return user;

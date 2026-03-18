@@ -26,6 +26,7 @@ public class RateLimitService {
 
     private final UserRepository userRepository;
 
+    // Contador global en memoria (no persistido): se resetea si la app se reinicia
     private final AtomicInteger globalDailyCount = new AtomicInteger(0);
 
     public void checkAndIncrement(String email) {
@@ -52,6 +53,7 @@ public class RateLimitService {
         globalDailyCount.incrementAndGet();
     }
 
+    // Cron a medianoche UTC: resetea contadores globales y por usuario
     @Scheduled(cron = "0 0 0 * * *")
     public void resetGlobalCount() {
         log.info("Resetting global AI generation counter (was {})", globalDailyCount.get());

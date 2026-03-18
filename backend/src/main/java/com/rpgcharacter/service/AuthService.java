@@ -59,7 +59,6 @@ public class AuthService {
         
         user = userRepository.save(user);
         
-        // Create verification token
         String token = UUID.randomUUID().toString();
         VerificationToken verificationToken = VerificationToken.builder()
                 .token(token)
@@ -71,7 +70,7 @@ public class AuthService {
         
         tokenRepository.save(verificationToken);
 
-        // Send verification email (optional - doesn't block registration if fails)
+        // El envio de email es opcional: si falla, el registro continua exitosamente
         try {
             emailService.sendVerificationEmail(user.getEmail(), token);
             log.info("Verification email sent successfully to: {}", user.getEmail());
@@ -80,16 +79,17 @@ public class AuthService {
                     user.getEmail(), e.getMessage());
         }
 
+        // Genera JWT inmediatamente al registrarse, sin requerir verificacion de email
         String jwtToken = jwtUtil.generateToken(user.getEmail());
         String refreshToken = jwtUtil.generateRefreshToken(user.getEmail());
-        
+
         return AuthDTO.AuthResponse.builder()
                 .token(jwtToken)
                 .refreshToken(refreshToken)
                 .user(mapToUserDTO(user))
                 .build();
     }
-    
+
     public AuthDTO.AuthResponse login(AuthDTO.LoginRequest request) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
@@ -139,11 +139,9 @@ public class AuthService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        // Delete any existing password reset tokens
         tokenRepository.findByUserIdAndType(user.getId(), VerificationToken.TokenType.PASSWORD_RESET)
                 .ifPresent(tokenRepository::delete);
         
-        // Create new token
         String token = UUID.randomUUID().toString();
         VerificationToken resetToken = VerificationToken.builder()
                 .token(token)
@@ -155,7 +153,6 @@ public class AuthService {
         
         tokenRepository.save(resetToken);
 
-        // Send password reset email (optional - doesn't block if fails)
         try {
             emailService.sendPasswordResetEmail(user.getEmail(), token);
             log.info("Password reset email sent successfully to: {}", user.getEmail());
@@ -231,15 +228,12 @@ public class AuthService {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
-        // Delete all characters associated with the user
         long deletedCharacters = characterRepository.deleteByUserId(user.getId());
         log.info("Deleted {} characters for user: {}", deletedCharacters, user.getEmail());
 
-        // Delete all verification tokens
         tokenRepository.deleteByUserId(user.getId());
         log.info("Deleted verification tokens for user: {}", user.getEmail());
 
-        // Delete the user account
         userRepository.delete(user);
         log.info("User account deleted: {}", user.getEmail());
     }

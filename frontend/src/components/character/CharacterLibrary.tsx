@@ -19,7 +19,6 @@ type SortBy = 'date-desc' | 'date-asc' | 'name-asc' | 'name-desc' | 'class-asc';
 export default function CharacterLibrary() {
   const { t } = useTranslation();
 
-  // React 19 feature: Dynamic document title
   useDocumentTitle(`${t('characterLibrary.title')} - RPG Character Creator`);
 
   const navigate = useNavigate();
@@ -34,25 +33,21 @@ export default function CharacterLibrary() {
   const [sortBy, setSortBy] = useState<SortBy>('date-desc');
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Fetch user characters if authenticated
   const { data: userCharacters, isLoading } = useQuery({
     queryKey: ['myCharacters'],
     queryFn: characterAPI.getMyCharacters,
     enabled: isAuthenticated,
   });
 
-  // Fetch class templates for the selected system
   const { data: templates } = useQuery({
     queryKey: ['classTemplates', selectedSystem],
     queryFn: () => classTemplateAPI.getBySystem(selectedSystem),
   });
 
-  // Reset class filter when system changes
   useEffect(() => {
     setClassFilter('');
   }, [selectedSystem]);
 
-  // Delete mutation
   const deleteMutation = useMutation({
     mutationFn: characterAPI.delete,
     onSuccess: () => {
@@ -86,7 +81,7 @@ export default function CharacterLibrary() {
     onError: () => toast.error(t('errors.somethingWentWrong')),
   });
 
-  // Get characters based on auth status
+  // Unifica personajes: los autenticados vienen del servidor, los anonimos del store local (sessionCharacters)
   const characters: CharacterCardType[] = isAuthenticated
     ? (userCharacters || [])
     : sessionCharacters
@@ -102,7 +97,6 @@ export default function CharacterLibrary() {
         createdAt: c.createdAt,
       }));
 
-  // Filter characters by system, class, and search term
   const filtered = characters.filter((char) => {
     if (char.system !== selectedSystem) return false;
     if (classFilter && char.className !== classFilter) return false;
@@ -114,18 +108,16 @@ export default function CharacterLibrary() {
     return true;
   });
 
-  // Sort helper
   const sortFn = (a: CharacterCardType, b: CharacterCardType) => {
     switch (sortBy) {
       case 'date-asc': return new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
       case 'name-asc': return a.name.localeCompare(b.name);
       case 'name-desc': return b.name.localeCompare(a.name);
       case 'class-asc': return a.className.localeCompare(b.className);
-      default: return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(); // date-desc
+      default: return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
     }
   };
 
-  // Favorites first, then sort within each group
   const filteredCharacters = [
     ...filtered.filter((c) => favoriteIds.includes(c.id)).sort(sortFn),
     ...filtered.filter((c) => !favoriteIds.includes(c.id)).sort(sortFn),
@@ -140,7 +132,6 @@ export default function CharacterLibrary() {
     }
   };
 
-  // Import mutation
   const importMutation = useMutation({
     mutationFn: (data: Partial<Character>) => characterAPI.create(data),
     onSuccess: () => {
@@ -154,7 +145,6 @@ export default function CharacterLibrary() {
 
   const handleExport = async (id: string, format: 'pdf' | 'json' | 'csv') => {
     try {
-      // Fetch full character data
       const character = await characterAPI.getById(id);
 
       switch (format) {
@@ -201,7 +191,6 @@ export default function CharacterLibrary() {
     } catch {
       toast.error(t('characterLibrary.parseFailed'));
     } finally {
-      // Reset file input so the same file can be imported again
       if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
@@ -215,7 +204,6 @@ export default function CharacterLibrary() {
     <div className="min-h-screen bg-primary-light overflow-x-hidden">
       <div className="container mx-auto px-4 py-6 sm:py-12">
         <div className="max-w-7xl mx-auto">
-          {/* Header */}
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-8">
             <div>
               <h1 className="font-cinzel text-3xl sm:text-4xl md:text-5xl font-bold text-primary-dark mb-2">
@@ -258,10 +246,9 @@ export default function CharacterLibrary() {
             </div>
           </div>
 
-          {/* Auth Warning */}
           {!isAuthenticated && sessionCharacters.length > 0 && (
-            <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4 mb-8">
-              <p className="text-yellow-800">
+            <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-lg p-4 mb-8">
+              <p className="text-yellow-700 dark:text-yellow-300">
                 <strong>{t('common.note')}:</strong> {t('characterLibrary.authWarning')}
                 <button
                   type="button"
@@ -274,9 +261,7 @@ export default function CharacterLibrary() {
             </div>
           )}
 
-          {/* Filters */}
           <div className="w-full mb-8 space-y-3 sm:space-y-4">
-            {/* Search */}
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-primary-dark/50 pointer-events-none" size={20} />
               <input
@@ -288,7 +273,6 @@ export default function CharacterLibrary() {
               />
             </div>
 
-            {/* Class filter + Sort side by side */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
               <FilterSelect
                 value={classFilter}
@@ -314,23 +298,21 @@ export default function CharacterLibrary() {
             </div>
           </div>
 
-          {/* Loading State */}
           {isLoading && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {[...Array(4)].map((_, i) => (
-                <div key={i} className="bg-white rounded-lg shadow-lg overflow-hidden animate-pulse">
-                  <div className="aspect-square bg-gray-200" />
+                <div key={i} className="bg-white bg-panel-solid rounded-lg shadow-lg overflow-hidden animate-pulse">
+                  <div className="aspect-square bg-primary-dark/10" />
                   <div className="p-4 space-y-2">
-                    <div className="h-6 bg-gray-200 rounded w-3/4" />
-                    <div className="h-4 bg-gray-200 rounded w-1/2" />
-                    <div className="h-4 bg-gray-200 rounded w-2/3" />
+                    <div className="h-6 bg-primary-dark/10 rounded w-3/4" />
+                    <div className="h-4 bg-primary-dark/10 rounded w-1/2" />
+                    <div className="h-4 bg-primary-dark/10 rounded w-2/3" />
                   </div>
                 </div>
               ))}
             </div>
           )}
 
-          {/* Characters Grid */}
           {!isLoading && filteredCharacters.length > 0 && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {filteredCharacters.map((character) => (
@@ -351,7 +333,6 @@ export default function CharacterLibrary() {
             </div>
           )}
 
-          {/* Empty State */}
           {!isLoading && characters.length === 0 && (
             <div className="text-center py-20">
               <div className="w-24 h-24 bg-accent-gold/20 rounded-full flex items-center justify-center mx-auto mb-6">
@@ -372,7 +353,6 @@ export default function CharacterLibrary() {
             </div>
           )}
 
-          {/* No Search Results */}
           {!isLoading && characters.length > 0 && filteredCharacters.length === 0 && (
             <div className="text-center py-20">
               <div className="w-24 h-24 bg-primary-dark/10 rounded-full flex items-center justify-center mx-auto mb-6">

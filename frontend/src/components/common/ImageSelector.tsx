@@ -33,7 +33,6 @@ export default function ImageSelector({
     [acceptedFormats]
   );
 
-  // Determine what image to display
   const displayImage = value || defaultImage || "";
   const resolvedUrl = displayImage ? getAvatarUrl(displayImage) : "";
   const hasCustomImage = !!value && value !== defaultImage;
@@ -43,12 +42,10 @@ export default function ImageSelector({
     setIsLoading(true);
 
     try {
-      // Validate file type
       if (!acceptedFormats.includes(file.type)) {
         throw new Error(t('imageSelector.invalidFormat', { formats: formatsList }));
       }
 
-      // Validate file size
       const fileSizeInMB = file.size / (1024 * 1024);
       if (fileSizeInMB > maxSizeInMB) {
         throw new Error(
@@ -56,7 +53,6 @@ export default function ImageSelector({
         );
       }
 
-      // Upload to backend and get URL
       const avatarUrl = await avatarAPI.upload(file);
       onChange?.(avatarUrl);
     } catch (err) {
@@ -100,7 +96,7 @@ export default function ImageSelector({
   return (
     <div className="space-y-3">
       {error && (
-        <div className="flex items-center gap-2 p-3 bg-red-50 border-2 border-red-400 rounded-lg text-red-700 text-sm font-medium">
+        <div className="flex items-center gap-2 p-3 bg-red-600/10 border-2 border-red-400/50 rounded-lg text-red-700 dark:text-red-400 text-sm font-medium">
           <AlertCircle size={16} />
           <span>{error}</span>
         </div>
@@ -114,7 +110,6 @@ export default function ImageSelector({
             className={`${width} ${height} object-contain rounded-lg mx-auto`}
           />
 
-          {/* Upload new image button (overlay at bottom) */}
           <label className="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-2 bg-white/90 border-2 border-accent-gold text-primary-dark px-4 py-2 rounded-lg hover:bg-accent-gold/20 transition shadow-md cursor-pointer">
             <Upload size={16} />
             <span className="text-sm font-medium">
@@ -129,7 +124,6 @@ export default function ImageSelector({
             />
           </label>
 
-          {/* Revert to default button (only when custom image is set and default exists) */}
           {hasCustomImage && defaultImage && (
             <button
               type="button"
@@ -142,7 +136,6 @@ export default function ImageSelector({
             </button>
           )}
 
-          {/* Remove image completely (only when no default image) */}
           {!defaultImage && hasCustomImage && (
             <button
               type="button"
@@ -154,7 +147,6 @@ export default function ImageSelector({
             </button>
           )}
 
-          {/* Loading overlay */}
           {isLoading && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/30 rounded-lg">
               <Loader2 className="w-10 h-10 text-white animate-spin" />

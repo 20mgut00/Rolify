@@ -46,6 +46,7 @@ public class CharacterService {
 
         Character character = modelMapper.map(request, Character.class);
 
+        // Actualiza contadores de personajes del usuario (total y publicos) directamente aqui
         if (userEmail != null) {
             final Character finalCharacter = character;
             userRepository.findByEmail(userEmail).ifPresent(user -> {
@@ -165,6 +166,7 @@ public class CharacterService {
         List<String> likedByUserIds = character.getLikedByUserIds();
         if (likedByUserIds == null) likedByUserIds = new java.util.ArrayList<>();
 
+        // Toggle: si el usuario ya dio like lo quita, si no lo ha dado lo agrega
         if (likedByUserIds.contains(user.getId())) {
             likedByUserIds.remove(user.getId());
             character.setLikeCount(Math.max(0, character.getLikeCount() - 1));

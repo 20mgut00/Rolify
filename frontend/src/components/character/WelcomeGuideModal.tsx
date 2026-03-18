@@ -35,13 +35,11 @@ export default function WelcomeGuideModal({ isOpen, onClose }: WelcomeGuideModal
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
         onClick={onClose}
       />
 
-      {/* Modal — bg-primary-light + dark-shared-panel adapts to dark mode */}
       <div
         role="dialog"
         aria-modal="true"
@@ -49,7 +47,6 @@ export default function WelcomeGuideModal({ isOpen, onClose }: WelcomeGuideModal
         aria-describedby="welcome-guide-subtitle"
         className="relative bg-primary-light dark-shared-panel rounded-xl shadow-2xl w-full max-w-lg max-h-[90vh] flex flex-col animate-in fade-in zoom-in duration-200 border border-accent-gold/20"
       >
-        {/* Close button */}
         <button
           type="button"
           onClick={onClose}
@@ -59,7 +56,6 @@ export default function WelcomeGuideModal({ isOpen, onClose }: WelcomeGuideModal
           <X size={20} />
         </button>
 
-        {/* Header */}
         <div className="p-6 pb-4 border-b border-accent-gold/20">
           <div className="flex items-center gap-3 mb-2">
             <div className="w-10 h-10 rounded-full bg-accent-gold/15 flex items-center justify-center shrink-0">
@@ -76,7 +72,6 @@ export default function WelcomeGuideModal({ isOpen, onClose }: WelcomeGuideModal
           </div>
         </div>
 
-        {/* Steps list — scrollable */}
         <div className="overflow-y-auto flex-1 px-6 py-4">
           <ol className="space-y-3">
             {steps.map((step, i) => (
@@ -92,14 +87,12 @@ export default function WelcomeGuideModal({ isOpen, onClose }: WelcomeGuideModal
             ))}
           </ol>
 
-          {/* Tip — uses theme colors instead of hardcoded purple */}
           <div className="mt-4 flex items-start gap-2 bg-accent-gold/10 border border-accent-gold/30 rounded-lg p-3">
             <Lightbulb size={15} className="text-accent-gold shrink-0 mt-0.5" />
             <p className="text-xs text-primary-dark/80">{t('welcomeGuide.tip')}</p>
           </div>
         </div>
 
-        {/* Footer */}
         <div className="p-4 border-t border-accent-gold/20">
           <button
             type="button"

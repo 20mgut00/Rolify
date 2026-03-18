@@ -14,10 +14,6 @@ interface AuthState {
   getRefreshToken: () => string | null;
 }
 
-/**
- * Simplified auth store - Zustand persist middleware handles localStorage automatically.
- * No need for manual localStorage.setItem/removeItem calls.
- */
 export const useAuthStore = create<AuthState>()(
   persist(
     (set, get) => ({
@@ -96,16 +92,12 @@ export const useCharacterStore = create<CharacterState>()(
 
 interface UIState {
   selectedSystem: string;
-  selectedClass: string;
   setSelectedSystem: (system: string) => void;
-  setSelectedClass: (className: string) => void;
 }
 
 export const useUIStore = create<UIState>((set) => ({
   selectedSystem: 'Root',
-  selectedClass: '',
   setSelectedSystem: (system) => set({ selectedSystem: system }),
-  setSelectedClass: (className) => set({ selectedClass: className }),
 }));
 
 interface AccessibilityState {
@@ -119,6 +111,7 @@ interface AccessibilityState {
   setLanguage: (lang: string) => void;
 }
 
+// Detecta el idioma del navegador al cargar la app (antes de que React monte)
 const supportedLngs = ['en', 'es'];
 const browserLng = navigator.language.split('-')[0];
 const defaultLanguage = supportedLngs.includes(browserLng) ? browserLng : 'en';

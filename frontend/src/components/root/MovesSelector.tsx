@@ -23,6 +23,7 @@ function MovesSelector({
   maxMoves = 3,
 }: MovesSelectorProps) {
   const { t } = useTranslation();
+  // Wrapper de traduccion con cast forzado: evita error de tipos al pasar claves dinamicas a t()
   const tg = (key: string, fallback: string) => {
     const r = t(key as never, { defaultValue: key }) as string;
     return r === key ? fallback : r;

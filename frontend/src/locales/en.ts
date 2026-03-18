@@ -197,6 +197,8 @@ const en = {
   characterForm: {
     loadingTemplates: 'Loading templates...',
     noClassTemplate: 'No class template available',
+    noTemplatesTitle: 'No templates available',
+    noTemplatesDesc: 'There are no character templates for the selected game system yet. Try switching to a different system.',
     characterDetails: 'Character Details',
     generatingWithAI: 'Generating with AI...',
     autoFillWithAI: 'Auto-fill with AI',

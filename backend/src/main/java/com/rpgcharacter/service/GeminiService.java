@@ -62,6 +62,7 @@ public class GeminiService {
         prompt.append("Class: ").append(classTemplate.getClassName()).append("\n");
         prompt.append("Description: ").append(classTemplate.getDescription()).append("\n\n");
         prompt.append("IMPORTANT: Be highly creative and unique with the character name. Avoid common/overused names like 'Pip', 'Bramble', 'Thistle', etc. ");
+        // Semilla aleatoria en el prompt para que Gemini genere personajes variados en cada llamada
         prompt.append("Use a random seed of ").append(System.currentTimeMillis() % 10000).append(" to inspire uniqueness. ");
         prompt.append("Think of unusual, memorable names that feel fresh and original.\n\n");
 
@@ -73,24 +74,20 @@ public class GeminiService {
         prompt.append("  \"details\": \"physical appearance details\",\n");
         prompt.append("  \"equipment\": \"starting equipment description\",\n");
 
-        // Add nature selection
         if (classTemplate.getNature() != null && !classTemplate.getNature().isEmpty()) {
             prompt.append("  \"nature\": \"").append(getOptionNames(classTemplate.getNature())).append(" (select one)\",\n");
         }
 
-        // Add drives selection
         if (classTemplate.getDrives() != null && !classTemplate.getDrives().isEmpty()) {
             int maxDrives = classTemplate.getMaxDrives() != null ? classTemplate.getMaxDrives() : 2;
             prompt.append("  \"drives\": [\"").append(getOptionNames(classTemplate.getDrives())).append(" (select ").append(maxDrives).append(")\"],\n");
         }
 
-        // Add moves selection
         if (classTemplate.getMoves() != null && !classTemplate.getMoves().isEmpty()) {
             int maxMoves = classTemplate.getMaxMoves() != null ? classTemplate.getMaxMoves() : 3;
             prompt.append("  \"moves\": [\"").append(getOptionNames(classTemplate.getMoves())).append(" (select ").append(maxMoves).append(")\"],\n");
         }
 
-        // Add background answers
         if (classTemplate.getBackground() != null && !classTemplate.getBackground().isEmpty()) {
             prompt.append("  \"background\": [\n");
             for (ClassTemplate.BackgroundQuestion q : classTemplate.getBackground()) {
@@ -100,7 +97,6 @@ public class GeminiService {
             prompt.append("  ],\n");
         }
 
-        // Add connections
         if (classTemplate.getConnections() != null && !classTemplate.getConnections().isEmpty()) {
             prompt.append("  \"connections\": [\n");
             for (ClassTemplate.Connection conn : classTemplate.getConnections()) {
@@ -109,7 +105,6 @@ public class GeminiService {
             prompt.append("  ],\n");
         }
 
-        // Add stats (user must select +1 to one stat, max +2)
         if (classTemplate.getStats() != null && !classTemplate.getStats().isEmpty()) {
             prompt.append("  \"stats\": [\n");
             for (ClassTemplate.StatTemplate stat : classTemplate.getStats()) {
@@ -121,7 +116,6 @@ public class GeminiService {
             prompt.append("  \"selectedStat\": \"<select ONE stat from the above to add +1, ensuring it doesn't exceed +2>\",\n");
         }
 
-        // Add roguish feats (only if remaining > 0)
         if (classTemplate.getRoguishFeats() != null && classTemplate.getRoguishFeats().getFeats() != null) {
             int remaining = classTemplate.getRoguishFeats().getRemaining();
             if (remaining > 0) {
@@ -129,10 +123,8 @@ public class GeminiService {
             }
         }
 
-        // Add weapon skills (only selectable ones from database)
         if (classTemplate.getWeaponSkills() != null && classTemplate.getWeaponSkills().getSkills() != null) {
             int remaining = classTemplate.getWeaponSkills().getRemaining();
-            // Only include skills that are selectable (selected: true means they come from DB and are selectable)
             List<ClassTemplate.WeaponSkillsTemplate.Skill> selectableSkills = classTemplate.getWeaponSkills().getSkills().stream()
                     .filter(skill -> skill.getSelected())
                     .collect(Collectors.toList());
@@ -197,7 +189,6 @@ public class GeminiService {
             throw new RuntimeException("Gemini API returned status: " + response.getStatusCode());
         }
 
-        // Extract text from response
         JsonNode root = objectMapper.readTree(response.getBody());
         JsonNode candidates = root.path("candidates");
         if (candidates.isArray() && candidates.size() > 0) {
@@ -205,7 +196,6 @@ public class GeminiService {
             JsonNode parts = contentNode.path("parts");
             if (parts.isArray() && parts.size() > 0) {
                 String text = parts.get(0).path("text").asText();
-                // Clean up markdown code blocks if present
                 text = text.replaceAll("```json\\n?", "").replaceAll("```\\n?", "").trim();
                 return text;
             }
@@ -216,25 +206,21 @@ public class GeminiService {
 
     private Map<String, Object> parseCharacterResponse(String response, ClassTemplate classTemplate) {
         try {
-            // Parse the JSON response from Gemini
             JsonNode jsonResponse = objectMapper.readTree(response);
 
             Map<String, Object> result = new HashMap<>();
 
-            // Basic fields
             result.put("name", jsonResponse.path("name").asText(""));
             result.put("species", jsonResponse.path("species").asText(""));
             result.put("demeanor", jsonResponse.path("demeanor").asText(""));
             result.put("details", jsonResponse.path("details").asText(""));
             result.put("equipment", jsonResponse.path("equipment").asText(""));
 
-            // Parse nature
             if (jsonResponse.has("nature")) {
                 String natureName = jsonResponse.path("nature").asText();
                 result.put("nature", findMatchingOption(classTemplate.getNature(), natureName));
             }
 
-            // Parse drives
             if (jsonResponse.has("drives")) {
                 List<Map<String, Object>> drives = new ArrayList<>();
                 JsonNode drivesNode = jsonResponse.path("drives");
@@ -250,7 +236,6 @@ public class GeminiService {
                 result.put("drives", drives);
             }
 
-            // Parse moves
             if (jsonResponse.has("moves")) {
                 List<Map<String, Object>> moves = new ArrayList<>();
                 JsonNode movesNode = jsonResponse.path("moves");
@@ -266,7 +251,6 @@ public class GeminiService {
                 result.put("moves", moves);
             }
 
-            // Parse background - validate answers against template options
             if (jsonResponse.has("background") && classTemplate.getBackground() != null) {
                 List<Map<String, String>> background = new ArrayList<>();
                 JsonNode backgroundNode = jsonResponse.path("background");
@@ -276,7 +260,6 @@ public class GeminiService {
                         ClassTemplate.BackgroundQuestion templateQuestion = classTemplate.getBackground().get(i);
                         String aiAnswer = answerNode.path("answer").asText("");
 
-                        // Match against valid template answers (case-insensitive)
                         String matchedAnswer = templateQuestion.getAnswers().stream()
                                 .filter(a -> a.equalsIgnoreCase(aiAnswer.trim()))
                                 .findFirst()
@@ -291,7 +274,6 @@ public class GeminiService {
                 result.put("background", background);
             }
 
-            // Parse connections
             if (jsonResponse.has("connections")) {
                 List<Map<String, String>> connections = new ArrayList<>();
                 JsonNode connectionsNode = jsonResponse.path("connections");
@@ -306,7 +288,6 @@ public class GeminiService {
                 result.put("connections", connections);
             }
 
-            // Parse stats and selectedStat
             if (jsonResponse.has("stats")) {
                 List<Map<String, Object>> stats = new ArrayList<>();
                 JsonNode statsNode = jsonResponse.path("stats");
@@ -317,7 +298,6 @@ public class GeminiService {
                         String statName = statNode.path("name").asText("");
                         int baseValue = statNode.path("value").asInt(0);
 
-                        // Add +1 to the selected stat (if this is the one)
                         int finalValue = baseValue;
                         if (!selectedStat.isEmpty() && statName.equalsIgnoreCase(selectedStat) && baseValue < 2) {
                             finalValue = baseValue + 1;
@@ -332,7 +312,6 @@ public class GeminiService {
                 result.put("stats", stats);
             }
 
-            // Parse roguish feats
             if (jsonResponse.has("roguishFeats") && classTemplate.getRoguishFeats() != null) {
                 List<Map<String, Object>> feats = new ArrayList<>();
                 JsonNode featsNode = jsonResponse.path("roguishFeats");
@@ -348,7 +327,6 @@ public class GeminiService {
                 result.put("roguishFeats", feats);
             }
 
-            // Parse weapon skills (only accept selectable ones)
             if (jsonResponse.has("weaponSkills") && classTemplate.getWeaponSkills() != null) {
                 List<Map<String, Object>> skills = new ArrayList<>();
                 JsonNode skillsNode = jsonResponse.path("weaponSkills");
@@ -383,6 +361,7 @@ public class GeminiService {
         return Map.of("name", "", "description", "");
     }
 
+    // Matching case-insensitive contra las opciones del template, pero devuelve el nombre original del template
     private ClassTemplate.Option findOptionByName(List<ClassTemplate.Option> options, String name) {
         if (options == null || name == null) return null;
         return options.stream()

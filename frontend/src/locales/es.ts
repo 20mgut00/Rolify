@@ -197,6 +197,8 @@ const es = {
   characterForm: {
     loadingTemplates: 'Cargando plantillas...',
     noClassTemplate: 'No hay plantilla de clase disponible',
+    noTemplatesTitle: 'No hay plantillas disponibles',
+    noTemplatesDesc: 'Aun no existen plantillas de personaje para el sistema de juego seleccionado. Prueba a cambiar de sistema.',
     characterDetails: 'Detalles del Personaje',
     generatingWithAI: 'Generando con IA...',
     autoFillWithAI: 'Autocompletar con IA',

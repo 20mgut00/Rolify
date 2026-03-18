@@ -93,7 +93,6 @@ export default function Settings() {
           {t('settings.title')}
         </h1>
 
-        {/* Account Information - only when logged in */}
         {user && (
           <div className="bg-white rounded-lg shadow-lg p-6 mb-6 dark-shared-panel">
             <h2 className="font-cinzel text-2xl font-bold text-primary-dark mb-4 flex items-center gap-2">
@@ -133,7 +132,6 @@ export default function Settings() {
           </div>
         )}
 
-        {/* Change Password - only when logged in */}
         {user && (
           <div className="bg-white rounded-lg shadow-lg p-6 mb-6 dark-shared-panel">
             <h2 className="font-cinzel text-2xl font-bold text-primary-dark mb-4 flex items-center gap-2">
@@ -234,7 +232,6 @@ export default function Settings() {
           </div>
         )}
 
-        {/* Language */}
         <div className="bg-white rounded-lg shadow-lg p-6 mt-6 dark-shared-panel">
           <h2 className="font-cinzel text-2xl font-bold text-primary-dark mb-4 flex items-center gap-2">
             <Globe size={24} />
@@ -254,7 +251,6 @@ export default function Settings() {
           </div>
         </div>
 
-        {/* Accessibility */}
         <div className="bg-white rounded-lg shadow-lg p-6 mt-6 dark-shared-panel">
           <h2 className="font-cinzel text-2xl font-bold text-primary-dark mb-4">
             {t('settings.accessibility')}
@@ -302,7 +298,6 @@ export default function Settings() {
           </div>
         </div>
 
-        {/* Danger Zone - only when logged in */}
         {user && (
           <div className="bg-red-50 border-2 border-red-200 dark:bg-red-950/30 dark:border-red-900 rounded-lg p-6 mt-6">
             <h2 className="font-cinzel text-2xl font-bold text-red-600 dark:text-red-300 mb-4 flex items-center gap-2">

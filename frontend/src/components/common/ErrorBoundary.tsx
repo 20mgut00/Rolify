@@ -33,6 +33,7 @@ class ErrorBoundary extends Component<Props, State> {
     window.location.href = '/';
   };
 
+  // Usa i18next.t() directamente en vez del hook useTranslation porque es un class component
   render() {
     if (this.state.hasError) {
       return (

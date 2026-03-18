@@ -58,7 +58,6 @@ export default function CharacterBasicInfo({
 
   return (
     <>
-      {/* Avatar Image - row-span-4 on desktop only */}
       <div className="md:row-span-4">
         <Card label={t('characterBasicInfo.avatarImage')}>
           <ImageSelector
@@ -71,7 +70,6 @@ export default function CharacterBasicInfo({
         </Card>
       </div>
 
-      {/* Name */}
       <div>
         <Card label={t('characterBasicInfo.name')} required error={validationErrors.name}>
           <TextField
@@ -87,7 +85,6 @@ export default function CharacterBasicInfo({
         </Card>
       </div>
 
-      {/* Species */}
       <div>
         <Card label={t('characterBasicInfo.species')}>
           <TextField
@@ -103,7 +100,6 @@ export default function CharacterBasicInfo({
         </Card>
       </div>
 
-      {/* Details */}
       <div>
         <Card label={t('characterBasicInfo.details')}>
           <TextField
@@ -119,7 +115,6 @@ export default function CharacterBasicInfo({
         </Card>
       </div>
 
-      {/* Demeanor */}
       <div>
         <Card label={t('characterBasicInfo.demeanor')}>
           <TextField

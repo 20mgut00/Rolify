@@ -43,7 +43,7 @@ export function useCharacterForm(onSuccess: (characterId: string) => void) {
   const editId = searchParams.get('edit');
   const isEditing = !!editId;
 
-  const { data: templates } = useQuery({
+  const { data: templates, isLoading: isLoadingTemplates } = useQuery({
     queryKey: ['classTemplates', selectedSystem],
     queryFn: () => classTemplateAPI.getBySystem(selectedSystem),
   });
@@ -108,8 +108,7 @@ export function useCharacterForm(onSuccess: (characterId: string) => void) {
     [selectedClass?.roguishFeats?.feats]
   );
 
-  // In the template, 'selected: true' on weapon skills means the skill is available to pick,
-  // not that it should be pre-selected. New characters start with none chosen.
+  // En el template, 'selected: true' en weaponSkills significa que es seleccionable, NO que esta pre-seleccionado
   const preSelectedSkills = useMemo(() => [], []);
 
   const saveMutation = useMutation({
@@ -163,7 +162,8 @@ export function useCharacterForm(onSuccess: (characterId: string) => void) {
       }
       queryClient.invalidateQueries({ queryKey: ['myCharacters'] });
       toast.success(isEditing ? t('characterForm.characterUpdated') : t('characterForm.characterCreated'));
-      reset(); // clear dirty state before navigating so useBlocker doesn't trigger
+      // Limpia el estado dirty antes de navegar para que useBlocker no bloquee la navegacion
+      reset();
       if (data.id) {
         onSuccess(data.id);
       }
@@ -236,8 +236,7 @@ export function useCharacterForm(onSuccess: (characterId: string) => void) {
 
     setValidationErrors({});
 
-    // Auto-add reputation entries from background answers if the player hasn't added them manually.
-    // The ReputationSelector already handles the prestige/notoriety bonus, so we just ensure the faction exists.
+    // Auto-agrega facciones de reputacion basandose en las respuestas de background (preguntas 4 y 5)
     const reputations = [...data.reputations];
     const servedMost = data.background?.[3]?.answer?.trim().toLowerCase();
     const specialEnmity = data.background?.[4]?.answer?.trim().toLowerCase();
@@ -255,7 +254,6 @@ export function useCharacterForm(onSuccess: (characterId: string) => void) {
     saveMutation.mutate({ ...data, reputations, avatarImage });
   };
 
-  // reset() sets defaultValues baseline so isDirty stays false until the user actually edits
   useEffect(() => {
     if (selectedClass && !isEditing) {
       const firstNature = selectedClass.nature?.[0];
@@ -328,14 +326,12 @@ export function useCharacterForm(onSuccess: (characterId: string) => void) {
   }, [existingCharacter, isEditing, reset, templates]);
 
   return {
-    // Form state
     register,
     handleSubmit,
     control,
     watchedFields,
     setField,
 
-    // Data
     templates,
     selectedClass,
     selectedClassIndex,
@@ -343,15 +339,14 @@ export function useCharacterForm(onSuccess: (characterId: string) => void) {
     isPublic,
     setIsPublic,
 
-    // Status
     isEditing,
     editId,
     isAuthenticated,
+    isLoadingTemplates,
     isSaving: saveMutation.isPending,
     isDirty: formState.isDirty,
     validationErrors,
 
-    // Actions
     onSubmit,
   };
 }

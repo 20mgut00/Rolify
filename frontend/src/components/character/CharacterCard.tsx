@@ -40,7 +40,6 @@ export default function CharacterCard({
 
   return (
     <div className="bg-white rounded-lg shadow-lg overflow-hidden hover:shadow-xl transition-all duration-300 group flex flex-col dark-shared-panel">
-      {/* Avatar */}
       <div className="aspect-square bg-primary-dark/5 relative overflow-hidden">
         {character.avatarImage ? (
           <img
@@ -56,7 +55,6 @@ export default function CharacterCard({
           </div>
         )}
         
-        {/* Favorite Star */}
         {onFavorite && (
           <button
             onClick={(e) => { e.stopPropagation(); onFavorite(character.id); }}
@@ -70,7 +68,6 @@ export default function CharacterCard({
           </button>
         )}
 
-        {/* Public/Private Badge */}
         <div className="absolute top-3 right-3">
           {onTogglePublic ? (
             <button
@@ -97,7 +94,6 @@ export default function CharacterCard({
         </div>
       </div>
 
-      {/* Info */}
       <div className="p-4 flex-1 flex flex-col">
         <h3 className="font-cinzel text-xl font-bold text-primary-dark mb-1 truncate" title={character.name}>
           {character.name}
@@ -120,7 +116,6 @@ export default function CharacterCard({
         </div>
       </div>
 
-      {/* Actions */}
       <div className="px-4 pb-4 flex gap-2">
         <button
           onClick={() => onView(character.id)}

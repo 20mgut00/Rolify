@@ -39,3 +39,7 @@ Thumbs.db
 .env.local
 .env.production
 application-local.yml
+
+# Claude Code
+.claude/
+CLAUDE.md

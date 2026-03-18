@@ -23,6 +23,7 @@ function DriveSelector({
   onDrivesSelect,
 }: DriveSelectorProps) {
   const { t } = useTranslation();
+  // Wrapper de traduccion: si la clave i18n no existe (devuelve la propia clave), usa el fallback
   const tg = (key: string, fallback: string) => { const r = (t as (k: string) => string)(key); return r === key ? fallback : r; };
   const selectedNames = useMemo(() => value.map((d) => d.name), [value]);
 

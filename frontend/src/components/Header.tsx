@@ -88,7 +88,6 @@ export default function Header() {
     },
   };
 
-  /* ── Mobile Drawer ─────────────────────────────────────────── */
   const mobileDrawer = (
     <Drawer
       anchor="right"
@@ -96,7 +95,6 @@ export default function Header() {
       onClose={handleDrawerClose}
       slotProps={{ paper: { sx: { width: 280, bgcolor: 'background.paper' } } }}
     >
-      {/* Drawer header */}
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', px: 2, py: 1.5, borderBottom: 1, borderColor: 'divider' }}>
         <Typography variant="subtitle1" sx={{ fontFamily: 'Cinzel', fontWeight: 700 }}>
           {isAuthenticated && user ? user.name : t('header.menu')}
@@ -106,7 +104,6 @@ export default function Header() {
         </IconButton>
       </Box>
 
-      {/* User info (if authenticated) */}
       {isAuthenticated && user && (
         <Box sx={{ px: 2, py: 1.5, bgcolor: 'action.hover' }}>
           <Typography variant="body2" color="text.secondary" sx={{ fontSize: '0.75rem' }}>
@@ -124,7 +121,6 @@ export default function Header() {
       )}
 
       <List sx={{ pt: 1 }}>
-        {/* System selector */}
         <ListItem sx={{ px: 2, pb: 1 }}>
           <FormControl size="small" fullWidth>
             <Select
@@ -141,7 +137,6 @@ export default function Header() {
 
         <Divider />
 
-        {/* Navigation */}
         <ListItemButton component={RouterLink} to="/create" onClick={handleDrawerClose} sx={{ py: 1.5 }}>
           <ListItemIcon><Add color="primary" /></ListItemIcon>
           <ListItemText primary={t('header.newCharacter')} slotProps={{ primary: { fontWeight: 600 } }} />
@@ -163,7 +158,6 @@ export default function Header() {
 
         <Divider />
 
-        {/* Settings & theme */}
         <ListItemButton component={RouterLink} to="/settings" onClick={handleDrawerClose} sx={{ py: 1.5 }}>
           <ListItemIcon><Settings color="primary" /></ListItemIcon>
           <ListItemText primary={t('header.settings')} />
@@ -176,7 +170,6 @@ export default function Header() {
           </ListItemButton>
         )}
 
-        {/* Dark mode toggle */}
         <ListItemButton onClick={() => setDarkMode(!darkMode)} sx={{ py: 1.5 }}>
           <ListItemIcon>
             {darkMode ? <LightMode color="primary" /> : <DarkMode color="primary" />}
@@ -184,7 +177,6 @@ export default function Header() {
           <ListItemText primary={darkMode ? t('header.lightMode') : t('header.darkMode')} />
         </ListItemButton>
 
-        {/* Language selector */}
         <ListItem sx={{ px: 2, py: 1 }}>
           <ListItemIcon><Language color="primary" /></ListItemIcon>
           <FormControl size="small" sx={{ minWidth: 100 }}>
@@ -202,7 +194,6 @@ export default function Header() {
 
         <Divider />
 
-        {/* Auth actions */}
         {isAuthenticated && user ? (
           <ListItemButton
             onClick={() => { logout(); handleDrawerClose(); navigate('/'); }}
@@ -228,7 +219,6 @@ export default function Header() {
     <>
       <AppBar position="relative" sx={{ bgcolor: 'background.paper' }}>
         <Toolbar sx={{ py: 1, display: 'flex', justifyContent: 'space-between' }}>
-          {/* Logo */}
           <Box
             component={RouterLink}
             to="/"
@@ -250,10 +240,8 @@ export default function Header() {
             />
           </Box>
 
-          {/* ── Desktop nav ─────────────────────────────────────── */}
           {!isMobile && (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-              {/* System Selector */}
               <FormControl size="small" sx={{ minWidth: 120, mr: 2 }}>
                 <Select
                   value={selectedSystem}
@@ -302,7 +290,6 @@ export default function Header() {
                 {darkMode ? <LightMode /> : <DarkMode />}
               </IconButton>
 
-              {/* User Menu */}
               {isAuthenticated && user ? (
                 <>
                   <IconButton
@@ -375,7 +362,6 @@ export default function Header() {
             </Box>
           )}
 
-          {/* ── Mobile controls ──────────────────────────────────── */}
           {isMobile && (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <IconButton

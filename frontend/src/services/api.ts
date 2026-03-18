@@ -22,6 +22,7 @@ const api = axios.create({
   },
 });
 
+// Accede al store de Zustand fuera de React (getState) para usar el token en interceptores Axios
 const getAccessToken = (): string | null => {
   const storeToken = useAuthStore.getState().token;
   if (storeToken) return storeToken;
@@ -52,13 +53,16 @@ api.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
+// Interceptor de respuesta: si recibe 401, intenta refrescar el JWT y reintentar la peticion original
 api.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
 
+    // Excluye endpoints de auth para no intentar refrescar tokens en login/register
     const isAuthEndpoint = originalRequest.url?.includes('/auth/');
     if (error.response?.status === 401 && !originalRequest._retry && !isAuthEndpoint) {
+      // _retry es un flag custom para evitar bucles infinitos de refresco
       originalRequest._retry = true;
 
       try {
@@ -126,6 +130,7 @@ export const authAPI = {
   },
 };
 
+// Filtra solo las opciones marcadas como selected antes de enviar al backend
 function buildCharacterPayload(data: Partial<Character>) {
   return {
     name: data.name,

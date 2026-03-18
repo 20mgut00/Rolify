@@ -25,7 +25,7 @@ export default function OAuthCallback() {
 
       if (token && refreshToken) {
         try {
-          // Get user info with the token
+          // Usa fetch en vez de axios porque necesitamos el token antes de configurar el interceptor
           const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/me`, {
             headers: {
               'Authorization': `Bearer ${token}`

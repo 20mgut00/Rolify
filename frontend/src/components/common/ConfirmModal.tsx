@@ -11,7 +11,6 @@ interface ConfirmModalProps {
   confirmText?: string;
   cancelText?: string;
   variant?: 'danger' | 'warning';
-  /** If set, user must type this exact text to enable the confirm button */
   requireTypedConfirmation?: string;
 }
 
@@ -35,12 +34,10 @@ export default function ConfirmModal({
   useEffect(() => {
     if (isOpen) {
       setTypedValue('');
-      // Focus input if confirmation typing is required
       setTimeout(() => inputRef.current?.focus(), 100);
     }
   }, [isOpen]);
 
-  // Close on Escape key
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key === 'Escape' && isOpen) onClose();
@@ -62,15 +59,12 @@ export default function ConfirmModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-      {/* Backdrop */}
       <div
         className="absolute inset-0 bg-black/50 backdrop-blur-sm"
         onClick={onClose}
       />
 
-      {/* Modal */}
-      <div className="relative bg-white rounded-xl shadow-2xl max-w-md w-full p-6 animate-in fade-in zoom-in duration-200">
-        {/* Close button */}
+      <div className="relative bg-white bg-panel-solid rounded-xl shadow-2xl max-w-md w-full p-6 animate-in fade-in zoom-in duration-200">
         <button
           type="button"
           onClick={onClose}
@@ -79,9 +73,8 @@ export default function ConfirmModal({
           <X size={20} />
         </button>
 
-        {/* Icon */}
         <div className={`w-12 h-12 rounded-full flex items-center justify-center mb-4 ${
-          variant === 'danger' ? 'bg-red-100' : 'bg-yellow-100'
+          variant === 'danger' ? 'bg-red-600/15' : 'bg-yellow-500/15'
         }`}>
           <AlertTriangle
             size={24}
@@ -89,7 +82,6 @@ export default function ConfirmModal({
           />
         </div>
 
-        {/* Content */}
         <h3 className="font-cinzel text-xl font-bold text-primary-dark mb-2">
           {title}
         </h3>
@@ -97,7 +89,6 @@ export default function ConfirmModal({
           {message}
         </p>
 
-        {/* Typed confirmation input */}
         {requireTypedConfirmation && (
           <div className="mb-6">
             <label className="block text-sm font-medium text-primary-dark mb-2">
@@ -116,7 +107,6 @@ export default function ConfirmModal({
           </div>
         )}
 
-        {/* Actions */}
         <div className="flex gap-3 justify-end">
           <button
             type="button"

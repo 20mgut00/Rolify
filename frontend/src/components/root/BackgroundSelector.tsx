@@ -31,7 +31,6 @@ export default function BackgroundSelector({
       : background.map(() => "")
   );
 
-  // Update answers when initialValues change (for editing mode)
   useEffect(() => {
     if (initialValues) {
       setAnswers(background.map((_, idx) => initialValues[idx]?.answer || ""));

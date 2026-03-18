@@ -14,7 +14,6 @@ import { useUIStore, useAuthStore } from '../../store';
 
 export default function PublicGallery() {
   const { t } = useTranslation();
-  // React 19 feature: Dynamic document title
   useDocumentTitle(`${t('gallery.title')} - RPG Character Creator`);
 
   const navigate = useNavigate();
@@ -64,12 +63,10 @@ export default function PublicGallery() {
     likeMutation.mutate(id);
   };
 
-  // Reset class filter when system changes
   useEffect(() => {
     setClassFilter('');
   }, [selectedSystem]);
 
-  // Auto-fetch next page when reaching bottom
   useEffect(() => {
     if (inView && hasNextPage && !isFetchingNextPage) {
       fetchNextPage();
@@ -78,7 +75,6 @@ export default function PublicGallery() {
 
   const allCharacters = data?.pages.flatMap((page) => page.content) || [];
   
-  // Filter by search term (client-side)
   const characters = allCharacters.filter((char) =>
     char.name.toLowerCase().includes(debouncedSearch.toLowerCase()) ||
     char.species.toLowerCase().includes(debouncedSearch.toLowerCase())
@@ -95,9 +91,7 @@ export default function PublicGallery() {
           {t('gallery.subtitle')}
         </p>
 
-        {/* Filters */}
         <div className="w-full mb-12 space-y-3 sm:space-y-4">
-          {/* Search */}
           <div className="relative">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-primary-dark/50 pointer-events-none" size={20} />
             <input
@@ -109,7 +103,6 @@ export default function PublicGallery() {
             />
           </div>
 
-          {/* Class Filter */}
           <FilterSelect
             value={classFilter}
             onChange={setClassFilter}
@@ -121,30 +114,27 @@ export default function PublicGallery() {
           />
         </div>
 
-        {/* Results Count */}
         {!isLoading && (
           <div className="text-center mb-6 text-primary-dark/70">
             {characters.length} {characters.length !== 1 ? t('common.characters') : t('common.character')} {t('common.found')}
           </div>
         )}
 
-        {/* Loading State */}
         {isLoading && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {[...Array(8)].map((_, i) => (
-              <div key={i} className="bg-white rounded-lg shadow-lg overflow-hidden animate-pulse">
-                <div className="aspect-square bg-gray-200" />
+              <div key={i} className="bg-white bg-panel-solid rounded-lg shadow-lg overflow-hidden animate-pulse">
+                <div className="aspect-square bg-primary-dark/10" />
                 <div className="p-4 space-y-2">
-                  <div className="h-6 bg-gray-200 rounded w-3/4" />
-                  <div className="h-4 bg-gray-200 rounded w-1/2" />
-                  <div className="h-4 bg-gray-200 rounded w-2/3" />
+                  <div className="h-6 bg-primary-dark/10 rounded w-3/4" />
+                  <div className="h-4 bg-primary-dark/10 rounded w-1/2" />
+                  <div className="h-4 bg-primary-dark/10 rounded w-2/3" />
                 </div>
               </div>
             ))}
           </div>
         )}
 
-        {/* Grid */}
         {!isLoading && characters.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {characters.map((character) => (
@@ -159,7 +149,6 @@ export default function PublicGallery() {
           </div>
         )}
 
-        {/* Loading More Indicator */}
         {isFetchingNextPage && (
           <div className="text-center py-12">
             <div className="inline-block w-12 h-12 border-4 border-accent-gold border-t-transparent rounded-full animate-spin" />
@@ -167,10 +156,9 @@ export default function PublicGallery() {
           </div>
         )}
 
-        {/* Intersection Observer Trigger */}
+        {/* Elemento invisible que activa la carga de la siguiente pagina via IntersectionObserver */}
         <div ref={ref} className="h-10" />
 
-        {/* No More Results */}
         {!hasNextPage && characters.length > 0 && !isLoading && (
           <div className="text-center py-12">
             <p className="text-primary-dark/50 text-lg">
@@ -179,7 +167,6 @@ export default function PublicGallery() {
           </div>
         )}
 
-        {/* Empty State */}
         {!isLoading && characters.length === 0 && (
           <div className="text-center py-20">
             <div className="w-24 h-24 bg-accent-gold/20 rounded-full flex items-center justify-center mx-auto mb-6">

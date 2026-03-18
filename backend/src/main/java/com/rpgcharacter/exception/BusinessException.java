@@ -1,9 +1,5 @@
 package com.rpgcharacter.exception;
 
-/**
- * Base exception for all business logic errors.
- * Provides user-friendly error messages without exposing internal details.
- */
 public class BusinessException extends RuntimeException {
 
     private final String errorCode;

@@ -48,7 +48,6 @@ export default function ResetPassword() {
       setIsSuccess(true);
       toast.success(t('auth.passwordResetToast'));
 
-      // Redirect to home after 3 seconds
       setTimeout(() => {
         navigate('/');
       }, 3000);

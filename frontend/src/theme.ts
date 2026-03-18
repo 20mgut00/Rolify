@@ -1,28 +1,27 @@
 import { createTheme } from '@mui/material/styles';
 
-// RPG Character Creator Theme
 export const theme = createTheme({
   palette: {
     mode: 'dark',
     primary: {
-      main: '#D4AF37', // Gold
+      main: '#D4AF37',
       light: '#E5C158',
       dark: '#B8941F',
       contrastText: '#1A1A2E',
     },
     secondary: {
-      main: '#8B4513', // Brown
+      main: '#8B4513',
       light: '#A0522D',
       dark: '#6B3410',
       contrastText: '#FFFFFF',
     },
     background: {
-      default: '#0F0F23', // Very dark blue
-      paper: '#16213E', // Dark blue
+      default: '#0F0F23',
+      paper: '#16213E',
     },
     text: {
-      primary: '#F5E6D3', // Light parchment
-      secondary: '#D4AF37', // Gold
+      primary: '#F5E6D3',
+      secondary: '#D4AF37',
     },
     error: {
       main: '#DC143C',

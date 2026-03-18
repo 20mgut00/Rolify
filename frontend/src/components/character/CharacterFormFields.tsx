@@ -78,7 +78,6 @@ export default function CharacterFormFields({
 
   return (
     <>
-      {/* Nature */}
       <div>
         <Card label={t('characterFormFields.nature')} desc={t('characterFormFields.natureDesc')}>
           <NatureSelector
@@ -89,7 +88,6 @@ export default function CharacterFormFields({
         </Card>
       </div>
 
-      {/* Background - row-span-3 on desktop only */}
       <div className="md:row-span-3">
         <Card label={t('characterFormFields.background')} desc={t('characterFormFields.backgroundDesc')}>
           <BackgroundSelector
@@ -101,7 +99,6 @@ export default function CharacterFormFields({
         </Card>
       </div>
 
-      {/* Drives - row-span-2 on desktop only */}
       <div className="md:row-span-2">
         <Card
           label={t('characterFormFields.drives')}
@@ -117,7 +114,6 @@ export default function CharacterFormFields({
         </Card>
       </div>
 
-      {/* Connections */}
       <div>
         <Card label={t('characterFormFields.connections')} desc={t('characterFormFields.connectionsDesc')}>
           <ConnectionsSelector
@@ -129,7 +125,6 @@ export default function CharacterFormFields({
         </Card>
       </div>
 
-      {/* Stats */}
       <div>
         <Card label={t('characterFormFields.stats')} desc={t('characterFormFields.statsDesc')} helpText={t('characterFormFields.statsHelp')} required error={validationErrors.stats}>
           <AttributesSelector
@@ -141,7 +136,6 @@ export default function CharacterFormFields({
         </Card>
       </div>
 
-      {/* Reputation - col-span-2 on desktop only */}
       <div className="md:col-span-2">
         <Card label={t('characterFormFields.reputation')} desc={t('characterFormFields.reputationDesc')} helpText={t('characterFormFields.reputationHelp')}>
           <ReputationSelector
@@ -153,7 +147,6 @@ export default function CharacterFormFields({
         </Card>
       </div>
 
-      {/* Moves - col-span-2 on desktop only */}
       <div className="md:col-span-2">
         <Card label={t('characterFormFields.moves')} desc={t('characterFormFields.movesDesc')} required error={validationErrors.moves}>
           <MovesSelector
@@ -165,7 +158,6 @@ export default function CharacterFormFields({
         </Card>
       </div>
 
-      {/* Roguish Feats */}
       <div>
         <Card
           label={t('characterFormFields.roguishFeats')}
@@ -181,7 +173,6 @@ export default function CharacterFormFields({
         </Card>
       </div>
 
-      {/* Weapon Skills */}
       <div>
         <Card
           label={t('characterFormFields.weaponSkills')}
@@ -197,7 +188,6 @@ export default function CharacterFormFields({
         </Card>
       </div>
 
-      {/* Equipment - col-span-2 on desktop only */}
       <div className="md:col-span-2">
         <Card label={t('characterFormFields.equipment')} desc={t('characterFormFields.equipmentDesc')}>
           <TextField

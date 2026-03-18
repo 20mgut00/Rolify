@@ -22,6 +22,7 @@ services:
       MAIL_PORT: ${MAIL_PORT:-587}
       MAIL_USERNAME: ${MAIL_USERNAME:-resend}
       MAIL_PASSWORD: ${RESEND_API_KEY:-your-api-key}
+      RESEND_API_KEY: ${RESEND_API_KEY:-your-api-key}
       EMAIL_FROM: ${EMAIL_FROM:-noreply@rpgcharacters.com}
       FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3000}
       GEMINI_API_KEY: ${GEMINI_API_KEY}

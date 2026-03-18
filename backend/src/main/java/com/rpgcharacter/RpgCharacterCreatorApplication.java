@@ -7,6 +7,7 @@ import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
+// @EnableScheduling para el cron de reset de rate limiting, @EnableMongoAuditing para @CreatedDate/@LastModifiedDate
 @EnableMongoAuditing
 @EnableAsync
 @EnableScheduling

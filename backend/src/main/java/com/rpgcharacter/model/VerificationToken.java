@@ -27,6 +27,7 @@ public class VerificationToken {
     
     private TokenType type;
     
+    // TTL index de MongoDB: elimina automaticamente el documento cuando expira (basado en expiryDate)
     @Indexed(expireAfter = "0s")
     private LocalDateTime expiryDate;
     

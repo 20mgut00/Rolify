@@ -25,31 +25,20 @@ function WeaponSkillsSelector({
   value = [],
   onSkillsSelect,
 }: WeaponSkillsSelectorProps) {
-  // selectedNames: Cachea la lista de nombres de skills seleccionados por el usuario
-  // Solo recalcula si value cambia (el array de objetos del padre)
   const { t } = useTranslation();
   const tg = (key: string, fallback: string) => { const r = (t as (k: string) => string)(key); return r === key ? fallback : r; };
   const selectedNames = useMemo(() => value.map((s) => s.name), [value]);
 
-  // maxSelections: Número máximo de skills que pueden seleccionarse
-  // Viene del backend como "remaining" (espacio disponible para nuevas selecciones)
   const maxSelections = weaponSkills?.remaining || 0;
 
-  // handleChange: Controlador para seleccionar/deseleccionar skills
-  // Patrón: toggle (hacer click alterna el estado)
-  // Limitación: no puedes seleccionar más skills que el máximo permitido
-  // Memoizado para evitar re-creación en cada render
   const handleChange = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const name = event.target.value;
     let newSkills: string[];
     if (selectedNames.includes(name)) {
-      // Deseleccionar: remover del array
       newSkills = selectedNames.filter((skill) => skill !== name);
     } else {
-      // Seleccionar: añadir al array (solo si no alcanzas el máximo)
       newSkills = [...selectedNames, name];
     }
-    // Obtener los objetos completos (name + description) de los nuevos skills seleccionados
     const selectedItems =
       weaponSkills?.skills.filter((s) => newSkills.includes(s.name)) || [];
     onSkillsSelect?.(selectedItems);
@@ -66,18 +55,10 @@ function WeaponSkillsSelector({
   return (
     <div>
       <FormGroup className="text-start">
-        {/* Componente controlado: renderiza un Accordion por cada skill disponible en el catálogo */}
         {weaponSkills.skills.map((skill) => {
-          // isNotSelectable: Skills que NO vienen desde la base de datos (selected: false)
-          // Estas NUNCA pueden seleccionarse
+          // selected=true en el template significa "disponible para elegir", NO "ya seleccionado"
           const isNotSelectable = !skill.selected;
-
-          // isChecked: Verifica si esta skill está en selectedNames (usuario o Gemini la seleccionó)
           const isChecked = selectedNames.includes(skill.name);
-
-          // isDisabled: Deshabilita el checkbox si:
-          // 1. La skill NO es seleccionable (selected: false), O
-          // 2. Ya llegaste al máximo de selecciones permitidas Y esta skill no está seleccionada
           const isDisabled =
             isNotSelectable ||
             (selectedNames.length >= maxSelections && !isChecked);
@@ -113,7 +94,6 @@ function WeaponSkillsSelector({
                   value={skill.name}
                   control={
                     <Checkbox
-                      // checked: Marca si está en selectedNames (seleccionado por el usuario)
                       checked={isChecked}
                       onChange={(e) => {
                         e.stopPropagation();
@@ -146,7 +126,6 @@ function WeaponSkillsSelector({
                   }}
                 />
               </AccordionSummary>
-              {/* AccordionDetails: Muestra la descripción del skill */}
               <AccordionDetails sx={{ backgroundColor: 'var(--color-primary-light)', color: 'var(--color-primary-dark)' }}>
                 <Typography className="text-sm text-primary-dark opacity-70 ml-1">
                   {tg(`gameData.weaponSkills.${skill.name}.description`, skill.description)}
@@ -160,5 +139,4 @@ function WeaponSkillsSelector({
   );
 }
 
-// Memoize component to prevent unnecessary re-renders
 export default memo(WeaponSkillsSelector);

@@ -19,6 +19,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import com.rpgcharacter.exception.UnauthorizedException;
+
 import java.util.List;
 import java.util.Map;
 
@@ -31,7 +33,15 @@ public class CharacterController {
     private final GeminiService geminiService;
     private final ClassTemplateRepository classTemplateRepository;
     private final RateLimitService rateLimitService;
+
+    private String requireAuth(UserDetails userDetails) {
+        if (userDetails == null) {
+            throw new UnauthorizedException("Authentication required");
+        }
+        return userDetails.getUsername();
+    }
     
+    // userDetails es nullable: permite crear/ver personajes sin estar logueado (modo invitado)
     @PostMapping
     public ResponseEntity<CharacterDTO.Response> createCharacter(
             @Valid @RequestBody CharacterDTO.CreateRequest request,
@@ -56,7 +66,7 @@ public class CharacterController {
             @PathVariable String id,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        characterService.deleteCharacter(id, userDetails.getUsername());
+        characterService.deleteCharacter(id, requireAuth(userDetails));
         return ResponseEntity.noContent().build();
     }
     
@@ -64,7 +74,7 @@ public class CharacterController {
     public ResponseEntity<List<CharacterDTO.CardResponse>> getMyCharacters(
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        return ResponseEntity.ok(characterService.getUserCharacters(userDetails.getUsername()));
+        return ResponseEntity.ok(characterService.getUserCharacters(requireAuth(userDetails)));
     }
     
     @GetMapping("/{id}")
@@ -94,7 +104,7 @@ public class CharacterController {
             @PathVariable String id,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        return ResponseEntity.ok(characterService.toggleLike(id, userDetails.getUsername()));
+        return ResponseEntity.ok(characterService.toggleLike(id, requireAuth(userDetails)));
     }
 
     @PostMapping("/generate")
@@ -102,7 +112,7 @@ public class CharacterController {
             @Valid @RequestBody GenerateCharacterDTO.Request request,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
-        rateLimitService.checkAndIncrement(userDetails.getUsername());
+        rateLimitService.checkAndIncrement(requireAuth(userDetails));
 
         ClassTemplate template = classTemplateRepository
                 .findBySystemAndClassName(request.getSystem(), request.getClassName())

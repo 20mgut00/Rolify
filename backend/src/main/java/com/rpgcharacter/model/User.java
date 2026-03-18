@@ -26,7 +26,8 @@ public class User {
     @Indexed(unique = true)
     private String email;
     
-    private String password; // Null for OAuth users
+    // Null para usuarios OAuth (Google); solo tiene valor para login local
+    private String password;
     
     private String name;
     
@@ -35,7 +36,7 @@ public class User {
     @Builder.Default
     private AuthProvider provider = AuthProvider.LOCAL;
     
-    private String providerId; // Google ID for OAuth users
+    private String providerId;
     
     @Builder.Default
     private Boolean emailVerified = false;
@@ -49,14 +50,13 @@ public class User {
     @LastModifiedDate
     private LocalDateTime updatedAt;
     
-    // Statistics
     @Builder.Default
     private Long totalCharacters = 0L;
 
     @Builder.Default
     private Long publicCharacters = 0L;
 
-    // AI generation rate limiting
+    // Rate limiting por usuario: se resetea a medianoche via RateLimitService
     @Builder.Default
     private Integer dailyAiGenerations = 0;
 

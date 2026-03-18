@@ -45,6 +45,7 @@ public class SecurityConfig {
         http
             .csrf(AbstractHttpConfigurer::disable)
             .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+            // Permite acceso anonimo a estos endpoints para que usuarios no logueados puedan crear personajes y ver la galeria
             .authorizeHttpRequests(auth -> auth
                 .requestMatchers(
                     "/api/auth/**",
@@ -84,7 +85,6 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // Use setAllowedOriginPatterns to support wildcards like https://*.vercel.app
         configuration.setAllowedOriginPatterns(Arrays.asList(allowedOrigins.split(",")));
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         configuration.setAllowedHeaders(Arrays.asList(
@@ -95,7 +95,7 @@ public class SecurityConfig {
             "X-Requested-With"
         ));
         configuration.setAllowCredentials(true);
-        configuration.setMaxAge(86400L); // 24 hours for better preflight caching
+        configuration.setMaxAge(86400L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);

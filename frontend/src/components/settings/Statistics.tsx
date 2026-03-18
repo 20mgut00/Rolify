@@ -37,7 +37,6 @@ export default function Statistics() {
     );
   }
 
-  // Calculate statistics
   const stats = characters ? {
     total: characters.length,
     public: characters.filter(c => c.isPublic).length,
@@ -68,9 +67,9 @@ export default function Statistics() {
         {isLoading && (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="bg-white rounded-lg shadow-lg p-6 animate-pulse">
-                <div className="h-6 bg-gray-200 rounded w-3/4 mb-4" />
-                <div className="h-10 bg-gray-200 rounded w-1/2" />
+              <div key={i} className="bg-white bg-panel-solid rounded-lg shadow-lg p-6 animate-pulse">
+                <div className="h-6 bg-primary-dark/10 rounded w-3/4 mb-4" />
+                <div className="h-10 bg-primary-dark/10 rounded w-1/2" />
               </div>
             ))}
           </div>
@@ -78,7 +77,6 @@ export default function Statistics() {
 
         {!isLoading && stats && (
           <>
-            {/* Overview Cards */}
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
               <div className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition dark-shared-panel">
                 <div className="flex items-center justify-between mb-4">
@@ -99,7 +97,7 @@ export default function Statistics() {
                   <h3 className="font-cinzel text-lg font-bold text-primary-dark">
                     {t('statistics.publicCharacters')}
                   </h3>
-                  <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
+                  <div className="w-12 h-12 bg-green-600/15 rounded-full flex items-center justify-center">
                     <Globe size={24} className="text-green-600" />
                   </div>
                 </div>
@@ -113,7 +111,7 @@ export default function Statistics() {
                   <h3 className="font-cinzel text-lg font-bold text-primary-dark">
                     {t('statistics.privateCharacters')}
                   </h3>
-                  <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
+                  <div className="w-12 h-12 bg-blue-600/15 rounded-full flex items-center justify-center">
                     <Users size={24} className="text-blue-600" />
                   </div>
                 </div>
@@ -123,7 +121,6 @@ export default function Statistics() {
               </div>
             </div>
 
-            {/* Characters by Class */}
             <div className="bg-white rounded-lg shadow-lg p-6 mb-8 dark-shared-panel">
               <h2 className="font-cinzel text-2xl font-bold text-primary-dark mb-6 flex items-center gap-2">
                 <TrendingUp size={24} className="text-accent-gold" />
@@ -156,7 +153,6 @@ export default function Statistics() {
               )}
             </div>
 
-            {/* Account Info */}
             <div className="grid md:grid-cols-2 gap-6">
               <div className="bg-white rounded-lg shadow-lg p-6 dark-shared-panel">
                 <h3 className="font-cinzel text-xl font-bold text-primary-dark mb-4 flex items-center gap-2">
@@ -189,7 +185,6 @@ export default function Statistics() {
               )}
             </div>
 
-            {/* Call to Action */}
             {stats.total === 0 && (
               <div className="mt-8 text-center bg-linear-to-r from-accent-gold/20 to-primary-dark/10 rounded-lg p-12">
                 <h3 className="font-cinzel text-2xl font-bold text-primary-dark mb-4">

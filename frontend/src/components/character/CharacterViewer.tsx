@@ -17,6 +17,7 @@ export default function CharacterViewer() {
   const navigate = useNavigate();
   const { user } = useAuthStore();
   const { t, i18n } = useTranslation();
+  // Helper de traduccion con fallback: si la clave no existe en i18n, devuelve el valor por defecto
   const tg = (key: string, fallback: string): string => t(key, { defaultValue: fallback });
   const [showExportMenu, setShowExportMenu] = useState(false);
 
@@ -26,6 +27,7 @@ export default function CharacterViewer() {
     enabled: !!id,
   });
 
+  // Considera propietario tanto al usuario logueado como al anonimo que creo el personaje (userId vacio)
   const isOwner = !!(
     character && (
       (user && user.id === character.userId) ||
@@ -102,7 +104,6 @@ export default function CharacterViewer() {
     <main className="max-w-7xl mx-auto px-3 sm:px-6 py-6 sm:py-8 bg-primary-light min-h-screen">
       <div className="container mx-auto px-0 sm:px-4">
         <div className="max-w-5xl mx-auto">
-          {/* Header Actions */}
           <div className="flex flex-wrap items-center justify-between gap-3 mb-6 sm:mb-8">
             <button
               type="button"
@@ -176,9 +177,7 @@ export default function CharacterViewer() {
             </div>
           </div>
 
-          {/* Character Sheet */}
           <div className="bg-white rounded-2xl shadow-2xl overflow-hidden dark-shared-panel">
-            {/* Hero Section */}
             <div className="bg-linear-to-r from-primary-light via-primary-light to-accent-gold/10 p-4 sm:p-8 border-b-4 border-accent-gold relative overflow-hidden">
               <div className="relative z-10 flex flex-col md:flex-row items-center gap-4 sm:gap-6">
                 {character.avatarImage ? (
@@ -226,7 +225,6 @@ export default function CharacterViewer() {
             </div>
 
             <div className="p-4 sm:p-8">
-              {/* Stats */}
               <section className="mb-6 sm:mb-8">
                 <h2 className="font-cinzel text-xl sm:text-2xl font-bold text-primary-dark mb-4 flex items-center gap-2">
                   <Zap className="text-accent-gold" size={22} />
@@ -246,7 +244,6 @@ export default function CharacterViewer() {
                 </div>
               </section>
 
-              {/* Background */}
               <section className="mb-6 sm:mb-8">
                 <h2 className="font-cinzel text-xl sm:text-2xl font-bold text-primary-dark mb-4 flex items-center gap-2">
                   <Heart className="text-accent-gold" size={22} />
@@ -262,7 +259,6 @@ export default function CharacterViewer() {
                 </div>
               </section>
 
-              {/* Connections */}
               {character.connections && character.connections.length > 0 && (
                 <section className="mb-6 sm:mb-8">
                   <h2 className="font-cinzel text-xl sm:text-2xl font-bold text-primary-dark mb-4 flex items-center gap-2">
@@ -280,7 +276,6 @@ export default function CharacterViewer() {
                 </section>
               )}
 
-              {/* Reputation */}
               {character.reputation && character.reputation.factions && Object.keys(character.reputation.factions).length > 0 && (
                 <section className="mb-6 sm:mb-8">
                   <h2 className="font-cinzel text-xl sm:text-2xl font-bold text-primary-dark mb-4 flex items-center gap-2">
@@ -294,14 +289,14 @@ export default function CharacterViewer() {
                         <div className="flex justify-around">
                           <div className="text-center">
                             <div className="text-xs text-primary-dark/60 mb-1">{t('characterViewer.prestige')}</div>
-                            <div className={`text-2xl font-bold ${rep.prestige === 0 ? 'text-gray-300' : rep.prestige > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                            <div className={`text-2xl font-bold ${rep.prestige === 0 ? 'text-primary-dark/30' : rep.prestige > 0 ? 'text-green-600' : 'text-red-600'}`}>
                               {rep.prestige >= 0 ? '+' : ''}{rep.prestige}
                             </div>
                           </div>
                           <div className="w-px bg-primary-dark/10" />
                           <div className="text-center">
                             <div className="text-xs text-primary-dark/60 mb-1">{t('characterViewer.notoriety')}</div>
-                            <div className={`text-2xl font-bold ${rep.notoriety === 0 ? 'text-gray-300' : rep.notoriety > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                            <div className={`text-2xl font-bold ${rep.notoriety === 0 ? 'text-primary-dark/30' : rep.notoriety > 0 ? 'text-green-600' : 'text-red-600'}`}>
                               {rep.notoriety >= 0 ? '+' : ''}{rep.notoriety}
                             </div>
                           </div>
@@ -312,7 +307,6 @@ export default function CharacterViewer() {
                 </section>
               )}
 
-              {/* Nature & Drives */}
               <div className="grid md:grid-cols-2 gap-4 md:gap-8 mb-6 sm:mb-8">
                 <section>
                   <h2 className="font-cinzel text-xl sm:text-2xl font-bold text-primary-dark mb-4 flex items-center gap-2">
@@ -345,7 +339,6 @@ export default function CharacterViewer() {
                 </section>
               </div>
 
-              {/* Moves */}
               <section className="mb-6 sm:mb-8">
                 <h2 className="font-cinzel text-xl sm:text-2xl font-bold text-primary-dark mb-4 flex items-center gap-2">
                   <Shield className="text-accent-gold" size={22} />
@@ -361,7 +354,6 @@ export default function CharacterViewer() {
                 </div>
               </section>
 
-              {/* Weapon Skills & Roguish Feats */}
               <div className="grid md:grid-cols-2 gap-4 md:gap-8 mb-6 sm:mb-8">
                 <section>
                   <h2 className="font-cinzel text-xl sm:text-2xl font-bold text-primary-dark mb-4 flex items-center gap-2">
@@ -391,7 +383,6 @@ export default function CharacterViewer() {
                 </section>
               </div>
 
-              {/* Equipment & Notes */}
               {character.equipment && (
                 <section>
                   <h2 className="font-cinzel text-xl sm:text-2xl font-bold text-primary-dark mb-4">

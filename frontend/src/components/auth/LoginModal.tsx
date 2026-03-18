@@ -50,6 +50,7 @@ export default function LoginModal({ onClose, open }: LoginModalProps) {
   const { sessionCharacters, clearSessionCharacters } = useCharacterStore();
   const queryClient = useQueryClient();
 
+  // Migra los personajes creados como invitado a la cuenta del usuario tras hacer login
   const migrateSessionCharacters = async () => {
     if (sessionCharacters.length === 0) return;
     await Promise.allSettled(
@@ -163,7 +164,6 @@ export default function LoginModal({ onClose, open }: LoginModalProps) {
   };
 
   const handleGoogleLogin = () => {
-    // Get base URL from API_URL (remove /api suffix)
     const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
     const baseUrl = apiUrl.replace(/\/api$/, '');
     window.location.href = `${baseUrl}/oauth2/authorization/google`;
@@ -224,7 +224,6 @@ export default function LoginModal({ onClose, open }: LoginModalProps) {
       </DialogTitle>
 
       <DialogContent>
-        {/* Login Form */}
         {mode === 'login' && (
           <Box component="form" onSubmit={handleLoginSubmit(onLogin)} sx={{ mt: 2 }}>
             <TextField
@@ -342,7 +341,6 @@ export default function LoginModal({ onClose, open }: LoginModalProps) {
           </Box>
         )}
 
-        {/* Register Form */}
         {mode === 'register' && (
           <Box component="form" onSubmit={handleSignupSubmit(onRegister)} sx={{ mt: 2 }}>
             <TextField
@@ -441,7 +439,6 @@ export default function LoginModal({ onClose, open }: LoginModalProps) {
           </Box>
         )}
 
-        {/* Forgot Password Form */}
         {mode === 'forgot' && (
           <Box component="form" onSubmit={handleForgotSubmit(onForgotPassword)} sx={{ mt: 2 }}>
             <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>

@@ -16,14 +16,12 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
-/**
- * Character entity with optimized database indexes for common query patterns.
- */
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Document(collection = "characters")
+// Indices compuestos para optimizar las consultas mas frecuentes (galeria publica, personajes del usuario)
 @CompoundIndexes({
     @CompoundIndex(name = "public_system_class_idx", def = "{'isPublic': 1, 'system': 1, 'className': 1}"),
     @CompoundIndex(name = "public_created_idx", def = "{'isPublic': 1, 'createdAt': -1}"),
@@ -35,18 +33,17 @@ public class Character {
     private String id;
 
     @Indexed
-    private String userId; // Null if not logged in
+    // Nullable: null si el personaje fue creado por un usuario anonimo (modo invitado)
+    private String userId;
     
-    // Basic Info
     private String name;
-    private String system; // "Root", etc.
+    private String system;
     private String className;
     private String species;
     private String demeanor;
     private String details;
-    private String avatarImage; // Base64 or URL
-    
-    // Character specific data (flexible structure)
+    private String avatarImage;
+
     private List<Stat> stats;
     private List<BackgroundAnswer> background;
     private List<SelectedOption> drives;
@@ -55,10 +52,9 @@ public class Character {
     private List<Connection> connections;
     private WeaponSkillsData weaponSkills;
     private RoguishFeatsData roguishFeats;
-    private String equipment;  // Changed from EquipmentData to String for simplicity
+    private String equipment;
     private ReputationData reputation;
-    
-    // Metadata
+
     @Builder.Default
     @Indexed
     private Boolean isPublic = false;
@@ -75,7 +71,6 @@ public class Character {
     @LastModifiedDate
     private LocalDateTime updatedAt;
     
-    // Nested classes
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
@@ -142,26 +137,6 @@ public class Character {
             private String name;
             private String description;
             private Boolean selected;
-        }
-    }
-    
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class EquipmentData {
-        private Integer startingValue;
-        private Integer carrying;
-        private Integer burdened;
-        private Integer max;
-        private List<Item> items;
-        
-        @Data
-        @NoArgsConstructor
-        @AllArgsConstructor
-        public static class Item {
-            private String name;
-            private Integer value;
-            private Integer wear;
         }
     }
     
