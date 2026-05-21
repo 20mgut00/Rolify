@@ -1,6 +1,27 @@
 # Rolify — RPG Character Creator
 
-A fullstack web application for creating and managing tabletop RPG character sheets. Currently supports the **Root RPG** system by Magpie Games with 8 playable classes: Arbiter, Harrier, Ranger, Ronin, Scoundrel, Thief, Tinker, and Vagrant.
+<div align="center">
+
+**A fullstack web application for creating, managing and sharing tabletop RPG character sheets, with AI-powered character generation.**
+
+[🌐 Live Demo](https://rolify-beta.vercel.app) · [Report a bug](https://github.com/20mgut00/Rolify/issues)
+
+![Java](https://img.shields.io/badge/Java-21-ED8B00?style=flat&logo=openjdk&logoColor=white)
+![Spring Boot](https://img.shields.io/badge/Spring_Boot-4-6DB33F?style=flat&logo=spring-boot&logoColor=white)
+![React](https://img.shields.io/badge/React-19-20232A?style=flat&logo=react&logoColor=61DAFB)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.7-3178C6?style=flat&logo=typescript&logoColor=white)
+![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=flat&logo=mongodb&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=flat&logo=docker&logoColor=white)
+
+</div>
+
+---
+
+## 📸 Preview
+
+<img width="1899" height="915" alt="image" src="https://github.com/user-attachments/assets/f8d837eb-7441-48c4-9ade-80a342595ea4" />
+
+---
 
 ## Features
 
@@ -303,7 +324,10 @@ mvn test
 
 ## Author
 
-Miguel Gutierrez Vazquez
+**Miguel Gutiérrez Vázquez**
+
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=flat&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/miguelgutierrezvazquez/)
+[![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat&logo=github&logoColor=white)](https://github.com/20mgut00)
 
 ## License
 
